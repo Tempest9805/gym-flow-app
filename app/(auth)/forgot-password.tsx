@@ -20,18 +20,36 @@ export default function ForgotPasswordScreen() {
       return;
     }
 
+    if (loading) return; // Prevent multiple calls
+
     setLoading(true);
     try {
       const { error } = await authApi.resetPassword(email);
 
       if (error) {
-        Alert.alert('Error', error.message);
+        // Handle rate limit specifically
+        if (error.message?.includes('rate limit') || error.message?.includes('Too many requests')) {
+          Alert.alert(
+            'Please Wait',
+            'We already sent a reset link recently. Please check your email or try again in a few minutes.'
+          );
+        } else {
+          Alert.alert('Error', error.message);
+        }
         return;
       }
 
       setEmailSent(true);
-    } catch (e) {
-      Alert.alert('Error', 'An unexpected error occurred');
+    } catch (e: any) {
+      // Handle rate limit from caught error too
+      if (e?.message?.includes('rate limit') || e?.message?.includes('Too many requests')) {
+        Alert.alert(
+          'Please Wait',
+          'We already sent a reset link recently. Please check your email or try again in a few minutes.'
+        );
+      } else {
+        Alert.alert('Error', 'An unexpected error occurred');
+      }
       console.error(e);
     } finally {
       setLoading(false);

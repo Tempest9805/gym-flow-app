@@ -32,12 +32,22 @@ export default function SignUpScreen() {
       return;
     }
 
+    if (loading) return;
+
     setLoading(true);
     try {
       const { data, error } = await authApi.signUp({ email, password });
 
       if (error) {
-        Alert.alert('Sign Up Failed', error.message);
+        // Handle rate limit specifically
+        if (error.message?.includes('rate limit') || error.message?.includes('Too many requests')) {
+          Alert.alert(
+            'Please Wait',
+            'We already sent a confirmation email recently. Please check your inbox or try again in a few minutes.'
+          );
+        } else {
+          Alert.alert('Sign Up Failed', error.message);
+        }
         return;
       }
 
@@ -50,8 +60,15 @@ export default function SignUpScreen() {
       } else if (data.session) {
         router.replace('/(app)');
       }
-    } catch (e) {
-      Alert.alert('Error', 'An unexpected error occurred');
+    } catch (e: any) {
+      if (e?.message?.includes('rate limit') || e?.message?.includes('Too many requests')) {
+        Alert.alert(
+          'Please Wait',
+          'We already sent a confirmation email recently. Please check your inbox or try again in a few minutes.'
+        );
+      } else {
+        Alert.alert('Error', 'An unexpected error occurred');
+      }
       console.error(e);
     } finally {
       setLoading(false);
