@@ -26,9 +26,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true,
 
   initialize: async () => {
-    // Prevent multiple initializations
     const currentState = get();
-    if (currentState.session || currentState.isLoading === false) return;
+    if (currentState.session !== null || currentState.isLoading === false) return;
 
     try {
       const { data: { session } } = await supabase.auth.getSession();

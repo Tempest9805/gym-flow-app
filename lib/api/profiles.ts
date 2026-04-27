@@ -42,6 +42,46 @@ export const profilesApi = {
   getCurrent: async (): Promise<Profile | null> => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return null;
-    return profilesApi.getById(user.id);
+    
+    // Try to get existing profile
+    const { data: existingProfile, error: getError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    // If profile exists, return it
+    if (!getError && existingProfile) {
+      return existingProfile;
+    }
+
+    // If profile doesn't exist, create it (handle race condition)
+    if (getError?.code === 'PGRST116' || getError?.code === 'PGRST204') {
+      const { data: newProfile, error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || null,
+        })
+        .select()
+        .single();
+
+      if (!insertError && newProfile) {
+        return newProfile;
+      }
+    }
+
+    // If all else fails and it's "no data" error, return null gracefully
+    if (getError?.code === 'PGRST116') {
+      return null;
+    }
+
+    // For other errors, throw
+    if (getError) {
+      throw getError;
+    }
+
+    return null;
   },
 };

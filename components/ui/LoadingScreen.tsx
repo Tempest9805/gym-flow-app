@@ -13,7 +13,7 @@ interface LoadingScreenProps {
 export function LoadingScreen({ message, isOverlay = false }: LoadingScreenProps) {
   const content = (
     <View className="flex-1 items-center justify-center">
-      <ActivityIndicator size="large" color="#0072cd" />
+      <ActivityIndicator size="large" color="#36adff" />
       {message && (
         <Text className="mt-4 text-text-secondary font-semibold text-base">
           {message}
@@ -24,7 +24,7 @@ export function LoadingScreen({ message, isOverlay = false }: LoadingScreenProps
 
   if (isOverlay) {
     return (
-      <View className="absolute inset-0 bg-white/80 items-center justify-center z-50">
+      <View className="absolute inset-0 bg-background/80 items-center justify-center z-50">
         {content}
       </View>
     );

@@ -3,7 +3,7 @@
  * Enforces minimum touch target size (44px).
  */
 import React from 'react';
-import { Pressable, Text, ActivityIndicator, ViewStyle } from 'react-native';
+import { Pressable, Text, ActivityIndicator } from 'react-native';
 
 interface BaseButtonProps {
   title: string;
@@ -35,17 +35,17 @@ export function BaseButton({
   };
 
   const variantClasses = {
-    primary: 'bg-primary-600 active:bg-primary-700',
-    secondary: 'bg-surface-tertiary active:bg-surface-secondary border border-primary-200',
-    outline: 'bg-transparent border-2 border-primary-600 active:bg-primary-50',
+    primary: 'bg-primary active:bg-primary-600',
+    secondary: 'bg-surface-tertiary active:bg-surface-secondary border border-border',
+    outline: 'bg-transparent border-2 border-primary active:bg-surface-secondary',
     ghost: 'bg-transparent active:bg-surface-tertiary',
   };
 
   const textClasses = {
-    primary: 'text-white font-bold',
-    secondary: 'text-primary-700 font-semibold',
-    outline: 'text-primary-600 font-bold',
-    ghost: 'text-primary-600 font-semibold',
+    primary: 'text-text-inverse font-bold',
+    secondary: 'text-text-primary font-semibold',
+    outline: 'text-primary font-bold',
+    ghost: 'text-primary font-semibold',
   };
 
   const textSizeClasses = {
@@ -70,7 +70,7 @@ export function BaseButton({
       `}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? '#ffffff' : '#0072cd'} />
+        <ActivityIndicator color={variant === 'primary' ? '#ffffff' : '#36adff'} />
       ) : (
         <Text className={`${textClasses[variant]} ${textSizeClasses[size]}`}>{title}</Text>
       )}

@@ -1,38 +1,57 @@
 /**
- * Login screen — Integrated with Supabase.
+ * Sign up screen — Create a new account.
  */
 import React, { useState } from 'react';
-import { View, Text, TextInput, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BaseButton } from '@/components/ui';
 import { authApi } from '@/lib/api';
 import { APP_NAME } from '@/constants';
 
-export default function LoginScreen() {
+export default function SignUpScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+  const handleSignUp = async () => {
+    if (!email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert('Error', 'Password must be at least 6 characters');
       return;
     }
 
     setLoading(true);
     try {
-      const { error } = await authApi.signIn({
-        email,
-        password,
-      });
+      const { data, error } = await authApi.signUp({ email, password });
 
       if (error) {
-        Alert.alert('Login Failed', error.message);
+        Alert.alert('Sign Up Failed', error.message);
+        return;
+      }
+
+      if (data.user && !data.session) {
+        Alert.alert(
+          'Check Your Email',
+          'We sent a confirmation link to your email. Please verify to activate your account.',
+          [{ text: 'OK', onPress: () => router.replace('/(auth)/login') }]
+        );
+      } else if (data.session) {
+        router.replace('/(app)');
       }
     } catch (e) {
-      Alert.alert('Error', 'An unexpected error occurred during login');
+      Alert.alert('Error', 'An unexpected error occurred');
       console.error(e);
     } finally {
       setLoading(false);
@@ -46,17 +65,15 @@ export default function LoginScreen() {
         className="flex-1"
       >
         <View className="flex-1 justify-center px-8">
-          {/* Header */}
           <View className="items-center mb-10">
-            <Text className="text-4xl font-bold text-text-primary mb-2">
+            <Text className="text-3xl font-bold text-text-primary mb-2">
               {APP_NAME}
             </Text>
             <Text className="text-lg text-text-secondary">
-              Your workout, simplified
+              Create your account
             </Text>
           </View>
 
-          {/* Inputs */}
           <View className="mb-6 gap-4">
             <TextInput
               placeholder="Email"
@@ -77,40 +94,30 @@ export default function LoginScreen() {
               placeholderTextColor="#6c757d"
               editable={!loading}
             />
+            <TextInput
+              placeholder="Confirm Password"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              className="bg-surface-secondary border border-surface-tertiary rounded-button px-5 py-4 text-lg min-h-[52px] text-text-primary"
+              placeholderTextColor="#6c757d"
+              editable={!loading}
+            />
           </View>
 
-          {/* Primary Action */}
-          <BaseButton 
-            title={loading ? "Logging In..." : "Log In"} 
-            onPress={handleLogin} 
+          <BaseButton
+            title={loading ? 'Creating Account...' : 'Create Account'}
+            onPress={handleSignUp}
             disabled={loading}
           />
-          
-          {/* Forgot Password */}
-          <View className="mt-4 items-center">
-            <BaseButton
-              title="Forgot Password?"
-              variant="ghost"
-              size="sm"
-              onPress={() => router.push('/(auth)/forgot-password')}
-            />
-          </View>
 
-          {/* Sign Up Link */}
-          <View className="mt-8 items-center">
-            <Text className="text-text-secondary mb-2">Don't have an account?</Text>
+          <View className="mt-6 items-center">
             <BaseButton
-              title="Create Account"
+              title="Already have an account? Sign In"
               variant="ghost"
-              onPress={() => router.push('/(auth)/sign-up')}
+              onPress={() => router.replace('/(auth)/login')}
             />
           </View>
-          
-          {loading && (
-            <View className="absolute inset-0 items-center justify-center bg-background/50">
-              <ActivityIndicator size="large" color="#36adff" />
-            </View>
-          )}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

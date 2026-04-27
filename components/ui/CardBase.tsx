@@ -16,7 +16,7 @@ export function CardBase({ children, onPress, className = '' }: CardBaseProps) {
   return (
     <Wrapper
       onPress={onPress}
-      className={`bg-white rounded-card p-4 shadow-sm border border-surface-tertiary ${onPress ? 'active:bg-surface-secondary' : ''} ${className}`}
+      className={`bg-surface rounded-card p-4 border border-border ${onPress ? 'active:bg-surface-secondary' : ''} ${className}`}
     >
       {children}
     </Wrapper>

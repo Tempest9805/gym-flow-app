@@ -45,7 +45,7 @@ export default function ExerciseLibraryScreen() {
         placeholder="Search exercises..."
         value={search}
         onChangeText={setSearch}
-        className="bg-surface-secondary rounded-button px-5 py-4 text-lg mb-4 text-text-primary"
+        className="bg-surface-secondary border border-border rounded-button px-5 py-4 text-lg mb-4 text-text-primary"
         placeholderTextColor="#6c757d"
       />
 
@@ -58,9 +58,9 @@ export default function ExerciseLibraryScreen() {
                 <TouchableOpacity
                   key={category}
                   onPress={() => setSelectedCategory(category === 'All' ? null : category)}
-                  className={`px-4 py-2 rounded-full mr-2 ${isSelected ? 'bg-primary-500' : 'bg-surface-secondary'}`}
+                  className={`px-4 py-2 rounded-full mr-2 ${isSelected ? 'bg-primary' : 'bg-surface-secondary'}`}
                 >
-                  <Text className={`font-bold ${isSelected ? 'text-white' : 'text-text-secondary'}`}>
+                  <Text className={`font-bold ${isSelected ? 'text-text-inverse' : 'text-text-secondary'}`}>
                     {category}
                   </Text>
                 </TouchableOpacity>
@@ -86,7 +86,7 @@ export default function ExerciseLibraryScreen() {
                   {item.category} · {item.muscle_group}
                 </Text>
               </View>
-              <Text className="text-2xl text-primary-500">→</Text>
+              <Text className="text-2xl text-primary">→</Text>
             </CardBase>
           </TouchableOpacity>
         )}

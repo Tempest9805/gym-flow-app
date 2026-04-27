@@ -13,7 +13,7 @@ interface ScreenContainerProps {
 
 export function ScreenContainer({ children, className = '' }: ScreenContainerProps) {
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-background" edges={['top']}>
       <View className={`flex-1 px-5 pt-4 ${className}`}>
         {children}
       </View>

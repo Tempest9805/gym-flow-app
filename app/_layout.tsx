@@ -27,12 +27,18 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
     const inAuthGroup = segments[0] === '(auth)';
 
+    // Not authenticated - go to login
     if (!isAuthenticated && !inAuthGroup) {
       router.replace('/(auth)/login');
-    } else if (isAuthenticated && inAuthGroup) {
-      router.replace('/(app)');
+      return;
     }
-  }, [isAuthenticated, isLoading, segments]);
+
+    // Authenticated and in auth group - go to app
+    if (isAuthenticated && inAuthGroup) {
+      router.replace('/(app)');
+      return;
+    }
+  }, [isAuthenticated, isLoading, segments, router]);
 
   return <>{children}</>;
 }
