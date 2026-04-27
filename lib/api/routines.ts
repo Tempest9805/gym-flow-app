@@ -2,17 +2,9 @@ import { supabase } from '@/lib/supabase';
 import type { Routine, RoutineWithExercises, Profile, RoutineExercise } from '@/types';
 
 export const routinesApi = {
-  /** List routines with ABAC context (Gym vs Independent) */
+  /** List user routines */
   list: async (profile: Profile): Promise<Routine[]> => {
-    let query = supabase.from('routines').select('*').order('created_at', { ascending: false });
-
-    if (profile.gym_id) {
-      // Gym Mode: Only routines within the same gym
-      query = query.eq('gym_id', profile.gym_id);
-    } else {
-      // Independent Mode: Only routines created by the user
-      query = query.eq('created_by_profile_id', profile.id);
-    }
+    let query = supabase.from('routines').select('*').order('created_at', { ascending: false }).eq('user_id', profile.id);
 
     const { data, error } = await query;
     if (error) throw error;
@@ -43,41 +35,29 @@ export const routinesApi = {
       throw error;
     }
 
-    // ABAC Check
-    if (data.gym_id && data.gym_id !== profile?.gym_id) {
-       // Not in the same gym, check if it's the creator
-       if (data.created_by_profile_id !== user.id) {
-         throw new Error('Unauthorized: You do not have access to this routine.');
-       }
-    } else if (!data.gym_id && data.created_by_profile_id !== user.id) {
-       // Independent routine and not the creator
-       throw new Error('Unauthorized: You do not have access to this routine.');
+    if (data.user_id !== user.id) {
+      throw new Error('Unauthorized: You do not have access to this routine.');
     }
     
     return data as RoutineWithExercises;
   },
 
-  /** Create a new routine with role validation */
+  /** Create a new routine */
   create: async (
     profile: Profile,
-    routine: Omit<Routine, 'id' | 'created_at' | 'created_by_profile_id' | 'gym_id'>,
+    routine: Omit<Routine, 'id' | 'created_at' | 'user_id'>,
     exercises: Omit<RoutineExercise, 'id' | 'routine_id'>[]
   ): Promise<RoutineWithExercises> => {
-    // 1. Authentication & Role validation
+    // 1. Authentication
     const { data: { user } } = await supabase.auth.getUser();
     if (!user || user.id !== profile.id) {
       throw new Error('Unauthorized: Identity mismatch.');
     }
 
-    if (profile.role === 'user') {
-      throw new Error('Unauthorized: Athletes cannot create routines.');
-    }
-
-    // 2. Build routine data with context
+    // 2. Build routine data
     const routineData = {
       ...routine,
-      created_by_profile_id: profile.id,
-      gym_id: profile.gym_id || null,
+      user_id: profile.id,
       status: 'active' as const,
     };
 

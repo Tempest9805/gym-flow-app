@@ -24,13 +24,7 @@ export const profilesApi = {
 
     // Self-update is always allowed
     if (user.id !== id) {
-      // Fetch current user profile to check role
-      const currentUserProfile = await profilesApi.getById(user.id);
-      
-      // Only coaches can update other users, and only within the same gym
-      if (currentUserProfile?.role !== 'coach' || currentUserProfile.gym_id !== updates.gym_id) {
-        throw new Error('Unauthorized: You can only update your own profile or profiles in your gym.');
-      }
+        throw new Error('Unauthorized: You can only update your own profile.');
     }
 
     const { data, error } = await supabase

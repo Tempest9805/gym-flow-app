@@ -1,15 +1,13 @@
-# PLAN: Gym Flow App (Hybrid Fitness SaaS)
+# PLAN: Gym Flow App (User-Only MVP)
 
 ## Project Summary
-`gym-flow-app` is a hybrid mobile-first Fitness SaaS platform for iOS and Android.
+`gym-flow-app` is a mobile-first Fitness app for iOS and Android focused on individual users.
 
-It supports two interoperable operating modes:
-
-1. **Gym Mode (Multi-tenant):**
-   Coaches manage Trainers, and Trainers manage Users inside a specific `gym_id` scope.
-
-2. **Independent Mode (Peer-to-Peer):**
-   A User can act as a coach or trainer for another User without belonging to a gym, using explicit coaching relationships.
+The MVP is intentionally simplified to avoid unnecessary complexity and concentrate on the core user experience:
+1. Browse exercises by category
+2. View exercise detail with instructions and short media guidance
+3. Build weekly routines from the exercise catalog
+4. Share routines with other users through QR or invite code
 
 The app must feel like a kiosk-style ordering system:
 - extremely simple
@@ -19,170 +17,147 @@ The app must feel like a kiosk-style ordering system:
 - zero unnecessary complexity
 
 ## Business Goal
-Provide a scalable, low-friction coaching tool that works for both traditional gyms and independent personal trainers or online coaches, without forcing the system into a gym-only model.
+Provide a fast, low-friction fitness app for individual users that helps them discover exercises, understand correct execution, create weekly routines, and share routines with others.
 
-## Authorization Model (RBAC + ABAC)
-Security is enforced through two layers:
-
-### 1. Role-Based Access Control (RBAC)
-- **USER:** receives routines and executes workouts.
-- **TRAINER:** builds routines and assigns them.
-- **COACH:** manages trainers, users, and gym-level oversight.
-
-### 2. Attribute-Based Access Control (ABAC)
-Access depends on context:
-
-- **Gym context:** if `gym_id` is present, access is scoped to that gym.
-- **Independent context:** if `gym_id` is null, access is based on explicit coaching relationships between profiles.
+## Authorization Model
+For the MVP, the system is user-only.
 
 ### Access Rules
-- A trainer can assign routines:
-  - within their own gym, when `gym_id` matches
-  - in independent mode, only to users with an active coaching relationship
-- A coach can manage staff and users only inside their own gym scope
-- A user can receive assignments either:
-  - from gym-based trainers
-  - from independent coaches/trainers with an approved relationship
+- Each authenticated user manages only their own data.
+- A user can read the shared exercise catalog.
+- A user can create, edit, and delete only their own routines.
+- A user can share routines with another user through QR or share code.
+- A user can accept or duplicate routines shared by other users.
+
+No gym logic, no coach/trainer roles, and no multi-tenant permissions are part of the MVP.
 
 ## Database Schema (Supabase / PostgreSQL)
-Use the `profiles` pattern linked to `auth.users`.
+Use a simple user-centered model linked to `auth.users`.
 
 ### Core Tables
-- **gyms**
-  - `id` (UUID, PK)
-  - `name`
-  - `owner_profile_id` (FK to `profiles.id`)
-  - `metadata`
-  - `created_at`
-
 - **profiles**
   - `id` (UUID, PK and FK to `auth.users.id`)
   - `email`
   - `full_name`
-  - `role` (enum: `user`, `trainer`, `coach`)
-  - `gym_id` (UUID, nullable)
   - `avatar_url`
-  - `status`
   - `created_at`
 
 - **exercises**
   - `id`
-  - `name`
+  - `slug`
+  - `name_en`
+  - `name_es`
   - `category`
   - `muscle_group`
+  - `equipment`
   - `difficulty`
+  - `type`
+  - `is_compound`
+  - `movement_pattern`
   - `demonstration_url`
   - `description`
+  - `notes`
   - `created_at`
 
 - **routines**
   - `id`
+  - `user_id` (FK to `profiles.id`)
   - `name`
-  - `created_by_profile_id` (FK to `profiles.id`)
-  - `gym_id` (nullable)
-  - `metadata`
-  - `status`
+  - `description`
   - `created_at`
+  - `updated_at`
 
 - **routine_exercises**
   - `id`
   - `routine_id` (FK to `routines.id`)
   - `exercise_id` (FK to `exercises.id`)
+  - `day_of_week`
+  - `order_index`
   - `sets`
   - `reps`
-  - `duration_seconds`
+  - `weight`
   - `rest_seconds`
-  - `order_index`
   - `notes`
-
-- **coaching_relations**
-  - `id`
-  - `coach_profile_id` (FK to `profiles.id`)
-  - `user_profile_id` (FK to `profiles.id`)
-  - `status` (pending, active, revoked)
-  - `context_type` (gym, independent)
-  - `gym_id` (nullable)
   - `created_at`
 
-- **assignments**
+- **routine_shares**
   - `id`
-  - `user_profile_id` (recipient, FK to `profiles.id`)
   - `routine_id` (FK to `routines.id`)
-  - `assigned_by_profile_id` (FK to `profiles.id`)
-  - `gym_id` (nullable)
-  - `coaching_relation_id` (nullable, FK to `coaching_relations.id`)
-  - `context_type` (gym, independent)
-  - `status` (active, inactive, completed, archived)
-  - `assigned_at`
-  - `completed_at` (nullable)
+  - `sender_user_id` (FK to `profiles.id`)
+  - `receiver_user_id` (FK to `profiles.id`, nullable until accepted)
+  - `share_code`
+  - `share_type` (code, qr)
+  - `status` (pending, accepted, revoked, expired)
+  - `created_at`
+  - `accepted_at` (nullable)
+
+- **workout_schedules** (optional but useful for weekly planning)
+  - `id`
+  - `user_id` (FK to `profiles.id`)
+  - `routine_id` (FK to `routines.id`)
+  - `day_of_week`
+  - `is_active`
+  - `created_at`
 
 ### Referential Integrity Rules
 - `profiles.id` references `auth.users.id`
-- `profiles.gym_id` references `gyms.id`
-- `gyms.owner_profile_id` references `profiles.id`
-- `routines.created_by_profile_id` references `profiles.id`
-- `routines.gym_id` references `gyms.id`
+- `routines.user_id` references `profiles.id`
 - `routine_exercises.routine_id` references `routines.id`
 - `routine_exercises.exercise_id` references `exercises.id`
-- `coaching_relations.coach_profile_id` references `profiles.id`
-- `coaching_relations.user_profile_id` references `profiles.id`
-- `coaching_relations.gym_id` references `gyms.id`
-- `assignments.user_profile_id` references `profiles.id`
-- `assignments.routine_id` references `routines.id`
-- `assignments.assigned_by_profile_id` references `profiles.id`
-- `assignments.gym_id` references `gyms.id`
-- `assignments.coaching_relation_id` references `coaching_relations.id`
+- `routine_shares.routine_id` references `routines.id`
+- `routine_shares.sender_user_id` references `profiles.id`
+- `routine_shares.receiver_user_id` references `profiles.id`
+- `workout_schedules.user_id` references `profiles.id`
+- `workout_schedules.routine_id` references `routines.id`
 
 ### Integrity Rules
-- A profile can belong to at most one gym at a time.
-- A routine must belong to either:
-  - a gym context, or
-  - an independent context, but not both inconsistently
-- An assignment must always have a valid authorization path:
-  - gym-based authority, or
-  - active coaching relation
-- Unique constraints must prevent duplicate active coaching relations for the same pair
-- Independent coaching relationships must be explicit and revocable
+- A profile belongs to exactly one authenticated user.
+- A routine must belong to exactly one user.
+- A routine exercise must belong to exactly one routine.
+- A share code must be unique while active.
+- A shared routine must always have a valid authorization path.
+- No recursive RLS policies are allowed.
+- No gym-based or role-based dependencies are allowed in the MVP.
 
 ## MVP Feature Roadmap
-### Phase 1: Hybrid Foundation
+### Phase 1: Core User Foundation
 - [x] Supabase Auth + Profiles setup
-    - [x] Create Supabase client with expo-secure-store persistence
-    - [x] Setup environment variables
-    - [x] Create Auth Context / Store
-    - [x] Implement Simple Login Screen
-    - [x] Implement Basic Route Protection
-- [x] RBAC implementation
-    - [x] Role-based tab visibility in app layout
-    - [x] Navigation guards for unauthorized route access
-    - [x] Write protection on routine creation (role check)
-- [x] ABAC authorization layer
-    - [x] Context-aware routine filtering (gym_id vs independent)
-    - [x] Profile-linked hooks for authorization context
-- [x] Gym mode and independent mode support
-- [x] Base exercise library
-- [x] Basic routine creation and assignment
-- [x] Role-based home screens (User, Trainer, Coach variants)
+  - [x] Create Supabase client with expo-secure-store persistence
+  - [x] Setup environment variables
+  - [x] Create Auth Context / Store
+  - [x] Implement simple login screen
+  - [x] Implement basic route protection
+- [x] Exercise catalog integration
+  - [x] Connect real exercises table
+  - [x] Group/filter by category
+  - [x] Search by name
+- [x] Exercise detail experience
+  - [x] Description
+  - [x] Gif/video guide
+  - [x] Clear back navigation
+- [x] Routine creation
+  - [x] Weekly routine builder
+  - [x] Sets, reps, weight, day-of-week
+  - [x] Save and edit routines
+- [x] Routine sharing
+  - [x] Share code
+  - [x] QR generation
+  - [x] Accept or duplicate shared routines
 
-### Phase 2: Kiosk UX & Workouts
-- [x] Workout detail screen
-- [x] Workout session flow
-- [x] Clear completion actions
-- [x] Simplified routine builder
-- [x] Coach dashboard
-- [x] Weekly Workout Agenda (USER role)
-    - [x] workout_schedules table + RLS migration
-    - [x] Schedule API service (lib/api/schedule.ts)
-    - [x] React Query hooks (lib/hooks/useSchedule.ts)
-    - [x] WeeklyAgenda feature component
-    - [x] Integrated into User Home screen
+### Phase 2: Kiosk UX & Workflows
+- [x] Weekly workout agenda
+  - [x] User schedule visualization
+  - [x] Day-by-day routine overview
+- [ ] Workout session improvements
+- [ ] Better exercise search and filters
+- [ ] Better progress display
 
 ### Phase 3: Growth Features
 - [ ] Progress history
 - [ ] Notifications
 - [ ] Basic analytics
 - [ ] Routine templates
-- [ ] Search and filters in exercise library
+- [ ] Saved favorites
 
 ## UX Enforcement Rules (Critical)
 These are mandatory constraints, not guidelines.
@@ -192,7 +167,7 @@ These are mandatory constraints, not guidelines.
 - Maximum 2 secondary actions
 - Maximum navigation depth of 2 levels
 - No hidden core actions behind menus or gestures
-- No multi-step flows longer than 3 steps in MVP
+- No multi-step wizards longer than 3 steps in MVP
 
 ### Layout Rules
 - All primary buttons must be large and visually dominant
@@ -226,8 +201,9 @@ These are mandatory constraints, not guidelines.
 A first-time user of any age must be able to:
 - open the app
 - understand what to do immediately
-- start a workout without instructions
-- complete the session without confusion
+- browse exercises easily
+- create a routine without confusion
+- share or receive a routine with minimal friction
 
 ## UI & UX Architecture
 - **Framework:** Expo (React Native) + Expo Router
@@ -246,28 +222,27 @@ A first-time user of any age must be able to:
 - All data access must go through `lib/api`
 - No direct `supabase-js` calls inside UI components
 - Use React Query for server state
-- Enforce RBAC and ABAC both client-side and server-side
+- Enforce authorization only by user ownership
 - Use Supabase RLS policies as the final security boundary
+- Keep all policies non-recursive and minimal
 
 ## Wireframe Plan (Stitch MCP)
 Generate wireframes using Stitch MCP for the MVP screens only.
 
 ### Required Wireframes
 1. Login
-2. Role-Based Home
-   - User Home
-   - Trainer Home
-   - Coach Home
-3. Workout Detail
-4. Workout Session
+2. Home
+3. Exercise List
+4. Exercise Detail
 5. Routine Builder
-6. Coach Dashboard
-7. Exercise Library
+6. Weekly Agenda
+7. Share Routine
+8. Accept Shared Routine
 
 ### Wireframe Requirements
 - Mobile-first
 - Ultra simple
-- Kiosk-style like a McDonald’s ordering terminal
+- Kiosk-style like a modern ordering terminal
 - Large buttons
 - Visual hierarchy
 - Minimal text
@@ -281,10 +256,9 @@ Generate wireframes using Stitch MCP for the MVP screens only.
 Define structure, spacing, hierarchy, and interaction flow suitable for direct implementation in Expo React Native.
 
 ## Scalability Notes
-- Nullable `gym_id` enables both gym-based and independent users in the same system
-- `coaching_relations` provides a clean and explicit way to authorize peer-to-peer coaching
-- `assignments` captures both gym-based and independent assignment flows
-- RLS policies must prevent cross-gym leakage and unauthorized independent access
-- The schema should support future expansion into messaging, analytics, notifications, and progress tracking without restructuring core entities
+- The MVP is intentionally user-only to reduce complexity and improve stability.
+- The schema should support future expansion into social features, notifications, analytics, and richer routine sharing.
+- RLS policies must remain simple and non-recursive.
+- The exercise catalog should support future filtering, favorites, and recommendations without restructuring core entities.
 
 **STOP: Awaiting approval for PLAN.md.**

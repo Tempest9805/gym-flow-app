@@ -8,7 +8,7 @@ export const scheduleApi = {
       .from('workout_schedules')
       .select(`
         *,
-        routine:routines(id, name, status, created_at, created_by_profile_id, gym_id)
+        routine:routines(id, name, status, created_at, user_id)
       `)
       .eq('user_id', userId)
       .order('day_of_week');
@@ -17,12 +17,10 @@ export const scheduleApi = {
     return (data || []) as unknown as WorkoutScheduleWithRoutine[];
   },
 
-  /** Toggle a day on/off in the schedule */
   toggleDay: async (
     userId: string,
     dayOfWeek: DayOfWeek,
-    routineId: string,
-    gymId: string | null
+    routineId: string
   ): Promise<void> => {
     // Check if an entry already exists for this day
     const { data: existing } = await supabase
@@ -47,18 +45,15 @@ export const scheduleApi = {
           user_id: userId,
           day_of_week: dayOfWeek,
           routine_id: routineId,
-          gym_id: gymId,
         });
       if (error) throw error;
     }
   },
 
-  /** Set a specific routine for a specific day */
   setDayRoutine: async (
     userId: string,
     dayOfWeek: DayOfWeek,
-    routineId: string,
-    gymId: string | null
+    routineId: string
   ): Promise<void> => {
     // Upsert: delete existing then insert
     await supabase
@@ -73,7 +68,6 @@ export const scheduleApi = {
         user_id: userId,
         day_of_week: dayOfWeek,
         routine_id: routineId,
-        gym_id: gymId,
       });
     if (error) throw error;
   },

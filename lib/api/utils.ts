@@ -18,11 +18,3 @@ export async function ensureAuthenticated(): Promise<Profile> {
   return profile;
 }
 
-/**
- * Validates that the current user has one of the required roles.
- */
-export function validateRole(profile: Profile, allowedRoles: string[]) {
-  if (!allowedRoles.includes(profile.role)) {
-    throw new Error('Unauthorized: Insufficient permissions');
-  }
-}

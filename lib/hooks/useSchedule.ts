@@ -17,12 +17,27 @@ export const useToggleScheduleDay = (userId?: string) => {
     mutationFn: ({
       dayOfWeek,
       routineId,
-      gymId,
     }: {
       dayOfWeek: DayOfWeek;
       routineId: string;
-      gymId: string | null;
-    }) => (userId ? scheduleApi.toggleDay(userId, dayOfWeek, routineId, gymId) : Promise.reject()),
+    }) => (userId ? scheduleApi.toggleDay(userId, dayOfWeek, routineId) : Promise.reject()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['schedule', userId] });
+    },
+  });
+};
+
+export const useSetDayRoutine = (userId?: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      dayOfWeek,
+      routineId,
+    }: {
+      dayOfWeek: DayOfWeek;
+      routineId: string;
+    }) => (userId ? scheduleApi.setDayRoutine(userId, dayOfWeek, routineId) : Promise.reject()),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['schedule', userId] });
     },

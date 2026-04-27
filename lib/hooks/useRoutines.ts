@@ -4,7 +4,7 @@ import type { Routine, Profile, RoutineExercise, RoutineWithExercises } from '@/
 
 export const useRoutines = (profile?: Profile) => {
   return useQuery({
-    queryKey: ['routines', profile?.id, profile?.gym_id],
+    queryKey: ['routines', profile?.id],
     queryFn: () => (profile ? routinesApi.list(profile) : []),
     enabled: !!profile,
   });
@@ -26,7 +26,7 @@ export const useCreateRoutine = (profile?: Profile) => {
       routine, 
       exercises 
     }: { 
-      routine: Omit<Routine, 'id' | 'created_at' | 'created_by_profile_id' | 'gym_id'>; 
+      routine: Omit<Routine, 'id' | 'created_at' | 'user_id'>; 
       exercises: Omit<RoutineExercise, 'id' | 'routine_id'>[];
     }) =>
       profile ? routinesApi.create(profile, routine, exercises) : Promise.reject('No profile'),

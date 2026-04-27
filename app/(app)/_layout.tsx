@@ -1,38 +1,31 @@
 import React, { useEffect } from 'react';
 import { Tabs, useRouter, useSegments } from 'expo-router';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { useCurrentProfile } from '@/lib/hooks';
 import { LoadingScreen } from '@/components/ui';
+import { useAuthStore } from '@/lib/store/authStore';
 
 export default function AppLayout() {
-  const { data: profile, isLoading } = useCurrentProfile();
+  const { isAuthenticated } = useAuthStore();
+  const { data: profile, isLoading, isError } = useCurrentProfile();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
     if (isLoading || !profile) return;
-
-    const role = profile.role;
-    const currentTab = segments[segments.length - 1];
-
-    // Protection logic
-    if (role === 'user') {
-      if (currentTab === 'routines' || currentTab === 'dashboard') {
-        router.replace('/(app)');
-      }
-    } else if (role === 'trainer') {
-      if (currentTab === 'dashboard') {
-        router.replace('/(app)');
-      }
-    }
   }, [profile, isLoading, segments]);
 
   if (isLoading) {
     return <LoadingScreen />;
   }
 
-  const role = profile?.role || 'user';
-  const isTrainerOrCoach = role === 'trainer' || role === 'coach';
+  if (isError || !profile) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <Text className="text-lg text-text-secondary">Unable to load profile</Text>
+      </View>
+    );
+  }
 
   return (
     <Tabs
@@ -63,37 +56,26 @@ export default function AppLayout() {
       <Tabs.Screen
         name="workout"
         options={{
+          href: null,
           title: 'Workout',
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 24, color }}>💪</Text>
-          ),
         }}
       />
       <Tabs.Screen
         name="routines"
         options={{
           title: 'Routines',
-          href: isTrainerOrCoach ? undefined : null, // Hide for standard users
           tabBarIcon: ({ color }) => (
             <Text style={{ fontSize: 24, color }}>📋</Text>
           ),
         }}
       />
       <Tabs.Screen
-        name="dashboard"
-        options={{
-          title: 'Dashboard',
-          href: role === 'coach' ? undefined : null, // Only coach sees gym dashboard
-          tabBarIcon: ({ color }) => (
-            <Text style={{ fontSize: 24, color }}>📊</Text>
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="exercises"
         options={{
-          href: null,
           title: 'Exercise Library',
+          tabBarIcon: ({ color }) => (
+            <Text style={{ fontSize: 24, color }}>🔍</Text>
+          ),
         }}
       />
       <Tabs.Screen

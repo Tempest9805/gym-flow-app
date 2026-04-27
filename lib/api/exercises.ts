@@ -23,17 +23,14 @@ export const exercisesApi = {
     
     if (error) throw error;
     
-    const muscleGroups = Array.from(new Set(data.map(d => d.muscle_group)));
-    const categories = Array.from(new Set(data.map(d => d.category)));
+    const muscleGroups = Array.from(new Set(data.map(d => d.muscle_group).filter(Boolean)));
+    const categories = Array.from(new Set(data.map(d => d.category).filter(Boolean)));
     
     return { muscleGroups, categories };
   },
 
   /** Get single exercise by ID */
   getById: async (id: string): Promise<Exercise | null> => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Authentication required');
-
     const { data, error } = await supabase
       .from('exercises')
       .select('*')

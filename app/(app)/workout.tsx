@@ -39,7 +39,7 @@ export default function WorkoutDetailScreen() {
         renderItem={({ item }) => (
           <CardBase className="mb-4 flex-row items-center p-4">
             <View className="w-12 h-12 bg-surface-secondary rounded-full items-center justify-center mr-4">
-              <Text className="text-lg font-bold text-primary-600">{item.order_index + 1}</Text>
+              <Text className="text-lg font-bold text-primary-600">{(item.order_index ?? 0) + 1}</Text>
             </View>
             <View className="flex-1">
               <Text className="text-lg font-bold text-text-primary">{item.exercise.name}</Text>

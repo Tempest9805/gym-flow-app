@@ -36,13 +36,13 @@ export default function RoutinesScreen() {
                 title="Edit" 
                 variant="ghost" 
                 size="sm" 
-                onPress={() => {}} 
+                onPress={() => router.push({ pathname: '/routine-builder', params: { id: item.id } })} 
               />
             </View>
             <BaseButton 
-              title="Assign to Athlete" 
+              title="Share Routine" 
               variant="outline" 
-              onPress={() => {}} 
+              onPress={() => router.push(`/share/${item.id}`)} 
             />
           </CardBase>
         )}
@@ -53,11 +53,20 @@ export default function RoutinesScreen() {
         }
       />
 
-      <View className="absolute bottom-6 left-6 right-6">
-        <BaseButton 
-          title="Create New Routine" 
-          onPress={() => {}} 
-        />
+      <View className="absolute bottom-6 left-6 right-6 flex-row justify-between space-x-4">
+        <View className="flex-1">
+          <BaseButton 
+            title="Import" 
+            variant="outline"
+            onPress={() => router.push('/import-routine')} 
+          />
+        </View>
+        <View className="flex-1">
+          <BaseButton 
+            title="Create New" 
+            onPress={() => router.push('/routine-builder')} 
+          />
+        </View>
       </View>
     </ScreenContainer>
   );

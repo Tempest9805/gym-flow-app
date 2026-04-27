@@ -19,19 +19,18 @@ interface AuthState {
   setLoading: (loading: boolean) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   session: null,
   user: null,
   isAuthenticated: false,
   isLoading: true,
 
   initialize: async () => {
-    // Only initialize once
-    const { session: currentSession } = useAuthStore.getState();
-    if (currentSession) return;
+    // Prevent multiple initializations
+    const currentState = get();
+    if (currentState.session || currentState.isLoading === false) return;
 
     try {
-      // Get initial session
       const { data: { session } } = await supabase.auth.getSession();
       
       set({ 
@@ -41,8 +40,7 @@ export const useAuthStore = create<AuthState>((set) => ({
         isLoading: false 
       });
 
-      // Listen for auth changes
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      supabase.auth.onAuthStateChange((_event, session) => {
         set({ 
           session, 
           user: session?.user ?? null, 
@@ -50,8 +48,6 @@ export const useAuthStore = create<AuthState>((set) => ({
           isLoading: false 
         });
       });
-
-      // Optional: store subscription if needed for cleanup
     } catch (error) {
       console.error('Auth initialization error:', error);
       set({ isLoading: false });
