@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gym Flow - Sign Up</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#ffdbcf",
+                        "surface-container-high": "#372621",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#e3bfb3",
+                        "on-secondary-fixed": "#331200",
+                        "on-background": "#f9dcd4",
+                        "surface-tint": "#ffb59c",
+                        "secondary": "#ffb68e",
+                        "inverse-primary": "#ab3600",
+                        "on-primary": "#5c1900",
+                        "primary": "#ffb59c",
+                        "background": "#1e100b",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#f9dcd4",
+                        "surface": "#1e100b",
+                        "on-primary-fixed": "#390c00",
+                        "surface-container-lowest": "#180b07",
+                        "surface-dim": "#1e100b",
+                        "surface-container": "#2b1c17",
+                        "inverse-on-surface": "#3d2c27",
+                        "on-surface": "#f9dcd4",
+                        "on-tertiary": "#00344f",
+                        "tertiary": "#8dcdff",
+                        "tertiary-container": "#009de4",
+                        "on-primary-container": "#561700",
+                        "on-tertiary-fixed-variant": "#004b70",
+                        "on-secondary-container": "#ffe2d5",
+                        "surface-container-low": "#271813",
+                        "on-tertiary-fixed": "#001e30",
+                        "primary-fixed-dim": "#ffb59c",
+                        "surface-bright": "#47352f",
+                        "tertiary-fixed-dim": "#8dcdff",
+                        "secondary-container": "#ab4c00",
+                        "primary-container": "#ff5f1f",
+                        "error-container": "#93000a",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#832700",
+                        "on-secondary": "#532200",
+                        "outline": "#aa897f",
+                        "surface-container-highest": "#42312b",
+                        "on-secondary-fixed-variant": "#763300",
+                        "secondary-fixed": "#ffdbca",
+                        "tertiary-fixed": "#cae6ff",
+                        "on-tertiary-container": "#00304a",
+                        "outline-variant": "#5b4138",
+                        "secondary-fixed-dim": "#ffb68e",
+                        "surface-variant": "#42312b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container_padding": "24px",
+                        "touch_target_min": "48px",
+                        "section_margin": "40px",
+                        "base_unit": "8px",
+                        "card_gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Lexend"],
+                        "headline-md": ["Lexend"],
+                        "title-sm": ["Lexend"],
+                        "body-base": ["Inter"],
+                        "display-lg": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "title-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased selection:bg-primary-container selection:text-black">
+<!-- TopAppBar -->
+<header class="bg-[#121212] flex justify-between items-center h-16 px-6 w-full border-b border-white/10 shrink-0 z-50 relative">
+<div class="flex-1">
+<!-- Hidden menu icon as this is a linear/transactional flow, but keeping space for balance -->
+</div>
+<div class="flex-1 flex justify-center text-orange-600 font-lexend font-bold tracking-tighter text-2xl font-black text-white">
+            GYM FLOW
+        </div>
+<div class="flex-1 flex justify-end">
+<button class="font-label-caps text-label-caps text-secondary uppercase hover:text-primary-container transition-colors px-2 py-2" type="button">
+                EN
+            </button>
+</div>
+</header>
+<!-- Main Content Split Layout -->
+<main class="flex-grow flex w-full h-full relative">
+<!-- Left Side Image (Hidden on mobile) -->
+<div class="hidden md:block md:w-1/2 relative bg-surface-container-lowest">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-background z-10"></div>
+<img alt="Elite Gym Facility" class="w-full h-full object-cover opacity-60" data-alt="A high-intensity, cinematic shot of a modern, elite fitness facility bathed in deep shadows and stark, contrasting neon orange lighting. The setting features premium, matte black weightlifting equipment perfectly aligned on a rubberized floor. The mood is aggressive, focused, and nocturnal, evoking a high-end athletic training center. The global visual style emphasizes a sleek, minimalist aesthetic with heavy shadows, brilliant neon orange accents cutting through the darkness, and an overall premium, hardcore atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAG1ga32-fjEkLinZ2a3wHOsdymZdhCUPXaofx__7elz8AqAsE-eVcfN4mwJyvmuIwn4ouPlb-FVLVoesPN1HWoS7W8EHbYJI_Pa0sYzrfHEmlk7d-XwiyOkoc1Vr5BDZFWi9RpW6svHEzpUSmPajyfiep4M23vy73ORIWEG_xiJ2f7UzUOaU-6bs_TT8WejjdYJbo-RO7l1ZRfgOXgZi0CeIudAaMBlXmbQbp64GR2v1C-R-rhYeuWqeMVBebxTSCEJGbxLu1dibQ"/>
+</div>
+<!-- Right Side Form Container -->
+<div class="w-full md:w-1/2 flex flex-col justify-center items-center px-container_padding py-section_margin relative z-20 overflow-y-auto">
+<div class="w-full max-w-md">
+<!-- Heading -->
+<h1 class="font-display-lg text-display-lg text-on-background mb-section_margin text-center">
+                    JOIN THE ELITE
+                </h1>
+<!-- Sign Up Form -->
+<form action="#" class="flex flex-col gap-card_gutter" method="POST">
+<!-- Full Name Field -->
+<div class="relative group">
+<input class="w-full h-touch_target_min bg-surface-container text-on-background px-4 border-b-2 border-transparent focus:border-primary-container focus:outline-none font-body-base text-body-base transition-colors placeholder:text-on-surface-variant/50" id="fullname" name="fullname" placeholder="Full Name" required="" type="text"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 material-symbols-outlined group-focus-within:text-primary-container transition-colors" data-icon="person">person</span>
+</div>
+<!-- Email Field -->
+<div class="relative group">
+<input class="w-full h-touch_target_min bg-surface-container text-on-background px-4 border-b-2 border-transparent focus:border-primary-container focus:outline-none font-body-base text-body-base transition-colors placeholder:text-on-surface-variant/50" id="email" name="email" placeholder="Email Address" required="" type="email"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 material-symbols-outlined group-focus-within:text-primary-container transition-colors" data-icon="mail">mail</span>
+</div>
+<!-- Password Field -->
+<div class="relative group">
+<input class="w-full h-touch_target_min bg-surface-container text-on-background px-4 border-b-2 border-transparent focus:border-primary-container focus:outline-none font-body-base text-body-base transition-colors placeholder:text-on-surface-variant/50" id="password" name="password" placeholder="Password" required="" type="password"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 material-symbols-outlined group-focus-within:text-primary-container transition-colors cursor-pointer" data-icon="visibility">visibility</span>
+</div>
+<!-- Confirm Password Field -->
+<div class="relative group">
+<input class="w-full h-touch_target_min bg-surface-container text-on-background px-4 border-b-2 border-transparent focus:border-primary-container focus:outline-none font-body-base text-body-base transition-colors placeholder:text-on-surface-variant/50" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required="" type="password"/>
+<span class="absolute right-4 top-1/2 -translate-y-1/2 text-on-surface-variant/50 material-symbols-outlined group-focus-within:text-primary-container transition-colors cursor-pointer" data-icon="visibility">visibility</span>
+</div>
+<!-- Primary CTA -->
+<button class="w-full h-touch_target_min bg-primary-container text-black font-label-caps text-label-caps uppercase flex items-center justify-center mt-base_unit active:scale-95 transition-transform hover:bg-primary duration-150" type="submit">
+                        CREATE ACCOUNT
+                    </button>
+</form>
+<!-- Footer Link -->
+<div class="mt-section_margin text-center">
+<a class="font-label-caps text-label-caps text-secondary hover:text-primary-container transition-colors uppercase py-2 px-4 inline-block" href="#">
+                        ALREADY A MEMBER? LOGIN
+                    </a>
+</div>
+</div>
+</div>
+</main>
+</body></html>

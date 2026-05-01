@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Exercise Library - Elite Performance</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Lexend:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-fixed-dim": "#d0bcff",
+                    "on-secondary": "#3c0091",
+                    "on-background": "#eeddee",
+                    "tertiary-container": "#a76900",
+                    "inverse-surface": "#eeddee",
+                    "on-primary-container": "#ffffff",
+                    "on-tertiary-fixed-variant": "#653e00",
+                    "error-container": "#93000a",
+                    "tertiary-fixed": "#ffddb8",
+                    "on-tertiary-container": "#ffffff",
+                    "on-tertiary": "#472a00",
+                    "surface-container-lowest": "#130b16",
+                    "surface-container-highest": "#3b313e",
+                    "on-secondary-fixed": "#23005c",
+                    "on-error": "#690005",
+                    "primary": "#ebb2ff",
+                    "on-secondary-fixed-variant": "#5516be",
+                    "tertiary-fixed-dim": "#ffb960",
+                    "on-tertiary-fixed": "#2b1700",
+                    "on-surface-variant": "#d4c0d7",
+                    "surface-container-high": "#302733",
+                    "secondary-container": "#571bc1",
+                    "on-primary-fixed": "#320047",
+                    "secondary-fixed": "#e9ddff",
+                    "on-surface": "#eeddee",
+                    "primary-container": "#bc13fe",
+                    "tertiary": "#ffb960",
+                    "on-primary-fixed-variant": "#74009f",
+                    "outline": "#9d8ba0",
+                    "inverse-primary": "#9800d0",
+                    "surface-tint": "#ebb2ff",
+                    "surface-container-low": "#211824",
+                    "on-secondary-container": "#c4abff",
+                    "surface-variant": "#3b313e",
+                    "primary-fixed": "#f8d8ff",
+                    "surface-bright": "#403643",
+                    "primary-fixed-dim": "#ebb2ff",
+                    "outline-variant": "#504254",
+                    "on-primary": "#520072",
+                    "surface": "#19101c",
+                    "secondary": "#d0bcff",
+                    "on-error-container": "#ffdad6",
+                    "surface-dim": "#19101c",
+                    "surface-container": "#251c28",
+                    "background": "#19101c",
+                    "inverse-on-surface": "#372d3a",
+                    "error": "#ffb4ab"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "unit": "8px",
+                    "gutter": "16px",
+                    "touch-target-min": "48px",
+                    "margin-mobile": "20px",
+                    "card-gap": "12px"
+            },
+            "fontFamily": {
+                    "display-xl": ["Lexend"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Lexend"],
+                    "headline-lg": ["Lexend"],
+                    "body-lg": ["Inter"],
+                    "label-caps": ["Inter"]
+            },
+            "fontSize": {
+                    "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Utility to hide scrollbar for horizontal scrolling areas */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased selection:bg-primary-container selection:text-on-primary-container flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center h-16 px-6 w-full fixed z-50 bg-[#0A0A0A] dark:bg-[#0A0A0A] full-width top-0 border-b border-[#2A2A2A]">
+<button aria-label="Menu" class="text-white/70 hover:bg-[#1A1A1A] transition-colors active:scale-95 duration-200 h-10 w-10 flex items-center justify-center rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-['Lexend'] font-bold tracking-tighter uppercase text-xl font-black text-[#BC13FE] drop-shadow-[0_0_8px_rgba(188,19,254,0.4)]">
+            ELITE PERFORMANCE
+        </h1>
+<button class="text-white/70 hover:bg-[#1A1A1A] transition-colors active:scale-95 duration-200 font-['Lexend'] font-bold tracking-tighter uppercase px-2 h-10 flex items-center rounded-full">
+            EN/ES
+        </button>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow pt-[88px] pb-[104px] px-margin-mobile max-w-5xl mx-auto w-full flex flex-col gap-8">
+<!-- Header Section -->
+<section class="flex flex-col gap-4">
+<h2 class="font-display-xl text-display-xl text-on-background">Library</h2>
+<!-- Search Bar -->
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant z-10 pointer-events-none">search</span>
+<input class="w-full h-[64px] pl-14 pr-4 bg-surface border border-surface-variant rounded-xl text-on-surface placeholder-on-surface-variant focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none font-body-lg text-body-lg shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]" placeholder="Search exercises..." type="text"/>
+</div>
+<!-- Category Pills (Horizontal Scroll) -->
+<div class="flex overflow-x-auto hide-scrollbar gap-3 pt-2 pb-2 -mx-margin-mobile px-margin-mobile">
+<button class="flex-shrink-0 h-[40px] px-6 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps flex items-center justify-center shadow-[0_0_12px_rgba(188,19,254,0.2)] border border-primary-container">
+                    ALL
+                </button>
+<button class="flex-shrink-0 h-[40px] px-6 rounded-full bg-surface-container text-on-surface font-label-caps text-label-caps flex items-center justify-center border border-surface-variant hover:bg-surface-container-high transition-colors">
+                    CHEST
+                </button>
+<button class="flex-shrink-0 h-[40px] px-6 rounded-full bg-surface-container text-on-surface font-label-caps text-label-caps flex items-center justify-center border border-surface-variant hover:bg-surface-container-high transition-colors">
+                    BACK
+                </button>
+<button class="flex-shrink-0 h-[40px] px-6 rounded-full bg-surface-container text-on-surface font-label-caps text-label-caps flex items-center justify-center border border-surface-variant hover:bg-surface-container-high transition-colors">
+                    LEGS
+                </button>
+<button class="flex-shrink-0 h-[40px] px-6 rounded-full bg-surface-container text-on-surface font-label-caps text-label-caps flex items-center justify-center border border-surface-variant hover:bg-surface-container-high transition-colors">
+                    CORE
+                </button>
+<button class="flex-shrink-0 h-[40px] px-6 rounded-full bg-surface-container text-on-surface font-label-caps text-label-caps flex items-center justify-center border border-surface-variant hover:bg-surface-container-high transition-colors">
+                    ARMS
+                </button>
+</div>
+</section>
+<!-- Visual Exercise Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Card 1 -->
+<article class="bg-surface border border-surface-variant rounded-xl overflow-hidden flex flex-col group relative">
+<div class="h-56 w-full relative bg-surface-container-highest overflow-hidden">
+<img alt="Barbell Bench Press" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 group-hover:scale-105 transform" data-alt="A high-contrast, cinematic shot of an elite matte-black barbell loaded with heavy bumper plates on a sleek bench press station. The scene is set in a dark, premium industrial gym environment, illuminated only by dramatic, low-angle neon purple and deep violet rim lighting that creates a vaporwave aesthetic. The mood is intense, minimalist, and focused, emphasizing raw power and high-end fitness equipment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC09abGEMK65V12p-SfZI47NemK4EKwZFQ0lILxPT9TI_Qi-C4fvEx5uVcnLqEbz61uDIOW7mnbOvQ1OCSmNrR3Mbf-45Ib_x12hSeMz7L58w71ua9LXbq6myGTyjwOcuVVrXF571bEofUG-5B3BhKr7uNknFTUYMkOTsvWcEHR8O_KZN1V-yaWcUSEJVMmw6hR02lAWX1lDit6L0buKiZ6xRQT5ewx1d8ZJwqc31xLtuLAoaoMF6w8J5jRPlU2YXKQSxq0YgJRyY0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90"></div>
+<!-- Top Metric Chip -->
+<div class="absolute top-4 left-4 bg-primary-container/15 text-primary-container border border-primary-container/30 px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-sm">
+                        STRENGTH
+                    </div>
+</div>
+<div class="p-5 flex justify-between items-end bg-background relative z-10 -mt-8 pt-8">
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface-variant uppercase tracking-wider text-[11px]">Chest • Barbell</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Bench Press</h3>
+</div>
+<button aria-label="Add Bench Press to Routine" class="h-[48px] w-[48px] rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_0_12px_rgba(188,19,254,0.4)] hover:scale-105 active:scale-95 transition-all flex-shrink-0">
+<span class="material-symbols-outlined font-bold text-2xl">add</span>
+</button>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface border border-surface-variant rounded-xl overflow-hidden flex flex-col group relative">
+<div class="h-56 w-full relative bg-surface-container-highest overflow-hidden">
+<img alt="Barbell Back Squat" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 group-hover:scale-105 transform" data-alt="A visually striking close-up of a matte-black squat rack holding a heavily loaded barbell. The background is completely immersed in deep, light-absorbent shadows, while the equipment itself is highlighted by sharp, neon purple glowing light strips that reflect off the metallic surfaces. The atmosphere is highly specialized and utilitarian, capturing a Kiosk-Minimalist design language meant for serious athletic performance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_CRU9feaDNMOXO5mOqmSjxldmbFz6sQFHC170y5_dEInWOkq5KF2DedCDNc_aUbB-HYWNcPfZVZ2QJDtDVbzafzdky2coTPSVH1zgUpuE-L3_KAeOs26vU9xDCPW5o2fUoEkEJm2N7NtaoHvd3SAeY5wMJH27rLw6HlB2W1gjdfYxm8UtcjPSfggdavbID-c1nfTv1W9m5BJ6v3Piwh4KeiqkdATsu7N2BlZ3O7GK-A1vS4oJV7oaz1nM1RdLnfcm3cslRKWtiO4"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90"></div>
+<!-- Top Metric Chip -->
+<div class="absolute top-4 left-4 bg-primary-container/15 text-primary-container border border-primary-container/30 px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-sm">
+                        STRENGTH
+                    </div>
+</div>
+<div class="p-5 flex justify-between items-end bg-background relative z-10 -mt-8 pt-8">
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface-variant uppercase tracking-wider text-[11px]">Legs • Barbell</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Back Squat</h3>
+</div>
+<button aria-label="Add Back Squat to Routine" class="h-[48px] w-[48px] rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_0_12px_rgba(188,19,254,0.4)] hover:scale-105 active:scale-95 transition-all flex-shrink-0">
+<span class="material-symbols-outlined font-bold text-2xl">add</span>
+</button>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface border border-surface-variant rounded-xl overflow-hidden flex flex-col group relative">
+<div class="h-56 w-full relative bg-surface-container-highest overflow-hidden">
+<img alt="Pull Ups" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 group-hover:scale-105 transform" data-alt="An imposing, architectural perspective of a heavy-duty steel pull-up bar rig isolated against a pitch-black background. A solitary, intense beam of neon violet light cuts across the textured metal grips, creating stark, high-contrast shadows. The image exudes a minimalist, cyberpunk-infused fitness aesthetic, focusing entirely on the raw utility of the equipment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHRImUUAcmOpV4cEq7MfgAQjX_XxLcm7njKetKCvMURkZK1Nry9FiYbWm6onEgDGarltZ3YqbK4_Fx5YGOKfCICH5N7id-vNiB7iCltrE1uQ8nst8A4AYg-LoCrePVEzrI_eeYKimyJaOGD013soVN8GgQUKo2iGv9uYPQWmtl0pijzZRV4GXjEBPK9XzL4YU9Y44dy36pPtfTCoZQhAh0x4nkrfO-s8dY5RL0j1KbQzhDip79HbnWClT1AVPzLLAvtDiqwaXaLMw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90"></div>
+<!-- Top Metric Chip -->
+<div class="absolute top-4 left-4 bg-primary-container/15 text-primary-container border border-primary-container/30 px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-sm">
+                        BODYWEIGHT
+                    </div>
+</div>
+<div class="p-5 flex justify-between items-end bg-background relative z-10 -mt-8 pt-8">
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface-variant uppercase tracking-wider text-[11px]">Back • Bodyweight</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Pull Up</h3>
+</div>
+<button aria-label="Add Pull Up to Routine" class="h-[48px] w-[48px] rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_0_12px_rgba(188,19,254,0.4)] hover:scale-105 active:scale-95 transition-all flex-shrink-0">
+<span class="material-symbols-outlined font-bold text-2xl">add</span>
+</button>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="bg-surface border border-surface-variant rounded-xl overflow-hidden flex flex-col group relative">
+<div class="h-56 w-full relative bg-surface-container-highest overflow-hidden">
+<img alt="Deadlift" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 group-hover:scale-105 transform" data-alt="A floor-level, dramatic view of a loaded barbell set up for a deadlift on a thick rubber platform. The environment is entirely enveloped in deep shadows, with a singular, ethereal violet glow emanating from behind the plates, highlighting the knurling on the bar. The composition is highly symmetric, premium, and evocative of elite, focused athletic training." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDl2j647DMdjf63Ut8qKz_1XbfHMBwr7cmHp7rYIzJeTIgARhbIsFCGRW-XbVPLduXjFHo-hRM1H_QFpN7gyloUTC7M0S8GiZ52_8998DIC5ztEhgOYOnM6QuWPMzIvGmOOYrdGbooLQW45u9Jwh2eTmA2JJQsYhC6rD-T4FhC-9ak8mwjKDXcDVAF7qKTe-ADZYYLDX-4T6F4RIyvWeEi7whiVfvLVfVzaW_qOg_PDd3LBCiP9AQl-z1d-6X7EQJkHQrHat4gaJ0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-90"></div>
+<!-- Top Metric Chip -->
+<div class="absolute top-4 left-4 bg-primary-container/15 text-primary-container border border-primary-container/30 px-3 py-1 rounded-full font-label-caps text-label-caps backdrop-blur-sm">
+                        POWER
+                    </div>
+</div>
+<div class="p-5 flex justify-between items-end bg-background relative z-10 -mt-8 pt-8">
+<div class="flex flex-col gap-1">
+<span class="font-body-md text-body-md text-on-surface-variant uppercase tracking-wider text-[11px]">Back/Legs • Barbell</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Deadlift</h3>
+</div>
+<button aria-label="Add Deadlift to Routine" class="h-[48px] w-[48px] rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shadow-[0_0_12px_rgba(188,19,254,0.4)] hover:scale-105 active:scale-95 transition-all flex-shrink-0">
+<span class="material-symbols-outlined font-bold text-2xl">add</span>
+</button>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 h-20 flex justify-around items-center px-4 md:hidden bg-[#0A0A0A]/90 dark:bg-[#0A0A0A]/90 backdrop-blur-xl docked full-width bottom-0 rounded-t-lg border-t border-[#2A2A2A] shadow-[0_-4px_20px_rgba(0,0,0,0.5)]">
+<!-- Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-white/90 active:scale-90 transition-transform w-[64px] h-[64px]" href="#">
+<span class="material-symbols-outlined text-[28px]">home</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest mt-1">Home</span>
+</a>
+<!-- Exercises (Active - Target destination matches) -->
+<a class="flex flex-col items-center justify-center text-[#BC13FE] drop-shadow-[0_0_10px_rgba(188,19,254,0.5)] active:scale-90 transition-transform w-[64px] h-[64px]" href="#">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest mt-1">Exercises</span>
+</a>
+<!-- Agenda (Inactive) -->
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-white/90 active:scale-90 transition-transform w-[64px] h-[64px]" href="#">
+<span class="material-symbols-outlined text-[28px]">calendar_today</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest mt-1">Agenda</span>
+</a>
+<!-- Routines (Inactive) -->
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-white/90 active:scale-90 transition-transform w-[64px] h-[64px]" href="#">
+<span class="material-symbols-outlined text-[28px]">layers</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest mt-1">Routines</span>
+</a>
+<!-- Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-white/90 active:scale-90 transition-transform w-[64px] h-[64px]" href="#">
+<span class="material-symbols-outlined text-[28px]">person</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

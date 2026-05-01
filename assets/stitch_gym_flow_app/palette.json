@@ -1,0 +1,16 @@
+{
+  "background": "#0A0A0F",
+  "surface": "#12121A",
+  "surfaceElevated": "#1A1A24",
+  "border": "#232334",
+  "primary": "#A855F7",
+  "primaryStrong": "#C084FC",
+  "secondary": "#8B5CF6",
+  "textPrimary": "#F8FAFC",
+  "textSecondary": "#A1A1AA",
+  "textMuted": "#71717A",
+  "success": "#22C55E",
+  "warning": "#F59E0B",
+  "danger": "#EF4444",
+  "overlay": "rgba(0,0,0,0.72)"
+}

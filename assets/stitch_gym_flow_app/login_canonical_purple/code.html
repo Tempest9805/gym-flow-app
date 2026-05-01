@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gym Flow - Login</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;family=Lexend:wght@400;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#d0bcff",
+                        "on-secondary": "#3c0091",
+                        "on-background": "#eeddee",
+                        "tertiary-container": "#a76900",
+                        "inverse-surface": "#eeddee",
+                        "on-primary-container": "#ffffff",
+                        "on-tertiary-fixed-variant": "#653e00",
+                        "error-container": "#93000a",
+                        "tertiary-fixed": "#ffddb8",
+                        "on-tertiary-container": "#ffffff",
+                        "on-tertiary": "#472a00",
+                        "surface-container-lowest": "#130b16",
+                        "surface-container-highest": "#3b313e",
+                        "on-secondary-fixed": "#23005c",
+                        "on-error": "#690005",
+                        "primary": "#ebb2ff",
+                        "on-secondary-fixed-variant": "#5516be",
+                        "tertiary-fixed-dim": "#ffb960",
+                        "on-tertiary-fixed": "#2b1700",
+                        "on-surface-variant": "#d4c0d7",
+                        "surface-container-high": "#302733",
+                        "secondary-container": "#571bc1",
+                        "on-primary-fixed": "#320047",
+                        "secondary-fixed": "#e9ddff",
+                        "on-surface": "#eeddee",
+                        "primary-container": "#bc13fe",
+                        "tertiary": "#ffb960",
+                        "on-primary-fixed-variant": "#74009f",
+                        "outline": "#9d8ba0",
+                        "inverse-primary": "#9800d0",
+                        "surface-tint": "#ebb2ff",
+                        "surface-container-low": "#211824",
+                        "on-secondary-container": "#c4abff",
+                        "surface-variant": "#3b313e",
+                        "primary-fixed": "#f8d8ff",
+                        "surface-bright": "#403643",
+                        "primary-fixed-dim": "#ebb2ff",
+                        "outline-variant": "#504254",
+                        "on-primary": "#520072",
+                        "surface": "#19101c",
+                        "secondary": "#d0bcff",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#19101c",
+                        "surface-container": "#251c28",
+                        "background": "#19101c",
+                        "inverse-on-surface": "#372d3a",
+                        "error": "#ffb4ab"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "8px",
+                        "gutter": "16px",
+                        "touch-target-min": "48px",
+                        "margin-mobile": "20px",
+                        "card-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "display-xl": ["Lexend"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Lexend"],
+                        "headline-lg": ["Lexend"],
+                        "body-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        [data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col font-body-md overflow-x-hidden relative">
+<!-- Ambient Background Graphic -->
+<div class="fixed inset-0 z-[-1] opacity-30 mix-blend-screen bg-cover bg-center pointer-events-none" data-alt="A dark, moody abstract background featuring out-of-focus neon purple geometric shapes and light streaks. The aesthetic is vaporwave-inspired minimalism, designed to look like a high-end fitness tracking interface background. The lighting is low-key with vibrant, electric purple luminescence bleeding through deep blacks, creating a sense of intense athletic focus and digital sophistication." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBwQ3yiKP86w69PEvcfLuZpnQcqYRdyq59Fkzl9xgu7Pg03LrdwopZdzX5iHA37GqJZy80ylgPKNIZ1lsi2BbE3ObZ8MeDxYlKK13qk-6atcWalu5TCxjSXmgfHsz6WBpVfodQpAYpoZOhfUCva0AgyxMZlmyJ2ls7gfDxtWraz-8OB0pyf7fbW0KGMx9RFusu8mUH1B88gaRADMPQ86VOiYSMQAzLdDdhJZgHRo5WMxnQm_FEF59BAoRKA6ZFGQNEDX4mqlF67k9A');">
+</div>
+<div class="fixed inset-0 z-[-1] bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none"></div>
+<!-- TopAppBar (from JSON) -->
+<header class="bg-[#0A0A0A] dark:bg-[#0A0A0A] border-[#2A2A2A] flat no-shadows flex justify-between items-center h-16 px-6 w-full sticky top-0 z-50 border-b">
+<button class="text-[#BC13FE] hover:bg-[#1A1A1A] transition-colors active:scale-95 duration-200 p-2 -ml-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="text-xl font-black text-[#BC13FE] drop-shadow-[0_0_8px_rgba(188,19,254,0.4)] font-['Lexend'] tracking-tighter uppercase text-center flex-1">
+            ELITE PERFORMANCE
+        </h1>
+<button class="text-[#BC13FE] font-['Lexend'] font-bold tracking-tighter uppercase text-sm hover:bg-[#1A1A1A] transition-colors active:scale-95 duration-200 px-3 py-1 rounded">
+            EN/ES
+        </button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col justify-center items-center px-margin-mobile py-12 w-full z-10">
+<div class="w-full max-w-md flex flex-col gap-8">
+<!-- Hero Text -->
+<div class="text-center mb-4">
+<h2 class="font-display-xl text-display-xl text-on-surface mb-2">SYSTEM<br/>ACCESS</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Identify yourself to continue.</p>
+</div>
+<!-- Form Container -->
+<form class="flex flex-col gap-6" onsubmit="event.preventDefault();">
+<!-- Email Input -->
+<div class="flex flex-col gap-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest pl-1" for="email">Email Designation</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none" data-icon="person">person</span>
+<input class="w-full h-[64px] bg-surface-container border border-surface-variant rounded-lg pl-12 pr-4 font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all placeholder:text-outline-variant/50" id="email" placeholder="ATHLETE@GYMFLOW.COM" type="email"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="flex flex-col gap-2">
+<div class="flex justify-between items-center pl-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest" for="password">Security Code</label>
+<a class="font-label-caps text-label-caps text-primary-container hover:text-primary transition-colors tracking-widest" href="#">Forgot Password?</a>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline-variant pointer-events-none" data-icon="lock">lock</span>
+<input class="w-full h-[64px] bg-surface-container border border-surface-variant rounded-lg pl-12 pr-4 font-body-lg text-body-lg text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all placeholder:text-outline-variant/50 tracking-[0.2em]" id="password" placeholder="••••••••••••" type="password"/>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="mt-4 h-[64px] w-full bg-primary-container text-[#0A0A0A] font-headline-md text-headline-md rounded-lg shadow-[0_0_12px_rgba(188,19,254,0.3)] hover:shadow-[0_0_24px_rgba(188,19,254,0.6)] hover:bg-primary transition-all flex items-center justify-center tracking-wider active:scale-[0.98] duration-200 uppercase" type="submit">
+                    LOG IN
+                </button>
+</form>
+<!-- Secondary Path -->
+<div class="mt-2 text-center">
+<a class="inline-flex items-center justify-center h-touch-target-min px-6 font-body-md text-body-md text-on-surface border border-surface-variant rounded-lg hover:bg-surface-variant/50 transition-colors w-full" href="#">
+                    Sign Up
+                </a>
+</div>
+<!-- Structural Divider -->
+<!-- Tertiary Actions -->
+</div>
+</main>
+</body></html>

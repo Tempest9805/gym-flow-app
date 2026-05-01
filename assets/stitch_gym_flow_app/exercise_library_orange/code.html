@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gym Flow - Exercise List</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&amp;family=Lexend:wght@500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#ffdbcf",
+                        "surface-container-high": "#372621",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#e3bfb3",
+                        "on-secondary-fixed": "#331200",
+                        "on-background": "#f9dcd4",
+                        "surface-tint": "#ffb59c",
+                        "secondary": "#ffb68e",
+                        "inverse-primary": "#ab3600",
+                        "on-primary": "#5c1900",
+                        "primary": "#ffb59c",
+                        "background": "#1e100b",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#f9dcd4",
+                        "surface": "#1e100b",
+                        "on-primary-fixed": "#390c00",
+                        "surface-container-lowest": "#180b07",
+                        "surface-dim": "#1e100b",
+                        "surface-container": "#2b1c17",
+                        "inverse-on-surface": "#3d2c27",
+                        "on-surface": "#f9dcd4",
+                        "on-tertiary": "#00344f",
+                        "tertiary": "#8dcdff",
+                        "tertiary-container": "#009de4",
+                        "on-primary-container": "#561700",
+                        "on-tertiary-fixed-variant": "#004b70",
+                        "on-secondary-container": "#ffe2d5",
+                        "surface-container-low": "#271813",
+                        "on-tertiary-fixed": "#001e30",
+                        "primary-fixed-dim": "#ffb59c",
+                        "surface-bright": "#47352f",
+                        "tertiary-fixed-dim": "#8dcdff",
+                        "secondary-container": "#ab4c00",
+                        "primary-container": "#ff5f1f",
+                        "error-container": "#93000a",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#832700",
+                        "on-secondary": "#532200",
+                        "outline": "#aa897f",
+                        "surface-container-highest": "#42312b",
+                        "on-secondary-fixed-variant": "#763300",
+                        "secondary-fixed": "#ffdbca",
+                        "tertiary-fixed": "#cae6ff",
+                        "on-tertiary-container": "#00304a",
+                        "outline-variant": "#5b4138",
+                        "secondary-fixed-dim": "#ffb68e",
+                        "surface-variant": "#42312b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container_padding": "24px",
+                        "touch_target_min": "48px",
+                        "section_margin": "40px",
+                        "base_unit": "8px",
+                        "card_gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Lexend"],
+                        "headline-md": ["Lexend"],
+                        "title-sm": ["Lexend"],
+                        "body-base": ["Inter"],
+                        "display-lg": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "title-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-[100px] md:pb-0 pt-16 md:pt-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#121212] border-b border-white/10 flex justify-between items-center h-16 px-6 shadow-none">
+<button class="text-orange-600 hover:bg-white/5 transition-colors active:scale-95 duration-150 p-2 -ml-2 rounded-lg flex items-center justify-center min-h-[48px] min-w-[48px]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">menu</span>
+</button>
+<h1 class="font-lexend font-bold tracking-tighter text-2xl text-white">GYM FLOW</h1>
+<button class="font-lexend font-bold tracking-tighter text-orange-600 hover:bg-white/5 transition-colors active:scale-95 duration-150 p-2 -mr-2 rounded-lg flex items-center justify-center min-h-[48px] min-w-[48px]">
+            EN
+        </button>
+</header>
+<!-- SideNav (Web) -->
+<aside class="hidden md:flex flex-col fixed top-16 left-0 h-[calc(100vh-4rem)] w-80 bg-[#1E1E1E] divide-y divide-white/5 shadow-2xl shadow-black rounded-r-none py-4 z-40">
+<nav class="flex-1 overflow-y-auto px-4 space-y-2">
+<a class="flex items-center space-x-4 px-4 h-touch_target_min rounded-lg text-white/70 hover:bg-white/5 transition-colors tap-highlight-transparent font-lexend text-base" href="#">
+<span class="material-symbols-outlined">home</span>
+<span>Home</span>
+</a>
+<a class="flex items-center space-x-4 px-4 h-touch_target_min rounded-lg bg-orange-600 text-black font-bold transition-colors tap-highlight-transparent font-lexend text-base" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+<span>Exercises</span>
+</a>
+<a class="flex items-center space-x-4 px-4 h-touch_target_min rounded-lg text-white/70 hover:bg-white/5 transition-colors tap-highlight-transparent font-lexend text-base" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+<span>Agenda</span>
+</a>
+<a class="flex items-center space-x-4 px-4 h-touch_target_min rounded-lg text-white/70 hover:bg-white/5 transition-colors tap-highlight-transparent font-lexend text-base" href="#">
+<span class="material-symbols-outlined">format_list_bulleted</span>
+<span>Routines</span>
+</a>
+<a class="flex items-center space-x-4 px-4 h-touch_target_min rounded-lg text-white/70 hover:bg-white/5 transition-colors tap-highlight-transparent font-lexend text-base" href="#">
+<span class="material-symbols-outlined">person</span>
+<span>Profile</span>
+</a>
+</nav>
+</aside>
+<!-- Main Content -->
+<main class="md:ml-80 px-container_padding py-section_margin max-w-7xl mx-auto space-y-section_margin">
+<!-- Search & Filter Area -->
+<section class="space-y-card_gutter">
+<!-- Search Bar -->
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant z-10 pointer-events-none">search</span>
+<input class="w-full h-[56px] pl-12 pr-4 bg-[#1E1E1E] border-0 border-b-2 border-transparent focus:border-primary-container focus:ring-0 text-on-surface font-body-base text-body-base placeholder-on-surface-variant transition-colors rounded-t-lg" placeholder="Search exercises..." type="text"/>
+</div>
+<!-- Chips -->
+<div class="flex overflow-x-auto gap-3 pb-2 snap-x hide-scrollbar">
+<button class="snap-start flex-shrink-0 px-6 h-10 rounded-full bg-primary-container text-black font-title-sm text-title-sm font-bold shadow-[0_0_12px_rgba(255,95,31,0.3)]">All</button>
+<button class="snap-start flex-shrink-0 px-6 h-10 rounded-full bg-[#1E1E1E] text-on-surface border border-outline-variant font-title-sm text-title-sm hover:border-primary-container hover:text-primary-container transition-colors">Chest</button>
+<button class="snap-start flex-shrink-0 px-6 h-10 rounded-full bg-[#1E1E1E] text-on-surface border border-outline-variant font-title-sm text-title-sm hover:border-primary-container hover:text-primary-container transition-colors">Back</button>
+<button class="snap-start flex-shrink-0 px-6 h-10 rounded-full bg-[#1E1E1E] text-on-surface border border-outline-variant font-title-sm text-title-sm hover:border-primary-container hover:text-primary-container transition-colors">Legs</button>
+<button class="snap-start flex-shrink-0 px-6 h-10 rounded-full bg-[#1E1E1E] text-on-surface border border-outline-variant font-title-sm text-title-sm hover:border-primary-container hover:text-primary-container transition-colors">Arms</button>
+<button class="snap-start flex-shrink-0 px-6 h-10 rounded-full bg-[#1E1E1E] text-on-surface border border-outline-variant font-title-sm text-title-sm hover:border-primary-container hover:text-primary-container transition-colors">Core</button>
+</div>
+</section>
+<!-- Exercise Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-container_padding">
+<!-- Card 1 -->
+<article class="bg-[#1E1E1E] rounded-xl overflow-hidden hover:ring-1 hover:ring-secondary/20 transition-shadow group relative">
+<div class="aspect-video w-full bg-surface-container-high relative overflow-hidden">
+<img alt="Barbell bench press" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A close-up shot of a heavily loaded barbell resting on a premium, black leather bench press station in a high-intensity, dark gym environment. Neon orange accent lights cast sharp, dramatic highlights on the knurled steel bar. The overall mood is intense, focused, and professional, perfectly reflecting a high-performance fitness aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8lUA1-9jcwaXYXr5jzioZ5p1gXh8ARKCWKLdMdQtEl3gVHX7nt-vjFQzAPZGMXr_zUQ7J4LIAEUtnAP6Iti-uBxrbEI2oY6bq8acZqMaK4FbZ97sOAbFX6iOaypDr-zZbmIRBtwKhZa5Y8LieOnaeO0drI-T747X2pwHLdzps1KSfWnU2b0urckqZgTcemVoxFgysxhHgVZvrW7F6GBZZIS2WXd4BWRBAp6vFE81YaGcV-ei83gBOSy5FBD7K4zsgG9TOSy4jouc"/>
+<button class="absolute top-3 right-3 text-white/50 hover:text-primary-container transition-colors bg-black/50 rounded-full p-2 backdrop-blur-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+<div class="p-4 space-y-2">
+<h3 class="font-title-sm text-title-sm text-white">Barbell Bench Press</h3>
+<p class="font-body-base text-body-base text-on-surface-variant text-sm">Chest • Barbell</p>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-[#1E1E1E] rounded-xl overflow-hidden hover:ring-1 hover:ring-secondary/20 transition-shadow group relative">
+<div class="aspect-video w-full bg-surface-container-high relative overflow-hidden">
+<img alt="Deadlift" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="An imposing setup for a heavy deadlift on a thick black rubber mat. The bumper plates are massive and rugged. The lighting is low-key with strong overhead spotlights creating deep shadows, while a faint neon orange underglow illuminates the floor. The aesthetic is raw power and minimalist functionality." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBK0kJhe2z7gS9Su4vRuiGdPTAsKKSke6gpf7xVsIMhkFSuGf0q-3sBZTQWfey-_zDj24G00_XIrq6NtN3AW84SdEHU0LGPVUwCFk6JYbM6Nnwr-gnv9lN9vJj24EPFh0sgsACRM2br569vVOkwhVvNrT1YXsTSXpnwkJcVsXOH6aHqARsT_-3mQL1zUCzm-6yD0If4PsES0rS6fAfJIdzuQ2Q8Fig-ar3CLS8LGSgQHA2PORWuPaxUfiJhPg46BJpKol7mQ7LEX4k"/>
+<button class="absolute top-3 right-3 text-white/50 hover:text-primary-container transition-colors bg-black/50 rounded-full p-2 backdrop-blur-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+<div class="p-4 space-y-2">
+<h3 class="font-title-sm text-title-sm text-white">Conventional Deadlift</h3>
+<p class="font-body-base text-body-base text-on-surface-variant text-sm">Back • Barbell</p>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-[#1E1E1E] rounded-xl overflow-hidden hover:ring-1 hover:ring-secondary/20 transition-shadow group relative">
+<div class="aspect-video w-full bg-surface-container-high relative overflow-hidden">
+<img alt="Squat" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" data-alt="A heavy squat rack made of thick, matte black steel, loaded with weights. The surrounding gym area is dark and cavernous, lit by sparse, high-contrast industrial lighting. A neon orange strip light provides a sleek, futuristic edge to the equipment. The scene exudes intense discipline and high-end fitness architecture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRNTf9t1EufeE1a2cnb0URTRdOO3iYiJYlCExk8mDuKjwIjghIOh0iLxsptDZS9hH4zeJPtH1X3mf3HFvT7gaVw6A1GeyvD7RBKuPIpN0Fi5Awl3jI4EXPrZ9mvvtoXiu3L6lQPyxT3JJKoJn2sqvk4rMHsnDpsoarV80mKI9yjDCDdk9H6n8Kvv7YQa5CWBeNZ1S47lwHw1TdRAHLku2sWiaX1-pJc6SV64wL0s0Z-5GmFdV7ukQeg3bW18P3K-xPHm76G-GSxvI"/>
+<button class="absolute top-3 right-3 text-white/50 hover:text-primary-container transition-colors bg-black/50 rounded-full p-2 backdrop-blur-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+<div class="p-4 space-y-2">
+<h3 class="font-title-sm text-title-sm text-white">Barbell Back Squat</h3>
+<p class="font-body-base text-body-base text-on-surface-variant text-sm">Legs • Barbell</p>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="bg-[#1E1E1E] rounded-xl overflow-hidden hover:ring-1 hover:ring-secondary/20 transition-shadow group relative">
+<div class="aspect-video w-full bg-surface-container-high relative overflow-hidden flex items-center justify-center">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant opacity-50">image</span>
+<button class="absolute top-3 right-3 text-white/50 hover:text-primary-container transition-colors bg-black/50 rounded-full p-2 backdrop-blur-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">bookmark</span>
+</button>
+</div>
+<div class="p-4 space-y-2">
+<h3 class="font-title-sm text-title-sm text-white">Overhead Press</h3>
+<p class="font-body-base text-body-base text-on-surface-variant text-sm">Shoulders • Barbell</p>
+</div>
+</article>
+</section>
+</main>
+<!-- BottomNavBar (Mobile) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 bg-[#121212] border-t border-white/10 h-20 docked full-width shadow-none">
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-16" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="font-lexend text-[10px] font-semibold uppercase tracking-widest">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-orange-600 drop-shadow-[0_0_8px_rgba(255,95,31,0.5)] hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="font-lexend text-[10px] font-semibold uppercase tracking-widest text-orange-600">Exercises</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-16" href="#">
+<span class="material-symbols-outlined mb-1">calendar_today</span>
+<span class="font-lexend text-[10px] font-semibold uppercase tracking-widest">Agenda</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-16" href="#">
+<span class="material-symbols-outlined mb-1">format_list_bulleted</span>
+<span class="font-lexend text-[10px] font-semibold uppercase tracking-widest">Routines</span>
+</a>
+<a class="flex flex-col items-center justify-center text-zinc-500 hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-16" href="#">
+<span class="material-symbols-outlined mb-1">person</span>
+<span class="font-lexend text-[10px] font-semibold uppercase tracking-widest">Profile</span>
+</a>
+</nav>
+</body></html>

@@ -1,22 +1,53 @@
+/**
+ * Routine Builder Screen — Stitch `routine_builder_canonical_purple` layout:
+ *   1. TopAppBar
+ *   2. Routine name input (transparent, display-xl size, UPPERCASE placeholder)
+ *   3. Category tags (pills row)
+ *   4. Exercise blocks (SET / LBS / REPS grid with copy, add set)
+ *   5. ADD EXERCISE dashed button
+ *   6. SAVE ROUTINE primary CTA (large, neon glow)
+ */
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, Modal, Pressable, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  Alert,
+  StyleSheet,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ScreenContainer, BaseButton, CardBase, LoadingScreen } from '@/components/ui';
-import { useExercises, useCreateRoutine, useCurrentProfile, useSetDayRoutine, useRoutine } from '@/lib/hooks';
-import type { DayOfWeek, Exercise, RoutineWithExercises } from '@/types';
+import { AppTopBar } from '@/components/ui/AppTopBar';
+import { useTheme } from '@/lib/hooks/useTheme';
+import {
+  useExercises,
+  useCreateRoutine,
+  useCurrentProfile,
+  useSetDayRoutine,
+  useRoutine,
+} from '@/lib/hooks';
+import type { DayOfWeek, Exercise } from '@/types';
 
-// Omit id and routine_id for creating
+type DraftSet = { weight: number; reps: number };
 type DraftExercise = {
   exercise_id: string;
   exercise: Exercise;
-  sets: number;
-  reps: number;
-  weight: number;
+  sets: DraftSet[];
   rest_seconds: number;
 };
 
+const DEFAULT_SETS: DraftSet[] = [
+  { weight: 0, reps: 10 },
+  { weight: 0, reps: 10 },
+  { weight: 0, reps: 10 },
+];
+
 export default function RoutineBuilderScreen() {
   const router = useRouter();
+  const t = useTheme();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { data: profile } = useCurrentProfile();
   const { data: existingRoutine, isLoading: isLoadingRoutine } = useRoutine(id);
@@ -27,6 +58,10 @@ export default function RoutineBuilderScreen() {
   const [dayOfWeek, setDayOfWeek] = useState<DayOfWeek | null>(null);
   const [exercises, setExercises] = useState<DraftExercise[]>([]);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isExerciseModalVisible, setIsExerciseModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const { data: allExercises } = useExercises();
 
   useEffect(() => {
     if (existingRoutine) {
@@ -35,26 +70,16 @@ export default function RoutineBuilderScreen() {
         existingRoutine.exercises?.map((e) => ({
           exercise_id: e.exercise_id,
           exercise: e.exercise,
-          sets: e.sets || 3,
-          reps: e.reps || 10,
-          weight: e.weight || 0,
+          sets: Array.from({ length: e.sets || 3 }, () => ({
+            weight: e.weight || 0,
+            reps: e.reps || 10,
+          })),
           rest_seconds: e.rest_seconds || 60,
         })) || []
       );
       setIsEditMode(true);
     }
   }, [existingRoutine]);
-
-  const isLoading = isEditMode && isLoadingRoutine;
-
-  if (isEditMode && isLoading) {
-    return <LoadingScreen />;
-  }
-
-  // Modal State
-  const [isExerciseModalVisible, setIsExerciseModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const { data: allExercises } = useExercises();
 
   const filteredExercises = useMemo(() => {
     if (!allExercises) return [];
@@ -70,9 +95,7 @@ export default function RoutineBuilderScreen() {
       {
         exercise_id: exercise.id,
         exercise,
-        sets: 3,
-        reps: 10,
-        weight: 0,
+        sets: [...DEFAULT_SETS],
         rest_seconds: 60,
       },
     ]);
@@ -80,11 +103,30 @@ export default function RoutineBuilderScreen() {
     setSearchQuery('');
   };
 
-  const handleUpdateExercise = (index: number, field: keyof DraftExercise, value: number) => {
+  const handleUpdateSet = (
+    exIndex: number,
+    setIndex: number,
+    field: keyof DraftSet,
+    value: number
+  ) => {
     setExercises((prev) => {
-      const newEx = [...prev];
-      newEx[index] = { ...newEx[index], [field]: value };
-      return newEx;
+      const next = [...prev];
+      const sets = [...next[exIndex].sets];
+      sets[setIndex] = { ...sets[setIndex], [field]: value };
+      next[exIndex] = { ...next[exIndex], sets };
+      return next;
+    });
+  };
+
+  const handleAddSet = (exIndex: number) => {
+    setExercises((prev) => {
+      const next = [...prev];
+      const last = next[exIndex].sets.at(-1) ?? { weight: 0, reps: 10 };
+      next[exIndex] = {
+        ...next[exIndex],
+        sets: [...next[exIndex].sets, { ...last }],
+      };
+      return next;
     });
   };
 
@@ -93,198 +135,471 @@ export default function RoutineBuilderScreen() {
   };
 
   const handleSave = async () => {
-    if (!name.trim() || exercises.length === 0 || !profile) return;
-
+    if (!name.trim() || exercises.length === 0 || !profile) {
+      Alert.alert('Incomplete', 'Please add a name and at least one exercise.');
+      return;
+    }
     try {
       const newRoutine = await createRoutine.mutateAsync({
-        routine: {
-          name,
-          description: '',
-          status: 'active',
-        },
-        exercises: exercises.map((e) => ({
-          exercise_id: e.exercise_id,
-          sets: e.sets,
-          reps: e.reps,
-          weight: e.weight,
-          rest_seconds: e.rest_seconds,
-          day_of_week: null,
-          order_index: null,
-          duration_seconds: null,
-          notes: null,
-        })),
+        routine: { name, description: '', status: 'active' },
+        exercises: exercises.flatMap((ex) =>
+          ex.sets.map((set, i) => ({
+            exercise_id: ex.exercise_id,
+            sets: ex.sets.length,
+            reps: set.reps,
+            weight: set.weight,
+            rest_seconds: ex.rest_seconds,
+            day_of_week: null,
+            order_index: i,
+            duration_seconds: null,
+            notes: null,
+          }))
+        ),
       });
-
       if (dayOfWeek !== null) {
-        await setDayRoutine.mutateAsync({
-          dayOfWeek,
-          routineId: newRoutine.id,
-        });
+        await setDayRoutine.mutateAsync({ dayOfWeek, routineId: newRoutine.id });
       }
-
       router.back();
     } catch (error) {
-      console.error('Failed to create routine', error);
+      console.error('Failed to save routine', error);
+      Alert.alert('Error', 'Could not save routine. Please try again.');
     }
   };
 
-  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
   return (
-    <ScreenContainer>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
-        <View className="mb-6">
-          <Text className="text-3xl font-bold text-text-primary">
-            {isEditMode ? 'Edit Routine' : 'Routine Builder'}
-          </Text>
-          <Text className="text-lg text-text-secondary mt-1">
-            {isEditMode ? 'Modify your workout' : 'Create your custom workout'}
-          </Text>
-        </View>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+      <AppTopBar />
+      <ScrollView
+        style={[styles.scroll, { backgroundColor: t.background }]}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── Routine Name ── */}
+        <TextInput
+          style={[styles.routineNameInput, { color: t.onBackground }]}
+          placeholder="ROUTINE NAME"
+          placeholderTextColor={t.surfaceVariant}
+          value={name}
+          onChangeText={setName}
+          autoCapitalize="characters"
+        />
 
-        {/* Name Input */}
-        <View className="mb-6">
-          <Text className="text-sm font-bold text-text-secondary uppercase mb-2">Routine Name</Text>
-          <TextInput
-            className="bg-surface-secondary text-text-primary text-lg p-4 rounded-xl border border-surface-tertiary"
-            placeholder="e.g. Upper Body Power"
-            placeholderTextColor="#9ca3af"
-            value={name}
-            onChangeText={setName}
-          />
-        </View>
-
-        {/* Day of Week Selection */}
-        <View className="mb-6">
-          <Text className="text-sm font-bold text-text-secondary uppercase mb-2">Assign to Day (Optional)</Text>
-          <View className="flex-row justify-between">
-            {DAYS.map((day, index) => (
-              <Pressable
-                key={day}
-                onPress={() => setDayOfWeek(index as DayOfWeek)}
-                className={`flex-1 mx-1 py-3 items-center rounded-lg ${
-                  dayOfWeek === index ? 'bg-primary-600' : 'bg-surface-secondary'
-                }`}
-              >
-                <Text
-                  className={`text-xs font-bold uppercase ${
-                    dayOfWeek === index ? 'text-white' : 'text-text-secondary'
-                  }`}
-                >
-                  {day}
-                </Text>
-              </Pressable>
-            ))}
+        {/* ── Tag Pills ── */}
+        <View style={styles.tagRow}>
+          <View
+            style={[
+              styles.tag,
+              {
+                backgroundColor: `${t.primaryContainer}22`,
+                borderColor: `${t.primaryContainer}44`,
+              },
+            ]}
+          >
+            <Text style={[styles.tagText, { color: t.primaryContainer }]}>STRENGTH</Text>
+          </View>
+          <View
+            style={[
+              styles.tag,
+              { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest },
+            ]}
+          >
+            <Text style={[styles.tagText, { color: t.onSurfaceVariant }]}>HYPERTROPHY</Text>
           </View>
         </View>
 
-        {/* Exercises List */}
-        <View className="mb-6">
-          <Text className="text-sm font-bold text-text-secondary uppercase mb-2">Exercises</Text>
-          {exercises.map((draft, index) => (
-            <CardBase key={index} className="mb-4 p-4 border border-surface-tertiary">
-              <View className="flex-row justify-between items-center mb-4">
-                <Text className="text-lg font-bold text-text-primary flex-1">
-                  {draft.exercise.name}
-                </Text>
-                <Pressable onPress={() => handleRemoveExercise(index)}>
-                  <Text className="text-error font-bold">Remove</Text>
-                </Pressable>
+        {/* ── Exercise Blocks ── */}
+        <View style={styles.exercisesContainer}>
+          {exercises.map((draft, exIndex) => (
+            <View
+              key={exIndex}
+              style={[
+                styles.exerciseBlock,
+                {
+                  backgroundColor: t.surfaceContainer,
+                  borderColor: t.surfaceContainerHighest,
+                },
+              ]}
+            >
+              {/* Block header */}
+              <View style={styles.blockHeader}>
+                <View style={styles.blockHeaderInfo}>
+                  <Text style={[styles.blockName, { color: t.onSurface }]}>
+                    {draft.exercise.name.toUpperCase()}
+                  </Text>
+                  <Text style={[styles.blockMeta, { color: t.primaryContainer }]}>
+                    Target: {draft.exercise.muscle_group}
+                  </Text>
+                </View>
+                <View style={styles.blockHeaderActions}>
+                  <TouchableOpacity
+                    style={styles.blockIconBtn}
+                    onPress={() => handleRemoveExercise(exIndex)}
+                  >
+                    <Text style={[styles.blockIconText, { color: t.outlineVariant }]}>✕</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
 
-              <View className="flex-row justify-between">
-                <View className="flex-1 mr-2">
-                  <Text className="text-xs text-text-secondary mb-1 uppercase">Sets</Text>
-                  <TextInput
-                    className="bg-surface-secondary text-text-primary p-3 rounded-lg text-center font-bold"
-                    keyboardType="numeric"
-                    value={String(draft.sets)}
-                    onChangeText={(v) => handleUpdateExercise(index, 'sets', parseInt(v) || 0)}
-                  />
+              {/* Sets table */}
+              <View style={styles.setsContainer}>
+                {/* Column headers */}
+                <View style={styles.setsHeaderRow}>
+                  <Text style={[styles.setColLabel, { color: t.outlineVariant, flex: 0.4 }]}>SET</Text>
+                  <Text style={[styles.setColLabel, { color: t.outlineVariant, flex: 1 }]}>LBS</Text>
+                  <Text style={[styles.setColLabel, { color: t.outlineVariant, flex: 1 }]}>REPS</Text>
+                  <View style={{ width: 48 }} />
                 </View>
-                <View className="flex-1 mr-2">
-                  <Text className="text-xs text-text-secondary mb-1 uppercase">Reps</Text>
-                  <TextInput
-                    className="bg-surface-secondary text-text-primary p-3 rounded-lg text-center font-bold"
-                    keyboardType="numeric"
-                    value={String(draft.reps)}
-                    onChangeText={(v) => handleUpdateExercise(index, 'reps', parseInt(v) || 0)}
-                  />
-                </View>
-                <View className="flex-1 mr-2">
-                  <Text className="text-xs text-text-secondary mb-1 uppercase">Lbs</Text>
-                  <TextInput
-                    className="bg-surface-secondary text-text-primary p-3 rounded-lg text-center font-bold"
-                    keyboardType="numeric"
-                    value={String(draft.weight)}
-                    onChangeText={(v) => handleUpdateExercise(index, 'weight', parseInt(v) || 0)}
-                  />
-                </View>
-                <View className="flex-1">
-                  <Text className="text-xs text-text-secondary mb-1 uppercase">Rest(s)</Text>
-                  <TextInput
-                    className="bg-surface-secondary text-text-primary p-3 rounded-lg text-center font-bold"
-                    keyboardType="numeric"
-                    value={String(draft.rest_seconds)}
-                    onChangeText={(v) => handleUpdateExercise(index, 'rest_seconds', parseInt(v) || 0)}
-                  />
-                </View>
+
+                {draft.sets.map((set, setIndex) => (
+                  <View key={setIndex} style={styles.setRow}>
+                    <Text
+                      style={[
+                        styles.setNum,
+                        { color: t.surfaceVariant, flex: 0.4 },
+                      ]}
+                    >
+                      {setIndex + 1}
+                    </Text>
+                    <TextInput
+                      style={[
+                        styles.setInput,
+                        {
+                          backgroundColor: t.surfaceContainerHigh,
+                          color: t.onSurface,
+                          flex: 1,
+                        },
+                      ]}
+                      keyboardType="numeric"
+                      value={String(set.weight)}
+                      onChangeText={(v) =>
+                        handleUpdateSet(exIndex, setIndex, 'weight', parseInt(v) || 0)
+                      }
+                      textAlign="center"
+                    />
+                    <TextInput
+                      style={[
+                        styles.setInput,
+                        {
+                          backgroundColor: t.surfaceContainerHigh,
+                          color: t.onSurface,
+                          flex: 1,
+                        },
+                      ]}
+                      keyboardType="numeric"
+                      value={String(set.reps)}
+                      onChangeText={(v) =>
+                        handleUpdateSet(exIndex, setIndex, 'reps', parseInt(v) || 0)
+                      }
+                      textAlign="center"
+                    />
+                    <TouchableOpacity
+                      style={[
+                        styles.copyBtn,
+                        { backgroundColor: t.surfaceContainerHighest },
+                      ]}
+                      onPress={() => {
+                        const lastSet = draft.sets.at(-1) ?? set;
+                        handleAddSet(exIndex);
+                      }}
+                    >
+                      <Text style={[styles.copyBtnText, { color: t.outline }]}>⧉</Text>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+
+                {/* Add set */}
+                <TouchableOpacity
+                  style={[
+                    styles.addSetBtn,
+                    {
+                      borderColor: `${t.primaryContainer}44`,
+                    },
+                  ]}
+                  onPress={() => handleAddSet(exIndex)}
+                >
+                  <Text style={[styles.addSetBtnText, { color: t.primaryContainer }]}>
+                    + ADD SET
+                  </Text>
+                </TouchableOpacity>
               </View>
-            </CardBase>
+            </View>
           ))}
-
-          <BaseButton
-            title="+ Add Exercise"
-            variant="outline"
-            onPress={() => setIsExerciseModalVisible(true)}
-          />
         </View>
+
+        {/* ── ADD EXERCISE dashed button ── */}
+        <TouchableOpacity
+          style={[
+            styles.addExerciseBtn,
+            {
+              borderColor: t.surfaceContainerHighest,
+            },
+          ]}
+          activeOpacity={0.7}
+          onPress={() => setIsExerciseModalVisible(true)}
+        >
+          <Text style={[styles.addExerciseBtnIcon, { color: t.onSurfaceVariant }]}>⊕</Text>
+          <Text style={[styles.addExerciseBtnText, { color: t.onSurfaceVariant }]}>
+            ADD EXERCISE
+          </Text>
+        </TouchableOpacity>
+
+        {/* ── SAVE ROUTINE CTA ── */}
+        <TouchableOpacity
+          style={[
+            styles.saveBtn,
+            {
+              backgroundColor: t.primaryContainer,
+              shadowColor: t.primaryContainer,
+            },
+          ]}
+          activeOpacity={0.85}
+          onPress={handleSave}
+          disabled={createRoutine.isPending}
+        >
+          <Text style={[styles.saveBtnText, { color: t.onPrimaryContainer }]}>
+            {createRoutine.isPending ? 'SAVING...' : 'SAVE ROUTINE'}
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
 
-      {/* Save Button */}
-      <View className="absolute bottom-6 left-6 right-6">
-        <BaseButton
-          title={createRoutine.isPending ? 'Saving...' : 'Save Routine'}
-          onPress={handleSave}
-          disabled={!name.trim() || exercises.length === 0 || createRoutine.isPending}
-        />
-      </View>
-
-      {/* Exercise Search Modal */}
-      <Modal visible={isExerciseModalVisible} animationType="slide" presentationStyle="pageSheet">
-        <View className="flex-1 bg-surface-primary p-6">
-          <View className="flex-row justify-between items-center mb-6 mt-10">
-            <Text className="text-2xl font-bold text-text-primary">Select Exercise</Text>
-            <Pressable onPress={() => setIsExerciseModalVisible(false)}>
-              <Text className="text-primary-600 font-bold text-lg">Close</Text>
-            </Pressable>
+      {/* ── Exercise Search Modal ── */}
+      <Modal
+        visible={isExerciseModalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setIsExerciseModalVisible(false)}
+      >
+        <SafeAreaView style={[styles.modalSafeArea, { backgroundColor: t.surfaceContainer }]}>
+          <View style={styles.modalHeader}>
+            <Text style={[styles.modalTitle, { color: t.onSurface }]}>Select Exercise</Text>
+            <TouchableOpacity onPress={() => setIsExerciseModalVisible(false)}>
+              <Text style={[styles.modalClose, { color: t.primaryContainer }]}>Close</Text>
+            </TouchableOpacity>
           </View>
-
           <TextInput
-            className="bg-surface-secondary text-text-primary text-lg p-4 rounded-xl border border-surface-tertiary mb-6"
+            style={[
+              styles.modalSearch,
+              {
+                backgroundColor: t.surfaceContainerHigh,
+                color: t.onSurface,
+                borderColor: t.surfaceContainerHighest,
+              },
+            ]}
             placeholder="Search exercises..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={t.onSurfaceVariant}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
-
           <ScrollView showsVerticalScrollIndicator={false}>
             {filteredExercises.map((exercise) => (
-              <Pressable
+              <TouchableOpacity
                 key={exercise.id}
+                style={[styles.modalExerciseRow, { backgroundColor: t.surfaceContainerHigh }]}
                 onPress={() => handleAddExercise(exercise)}
-                className="bg-surface-secondary p-4 rounded-xl mb-3 flex-row justify-between items-center"
               >
                 <View>
-                  <Text className="text-lg font-bold text-text-primary">{exercise.name}</Text>
-                  <Text className="text-sm text-text-secondary">{exercise.muscle_group}</Text>
+                  <Text style={[styles.modalExerciseName, { color: t.onSurface }]}>
+                    {exercise.name}
+                  </Text>
+                  <Text style={[styles.modalExerciseMeta, { color: t.onSurfaceVariant }]}>
+                    {exercise.muscle_group}
+                  </Text>
                 </View>
-                <Text className="text-primary-600 font-bold text-2xl">+</Text>
-              </Pressable>
+                <Text style={[styles.modalExerciseAdd, { color: t.primaryContainer }]}>+</Text>
+              </TouchableOpacity>
             ))}
           </ScrollView>
-        </View>
+        </SafeAreaView>
       </Modal>
-    </ScreenContainer>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  safeArea: { flex: 1 },
+  scroll: { flex: 1 },
+  content: {
+    paddingTop: 24,
+    paddingHorizontal: 20,
+    paddingBottom: 120,
+    gap: 48,
+  },
+  // Routine name
+  routineNameInput: {
+    fontSize: 48,
+    fontWeight: '800',
+    lineHeight: 52,
+    letterSpacing: -1,
+    textTransform: 'uppercase',
+    padding: 0,
+    borderWidth: 0,
+    backgroundColor: 'transparent',
+  },
+  // Tags
+  tagRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
+  tag: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 99,
+    borderWidth: 1,
+  },
+  tagText: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  // Exercise blocks
+  exercisesContainer: { gap: 12 },
+  exerciseBlock: {
+    borderRadius: 12,
+    padding: 24,
+    gap: 24,
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  blockHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  blockHeaderInfo: { gap: 4 },
+  blockName: {
+    fontSize: 20,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  blockMeta: { fontSize: 14, lineHeight: 20 },
+  blockHeaderActions: { flexDirection: 'row', gap: 8 },
+  blockIconBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 99,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  blockIconText: { fontSize: 16 },
+  // Sets
+  setsContainer: { gap: 12 },
+  setsHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    paddingHorizontal: 8,
+  },
+  setColLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+    textAlign: 'center',
+  },
+  setRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  setNum: {
+    fontSize: 20,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  setInput: {
+    height: 48,
+    borderRadius: 8,
+    fontSize: 20,
+    fontWeight: '600',
+  },
+  copyBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  copyBtnText: { fontSize: 18 },
+  addSetBtn: {
+    height: 48,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+  },
+  addSetBtnText: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  // Add exercise / Save
+  addExerciseBtn: {
+    width: '100%',
+    height: 64,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderStyle: 'dashed',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  addExerciseBtnIcon: { fontSize: 20 },
+  addExerciseBtnText: {
+    fontSize: 16,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+  },
+  saveBtn: {
+    width: '100%',
+    height: 80,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  saveBtnText: {
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: 3,
+    textTransform: 'uppercase',
+  },
+  // Modal
+  modalSafeArea: { flex: 1, padding: 24, gap: 16 },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  modalTitle: { fontSize: 24, fontWeight: '700' },
+  modalClose: { fontSize: 16, fontWeight: '600' },
+  modalSearch: {
+    height: 64,
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontSize: 18,
+    borderWidth: 1,
+  },
+  modalExerciseRow: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  modalExerciseName: { fontSize: 18, fontWeight: '700' },
+  modalExerciseMeta: { fontSize: 14, marginTop: 2 },
+  modalExerciseAdd: { fontSize: 24, fontWeight: '700' },
+});

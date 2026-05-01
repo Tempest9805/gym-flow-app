@@ -2,6 +2,7 @@
  * Root layout — Entry point for Expo Router.
  * Wraps the app with providers (React Query, Error Boundary)
  * and imports the global NativeWind stylesheet.
+ * Initializes both auth and theme stores on boot.
  */
 import '../global.css';
 
@@ -13,6 +14,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '@/lib/utils/queryProvider';
 import { ErrorBoundary } from '@/components/ui';
 import { useAuthStore } from '@/lib/store/authStore';
+import { useThemeStore } from '@/lib/store/themeStore';
 
 /**
  * Navigation guard: redirects based on auth state.
@@ -27,13 +29,11 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
     const inAuthGroup = segments[0] === '(auth)';
 
-    // Not authenticated - go to login
     if (!isAuthenticated && !inAuthGroup) {
       router.replace('/(auth)/login');
       return;
     }
 
-    // Authenticated and in auth group - go to app
     if (isAuthenticated && inAuthGroup) {
       router.replace('/(app)');
       return;
@@ -45,9 +45,12 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
 export default function RootLayout() {
   const { initialize } = useAuthStore();
+  const { loadTheme } = useThemeStore();
 
   useEffect(() => {
+    // Boot auth and theme in parallel on startup
     initialize();
+    loadTheme();
   }, []);
 
   return (
@@ -55,7 +58,8 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ErrorBoundary>
           <QueryProvider>
-            <StatusBar style="auto" />
+            {/* Always dark status bar to match Stitch dark backgrounds */}
+            <StatusBar style="light" />
             <AuthGuard>
               <Slot />
             </AuthGuard>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Share Routine - Gym Flow</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Lexend:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#ffdbcf",
+                        "surface-container-high": "#372621",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#e3bfb3",
+                        "on-secondary-fixed": "#331200",
+                        "on-background": "#f9dcd4",
+                        "surface-tint": "#ffb59c",
+                        "secondary": "#ffb68e",
+                        "inverse-primary": "#ab3600",
+                        "on-primary": "#5c1900",
+                        "primary": "#ffb59c",
+                        "background": "#1e100b",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#f9dcd4",
+                        "surface": "#1e100b",
+                        "on-primary-fixed": "#390c00",
+                        "surface-container-lowest": "#180b07",
+                        "surface-dim": "#1e100b",
+                        "surface-container": "#2b1c17",
+                        "inverse-on-surface": "#3d2c27",
+                        "on-surface": "#f9dcd4",
+                        "on-tertiary": "#00344f",
+                        "tertiary": "#8dcdff",
+                        "tertiary-container": "#009de4",
+                        "on-primary-container": "#561700",
+                        "on-tertiary-fixed-variant": "#004b70",
+                        "on-secondary-container": "#ffe2d5",
+                        "surface-container-low": "#271813",
+                        "on-tertiary-fixed": "#001e30",
+                        "primary-fixed-dim": "#ffb59c",
+                        "surface-bright": "#47352f",
+                        "tertiary-fixed-dim": "#8dcdff",
+                        "secondary-container": "#ab4c00",
+                        "primary-container": "#ff5f1f",
+                        "error-container": "#93000a",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#832700",
+                        "on-secondary": "#532200",
+                        "outline": "#aa897f",
+                        "surface-container-highest": "#42312b",
+                        "on-secondary-fixed-variant": "#763300",
+                        "secondary-fixed": "#ffdbca",
+                        "tertiary-fixed": "#cae6ff",
+                        "on-tertiary-container": "#00304a",
+                        "outline-variant": "#5b4138",
+                        "secondary-fixed-dim": "#ffb68e",
+                        "surface-variant": "#42312b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container_padding": "24px",
+                        "touch_target_min": "48px",
+                        "section_margin": "40px",
+                        "base_unit": "8px",
+                        "card_gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Lexend"],
+                        "headline-md": ["Lexend"],
+                        "title-sm": ["Lexend"],
+                        "body-base": ["Inter"],
+                        "display-lg": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "title-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-[#121212] flex justify-between items-center h-16 px-6 w-full docked full-width top-0 border-b border-white/10 flat no shadows relative z-50">
+<button aria-label="Menu" class="text-orange-600 hover:bg-white/5 transition-colors active:scale-95 duration-150 h-touch_target_min w-touch_target_min flex items-center justify-center rounded">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<div class="text-2xl font-black text-white font-lexend tracking-tighter">
+            GYM FLOW
+        </div>
+<button class="text-secondary font-lexend font-bold tracking-tighter hover:bg-white/5 transition-colors active:scale-95 duration-150 h-touch_target_min px-4 flex items-center justify-center rounded">
+            EN
+        </button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow flex flex-col items-center justify-center p-container_padding pb-32">
+<!-- Share Title -->
+<div class="text-center mb-section_margin">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-2">Share Routine</h1>
+<p class="font-body-base text-body-base text-on-surface-variant">Let others scan or use this code.</p>
+</div>
+<!-- QR Code Card -->
+<div class="bg-[#1E1E1E] rounded-xl p-6 flex flex-col items-center justify-center w-full max-w-sm border border-outline-variant shadow-[0_0_15px_rgba(255,95,31,0.15)] mb-8">
+<div class="bg-white p-4 rounded-lg w-64 h-64 flex items-center justify-center mb-6">
+<!-- Placeholder for actual QR -->
+<div class="w-full h-full bg-surface-container-high rounded border-4 border-dashed border-primary-container flex items-center justify-center relative overflow-hidden">
+<img alt="QR Code Placeholder" class="absolute inset-0 w-full h-full object-cover mix-blend-luminosity opacity-50" data-alt="A stylized, high-contrast black and white square matrix barcode, commonly known as a QR code, centered on a bright white background. The image is crisp and digital, designed to look like a functional, scannable code used in a high-tech gym environment. The stark contrast fits the bold, intense aesthetic of the application." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1WhicpiDDuWHuAiCewh2zzasVdcXd8CxMHn956nlYN_ldV6JnG_pPq7xqHlIvYX4sFkFzNPxehzrHkir-bAm4bcv507spOyo634rhshiWI9p48rpPX_OwmQsn27yZ3DwuEfcIBWRtKDDzmeBkcobsK1nnsYeCbCoCbI1TgdvfXhRDu76erpAWFfevzUtU-MODTHgL1j0zSmYGGdSF4WOvUmak_-qOo_OaLXQcpBOy4svVQaRzKwGfUaDBYz83ukB2Tds-wQs2qGE"/>
+<span class="material-symbols-outlined text-primary-container text-6xl relative z-10" data-icon="qr_code_2">qr_code_2</span>
+</div>
+</div>
+<div class="text-center w-full">
+<span class="font-label-caps text-label-caps text-secondary block mb-2">ROUTINE CODE</span>
+<div class="bg-surface-container-low rounded-lg py-4 px-6 flex items-center justify-between border border-white/5">
+<span class="font-display-lg text-title-sm text-white tracking-widest">GF-7X9B2</span>
+<button aria-label="Copy Code" class="text-primary-container hover:text-white transition-colors">
+<span class="material-symbols-outlined" data-icon="content_copy">content_copy</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="flex flex-col w-full max-w-sm gap-4">
+<button class="w-full bg-primary-container text-black font-label-caps text-label-caps h-touch_target_min rounded flex items-center justify-center gap-2 hover:bg-orange-500 transition-colors active:scale-95 shadow-[0_0_12px_rgba(255,95,31,0.4)]">
+<span class="material-symbols-outlined" data-icon="share">share</span>
+                SHARE QR
+            </button>
+<button class="w-full bg-transparent border-2 border-primary-container text-primary-container font-label-caps text-label-caps h-touch_target_min rounded flex items-center justify-center gap-2 hover:bg-primary-container/10 transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="link">link</span>
+                COPY LINK
+            </button>
+</div>
+</main>
+<!-- Navigation Drawer (Hidden by default, structure provided for context) -->
+<!-- 
+    <aside class="fixed inset-y-0 left-0 z-[60] bg-[#1E1E1E] h-full w-80 rounded-r-none shadow-2xl shadow-black flex flex-col py-4 transform -translate-x-full transition-transform">
+        <div class="text-orange-600 font-black text-xl px-6 py-8 font-lexend">
+            GYM FLOW
+        </div>
+        <nav class="flex-grow flex flex-col divide-y divide-white/5 font-lexend text-base">
+            <a href="#" class="flex items-center px-6 py-4 bg-orange-600 text-black font-bold tap-highlight-transparent h-touch_target_min">
+                <span class="material-symbols-outlined mr-4" data-icon="share">share</span>
+                Share Routine
+            </a>
+            <a href="#" class="flex items-center px-6 py-4 text-white/70 hover:bg-white/5 tap-highlight-transparent h-touch_target_min transition-colors">
+                <span class="material-symbols-outlined mr-4" data-icon="upload_file">upload_file</span>
+                Import Routine
+            </a>
+            ...
+        </nav>
+    </aside> 
+    -->
+</body></html>

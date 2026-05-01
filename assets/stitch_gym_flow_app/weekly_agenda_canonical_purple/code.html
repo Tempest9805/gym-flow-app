@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Elite Performance - Agenda</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700;800;900&amp;family=Inter:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "secondary-fixed-dim": "#d0bcff",
+                "on-secondary": "#3c0091",
+                "on-background": "#eeddee",
+                "tertiary-container": "#a76900",
+                "inverse-surface": "#eeddee",
+                "on-primary-container": "#ffffff",
+                "on-tertiary-fixed-variant": "#653e00",
+                "error-container": "#93000a",
+                "tertiary-fixed": "#ffddb8",
+                "on-tertiary-container": "#ffffff",
+                "on-tertiary": "#472a00",
+                "surface-container-lowest": "#130b16",
+                "surface-container-highest": "#3b313e",
+                "on-secondary-fixed": "#23005c",
+                "on-error": "#690005",
+                "primary": "#ebb2ff",
+                "on-secondary-fixed-variant": "#5516be",
+                "tertiary-fixed-dim": "#ffb960",
+                "on-tertiary-fixed": "#2b1700",
+                "on-surface-variant": "#d4c0d7",
+                "surface-container-high": "#302733",
+                "secondary-container": "#571bc1",
+                "on-primary-fixed": "#320047",
+                "secondary-fixed": "#e9ddff",
+                "on-surface": "#eeddee",
+                "primary-container": "#bc13fe",
+                "tertiary": "#ffb960",
+                "on-primary-fixed-variant": "#74009f",
+                "outline": "#9d8ba0",
+                "inverse-primary": "#9800d0",
+                "surface-tint": "#ebb2ff",
+                "surface-container-low": "#211824",
+                "on-secondary-container": "#c4abff",
+                "surface-variant": "#3b313e",
+                "primary-fixed": "#f8d8ff",
+                "surface-bright": "#403643",
+                "primary-fixed-dim": "#ebb2ff",
+                "outline-variant": "#504254",
+                "on-primary": "#520072",
+                "surface": "#19101c",
+                "secondary": "#d0bcff",
+                "on-error-container": "#ffdad6",
+                "surface-dim": "#19101c",
+                "surface-container": "#251c28",
+                "background": "#19101c",
+                "inverse-on-surface": "#372d3a",
+                "error": "#ffb4ab"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+        },
+        "spacing": {
+                "unit": "8px",
+                "gutter": "16px",
+                "touch-target-min": "48px",
+                "margin-mobile": "20px",
+                "card-gap": "12px"
+        },
+        "fontFamily": {
+                "display-xl": [
+                        "Lexend"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Lexend"
+                ],
+                "headline-lg": [
+                        "Lexend"
+                ],
+                "body-lg": [
+                        "Inter"
+                ],
+                "label-caps": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "display-xl": [
+                        "48px",
+                        {
+                                "lineHeight": "1.1",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "800"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "1.5",
+                                "fontWeight": "400"
+                        }
+                ],
+                "headline-md": [
+                        "24px",
+                        {
+                                "lineHeight": "1.3",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg": [
+                        "32px",
+                        {
+                                "lineHeight": "1.2",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "body-lg": [
+                        "18px",
+                        {
+                                "lineHeight": "1.6",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-caps": [
+                        "12px",
+                        {
+                                "lineHeight": "1",
+                                "letterSpacing": "0.1em",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  /* Vaporwave Neon Glow Util */
+  .neon-glow {
+      box-shadow: 0 0 15px rgba(188, 19, 254, 0.3);
+  }
+</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 font-body-md antialiased selection:bg-primary-container selection:text-black">
+<!-- TopAppBar -->
+<header class="bg-[#0A0A0A] dark:bg-[#0A0A0A] fixed top-0 w-full z-40 border-b border-[#2A2A2A] flex justify-between items-center h-16 px-6">
+<button class="text-[#BC13FE] hover:bg-[#1A1A1A] transition-colors active:scale-95 duration-200 p-2 -ml-2 rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-['Lexend'] font-bold tracking-tighter uppercase text-xl font-black text-[#BC13FE] drop-shadow-[0_0_8px_rgba(188,19,254,0.4)]">
+        ELITE PERFORMANCE
+    </h1>
+<button class="font-['Lexend'] font-bold tracking-tighter uppercase text-[#BC13FE] hover:bg-[#1A1A1A] transition-colors active:scale-95 duration-200 text-sm px-2 py-1 rounded">
+        EN/ES
+    </button>
+</header>
+<!-- Main Content Canvas -->
+<main class="pt-24 px-margin-mobile max-w-2xl mx-auto w-full flex flex-col gap-6">
+<!-- Header Area -->
+<section class="flex flex-col gap-2 relative z-10">
+<div class="inline-flex items-center gap-2 bg-primary-container/15 text-primary-container px-3 py-1 rounded-full w-max font-label-caps text-label-caps border border-primary-container/30">
+<span class="material-symbols-outlined text-[16px]">sync</span>
+            SYNCED TO CLOUD
+        </div>
+<h2 class="font-display-xl text-display-xl text-on-surface tracking-tight">AGENDA</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Week 12 • Power &amp; Hypertrophy Phase</p>
+</section>
+<!-- 7-Day Vertical Flow -->
+<section class="flex flex-col gap-card-gap">
+<!-- Day 1: Done -->
+<article class="bg-surface-container-low p-gutter rounded-xl flex items-center justify-between opacity-50 relative overflow-hidden">
+<div class="flex flex-col gap-1 relative z-10">
+<span class="font-label-caps text-label-caps text-on-surface-variant">MON • MAY 12</span>
+<h3 class="font-headline-md text-headline-md text-on-surface line-through decoration-outline-variant">Heavy Push</h3>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-caps text-label-caps bg-surface p-2 rounded-lg relative z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                DONE
+            </div>
+<div class="absolute inset-0 bg-gradient-to-r from-transparent to-surface-container-lowest z-0"></div>
+</article>
+<!-- Day 2: Done -->
+<article class="bg-surface-container-low p-gutter rounded-xl flex items-center justify-between opacity-50 relative overflow-hidden">
+<div class="flex flex-col gap-1 relative z-10">
+<span class="font-label-caps text-label-caps text-on-surface-variant">TUE • MAY 13</span>
+<h3 class="font-headline-md text-headline-md text-on-surface line-through decoration-outline-variant">Posterior Chain</h3>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-label-caps text-label-caps bg-surface p-2 rounded-lg relative z-10">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                DONE
+            </div>
+</article>
+<!-- Day 3: CURRENT / ACTIVE -->
+<article class="bg-surface-container-highest rounded-2xl border border-[#BC13FE] neon-glow overflow-hidden relative mt-2 mb-2">
+<!-- Decorative Accent -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary-container/20 blur-3xl rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+<div class="p-gutter flex flex-col gap-3 relative z-10">
+<div class="flex justify-between items-start">
+<span class="font-label-caps text-label-caps text-primary-container bg-primary-container/10 px-2 py-1 rounded">WED • TODAY</span>
+<span class="material-symbols-outlined text-primary-container">bolt</span>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface leading-tight">Metabolic Conditioning</h3>
+<div class="flex gap-4 mt-1">
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">timer</span>
+<span class="font-body-md text-body-md text-sm">45 Min</span>
+</div>
+<div class="flex items-center gap-1 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">local_fire_department</span>
+<span class="font-body-md text-body-md text-sm">High Intensity</span>
+</div>
+</div>
+</div>
+<!-- Primary CTA -->
+<button class="w-full h-[64px] bg-[#BC13FE] hover:bg-[#d54aff] active:scale-[0.98] transition-all duration-200 text-black font-label-caps text-label-caps text-sm tracking-widest flex justify-center items-center gap-2 relative z-10 border-t border-[#d54aff]">
+                START WORKOUT
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+</article>
+<!-- Day 4: Upcoming -->
+<article class="bg-surface-container p-gutter rounded-xl flex items-center justify-between border border-surface-container-highest">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">THU • MAY 15</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Active Recovery</h3>
+</div>
+<div class="font-label-caps text-label-caps text-outline tracking-wider">
+                UPCOMING
+            </div>
+</article>
+<!-- Day 5: Upcoming -->
+<article class="bg-surface-container p-gutter rounded-xl flex items-center justify-between border border-surface-container-highest">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">FRI • MAY 16</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Hypertrophy Pull</h3>
+</div>
+<div class="font-label-caps text-label-caps text-outline tracking-wider">
+                UPCOMING
+            </div>
+</article>
+<!-- Day 6: Upcoming -->
+<article class="bg-surface-container p-gutter rounded-xl flex items-center justify-between border border-surface-container-highest">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SAT • MAY 17</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Leg Day Vol. 2</h3>
+</div>
+<div class="font-label-caps text-label-caps text-outline tracking-wider">
+                UPCOMING
+            </div>
+</article>
+<!-- Day 7: Upcoming -->
+<article class="bg-surface-container p-gutter rounded-xl flex items-center justify-between border border-surface-container-highest opacity-70">
+<div class="flex flex-col gap-1">
+<span class="font-label-caps text-label-caps text-on-surface-variant">SUN • MAY 18</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Rest Day</h3>
+</div>
+<span class="material-symbols-outlined text-outline">snooze</span>
+</article>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-[#0A0A0A]/90 dark:bg-[#0A0A0A]/90 backdrop-blur-xl border-t border-[#2A2A2A] shadow-[0_-4px_20px_rgba(0,0,0,0.5)] fixed bottom-0 left-0 w-full z-50 h-20 flex justify-around items-center px-4">
+<!-- Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-white/90 active:scale-90 transition-transform w-[64px] gap-1" href="#">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest">Home</span>
+</a>
+<!-- Exercises (Inactive) -->
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-white/90 active:scale-90 transition-transform w-[64px] gap-1" href="#">
+<span class="material-symbols-outlined text-[24px]">fitness_center</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest">Exercises</span>
+</a>
+<!-- Agenda (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-[#BC13FE] drop-shadow-[0_0_10px_rgba(188,19,254,0.5)] active:scale-90 transition-transform w-[64px] gap-1 relative" href="#">
+<div class="absolute -top-3 w-12 h-1 bg-primary-container rounded-full neon-glow"></div>
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span class="font-['Lexend'] text-[10px] font-bold uppercase tracking-widest">Agenda</span>
+</a>
+<!-- Routines (Inactive) -->
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-white/90 active:scale-90 transition-transform w-[64px] gap-1" href="#">
+<span class="material-symbols-outlined text-[24px]">layers</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest">Routines</span>
+</a>
+<!-- Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-white/40 hover:text-white/90 active:scale-90 transition-transform w-[64px] gap-1" href="#">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="font-['Lexend'] text-[10px] font-medium uppercase tracking-widest">Profile</span>
+</a>
+</nav>
+</body></html>

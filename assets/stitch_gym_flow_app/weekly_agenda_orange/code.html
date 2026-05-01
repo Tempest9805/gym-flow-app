@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gym Flow - Weekly Agenda</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-fixed": "#ffdbcf",
+                        "surface-container-high": "#372621",
+                        "error": "#ffb4ab",
+                        "on-surface-variant": "#e3bfb3",
+                        "on-secondary-fixed": "#331200",
+                        "on-background": "#f9dcd4",
+                        "surface-tint": "#ffb59c",
+                        "secondary": "#ffb68e",
+                        "inverse-primary": "#ab3600",
+                        "on-primary": "#5c1900",
+                        "primary": "#ffb59c",
+                        "background": "#1e100b",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#f9dcd4",
+                        "surface": "#1e100b",
+                        "on-primary-fixed": "#390c00",
+                        "surface-container-lowest": "#180b07",
+                        "surface-dim": "#1e100b",
+                        "surface-container": "#2b1c17",
+                        "inverse-on-surface": "#3d2c27",
+                        "on-surface": "#f9dcd4",
+                        "on-tertiary": "#00344f",
+                        "tertiary": "#8dcdff",
+                        "tertiary-container": "#009de4",
+                        "on-primary-container": "#561700",
+                        "on-tertiary-fixed-variant": "#004b70",
+                        "on-secondary-container": "#ffe2d5",
+                        "surface-container-low": "#271813",
+                        "on-tertiary-fixed": "#001e30",
+                        "primary-fixed-dim": "#ffb59c",
+                        "surface-bright": "#47352f",
+                        "tertiary-fixed-dim": "#8dcdff",
+                        "secondary-container": "#ab4c00",
+                        "primary-container": "#ff5f1f",
+                        "error-container": "#93000a",
+                        "on-error": "#690005",
+                        "on-primary-fixed-variant": "#832700",
+                        "on-secondary": "#532200",
+                        "outline": "#aa897f",
+                        "surface-container-highest": "#42312b",
+                        "on-secondary-fixed-variant": "#763300",
+                        "secondary-fixed": "#ffdbca",
+                        "tertiary-fixed": "#cae6ff",
+                        "on-tertiary-container": "#00304a",
+                        "outline-variant": "#5b4138",
+                        "secondary-fixed-dim": "#ffb68e",
+                        "surface-variant": "#42312b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container_padding": "24px",
+                        "touch_target_min": "48px",
+                        "section_margin": "40px",
+                        "base_unit": "8px",
+                        "card_gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Lexend"],
+                        "headline-md": ["Lexend"],
+                        "title-sm": ["Lexend"],
+                        "body-base": ["Inter"],
+                        "display-lg": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "title-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "body-base": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-base min-h-screen flex flex-col pt-16 pb-20">
+<!-- TopAppBar -->
+<header class="bg-[#121212] docked full-width top-0 border-b border-white/10 flat no shadows flex justify-between items-center h-16 px-6 w-full fixed z-50">
+<button class="text-orange-600 hover:bg-white/5 transition-colors active:scale-95 duration-150 h-touch_target_min w-touch_target_min flex items-center justify-center rounded-full">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="text-2xl font-black text-white font-lexend font-bold tracking-tighter">GYM FLOW</h1>
+<button class="text-orange-600 hover:bg-white/5 transition-colors active:scale-95 duration-150 h-touch_target_min px-4 rounded-full font-label-caps text-label-caps">
+            EN
+        </button>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col p-container_padding pb-section_margin gap-card_gutter max-w-3xl mx-auto w-full">
+<!-- Header -->
+<div class="flex items-center justify-between mb-2">
+<h2 class="font-headline-md text-headline-md text-inverse-surface tracking-wide uppercase">This Week</h2>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[20px]">calendar_month</span>
+<span class="font-label-caps text-label-caps">Oct 23 - Oct 29</span>
+</div>
+</div>
+<!-- Agenda List -->
+<div class="flex flex-col gap-4">
+<!-- Monday - Done -->
+<div class="bg-[#1E1E1E] rounded-xl p-6 flex flex-col gap-4 border border-outline-variant/30 opacity-70">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wider">Monday</h3>
+<p class="font-headline-md text-headline-md text-inverse-surface mt-1">Chest &amp; Triceps</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-[#4ade80]">check_circle</span>
+<span class="font-label-caps text-label-caps text-[#4ade80]">DONE</span>
+</div>
+</div>
+<div class="h-px w-full bg-white/5 my-1"></div>
+<div class="flex items-center gap-4 text-on-surface-variant font-body-base text-body-base">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">fitness_center</span> 6 Exercises</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">timer</span> 45 Min</span>
+</div>
+</div>
+<!-- Tuesday - Done -->
+<div class="bg-[#1E1E1E] rounded-xl p-6 flex flex-col gap-4 border border-outline-variant/30 opacity-70">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wider">Tuesday</h3>
+<p class="font-headline-md text-headline-md text-inverse-surface mt-1">Back &amp; Biceps</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-[#4ade80]">check_circle</span>
+<span class="font-label-caps text-label-caps text-[#4ade80]">DONE</span>
+</div>
+</div>
+<div class="h-px w-full bg-white/5 my-1"></div>
+<div class="flex items-center gap-4 text-on-surface-variant font-body-base text-body-base">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">fitness_center</span> 5 Exercises</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">timer</span> 50 Min</span>
+</div>
+</div>
+<!-- Wednesday - Active -->
+<div class="bg-[#1E1E1E] rounded-xl p-6 flex flex-col gap-4 border-2 border-primary-container shadow-[0_0_15px_rgba(255,95,31,0.15)] relative overflow-hidden">
+<div class="absolute top-0 left-0 w-1.5 h-full bg-primary-container"></div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-sm text-title-sm text-primary-container uppercase tracking-wider font-bold">Wednesday (Today)</h3>
+<p class="font-headline-md text-headline-md text-inverse-surface mt-1">Leg Day: Quads Focus</p>
+</div>
+<div class="flex items-center gap-2 bg-primary-container/10 px-3 py-1.5 rounded-full border border-primary-container/30">
+<span class="material-symbols-outlined text-[16px] text-primary-container">play_arrow</span>
+<span class="font-label-caps text-label-caps text-primary-container">START</span>
+</div>
+</div>
+<div class="h-px w-full bg-primary-container/20 my-1"></div>
+<div class="flex items-center gap-4 text-inverse-surface font-body-base text-body-base">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px] text-primary">fitness_center</span> 7 Exercises</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px] text-primary">timer</span> 60 Min</span>
+</div>
+</div>
+<!-- Thursday - Rest -->
+<div class="bg-[#1E1E1E] rounded-xl p-6 flex flex-col gap-4 border border-outline-variant/30">
+<div class="flex justify-between items-center">
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wider">Thursday</h3>
+<p class="font-headline-md text-headline-md text-on-surface-variant mt-1">Active Recovery</p>
+</div>
+<span class="material-symbols-outlined text-[32px] text-on-surface-variant/50">self_improvement</span>
+</div>
+</div>
+<!-- Friday - Upcoming -->
+<div class="bg-[#1E1E1E] rounded-xl p-6 flex flex-col gap-4 border border-outline-variant/30">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wider">Friday</h3>
+<p class="font-headline-md text-headline-md text-inverse-surface mt-1">Shoulders &amp; Core</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">schedule</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">UPCOMING</span>
+</div>
+</div>
+<div class="h-px w-full bg-white/5 my-1"></div>
+<div class="flex items-center gap-4 text-on-surface-variant font-body-base text-body-base">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">fitness_center</span> 6 Exercises</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">timer</span> 45 Min</span>
+</div>
+</div>
+<!-- Saturday - Upcoming -->
+<div class="bg-[#1E1E1E] rounded-xl p-6 flex flex-col gap-4 border border-outline-variant/30">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wider">Saturday</h3>
+<p class="font-headline-md text-headline-md text-inverse-surface mt-1">Full Body Power</p>
+</div>
+<div class="flex items-center gap-2 bg-surface-container px-3 py-1.5 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">schedule</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">UPCOMING</span>
+</div>
+</div>
+<div class="h-px w-full bg-white/5 my-1"></div>
+<div class="flex items-center gap-4 text-on-surface-variant font-body-base text-body-base">
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">fitness_center</span> 8 Exercises</span>
+<span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[18px]">timer</span> 70 Min</span>
+</div>
+</div>
+<!-- Sunday - Rest -->
+<div class="bg-[#1E1E1E] rounded-xl p-6 flex flex-col gap-4 border border-outline-variant/30">
+<div class="flex justify-between items-center">
+<div>
+<h3 class="font-title-sm text-title-sm text-on-surface uppercase tracking-wider">Sunday</h3>
+<p class="font-headline-md text-headline-md text-on-surface-variant mt-1">Rest Day</p>
+</div>
+<span class="material-symbols-outlined text-[32px] text-on-surface-variant/50">bedtime</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-[#121212] docked full-width bottom-0 h-20 border-t border-white/10 flat no shadows fixed bottom-0 w-full z-50 flex justify-around items-center px-4 md:hidden">
+<button class="flex flex-col items-center justify-center text-zinc-500 hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-full min-w-[touch_target_min] font-lexend text-[10px] font-semibold uppercase tracking-widest gap-1">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span>Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-full min-w-[touch_target_min] font-lexend text-[10px] font-semibold uppercase tracking-widest gap-1">
+<span class="material-symbols-outlined text-[24px]">fitness_center</span>
+<span>Exercises</span>
+</button>
+<button class="flex flex-col items-center justify-center text-orange-600 drop-shadow-[0_0_8px_rgba(255,95,31,0.5)] hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-full min-w-[touch_target_min] font-lexend text-[10px] font-semibold uppercase tracking-widest gap-1">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+<span>Agenda</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-full min-w-[touch_target_min] font-lexend text-[10px] font-semibold uppercase tracking-widest gap-1">
+<span class="material-symbols-outlined text-[24px]">format_list_bulleted</span>
+<span>Routines</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-500 hover:bg-orange-600/10 active:scale-90 transition-transform h-full w-full min-w-[touch_target_min] font-lexend text-[10px] font-semibold uppercase tracking-widest gap-1">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span>Profile</span>
+</button>
+</nav>
+</body></html>
