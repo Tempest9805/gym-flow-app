@@ -2,11 +2,11 @@
  * Home Screen — Implements Stitch `home_canonical_purple` layout exactly:
  *   1. TopAppBar (fixed)
  *   2. Greeting ("HELLO, ATHLETE")
- *   3. "Now" card (next scheduled workout + START WORKOUT CTA)
- *   4. Minimal stats bento (2-col grid)
- *   5. Agenda preview (next 2 days)
+ *   3. Weekly tracker (Mon-Sun checks)
+ *   4. Today's Routine (clear format, sets/reps helper, completion toggle)
+ *   5. Minimal stats bento & Agenda preview
  */
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  AccessibilityRole,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RoutineWithExercises } from '@/types';
@@ -21,9 +22,18 @@ import { useRouter } from 'expo-router';
 import { AppTopBar } from '@/components/ui/AppTopBar';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useCurrentProfile, useWeekSchedule } from '@/lib/hooks';
+import { useSessionStore } from '@/lib/store/sessionStore';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function getWeekStart(date: Date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  // We align with Javascript's getDay() where 0 is Sunday
+  d.setDate(d.getDate() - day);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString().split('T')[0];
+}
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -31,8 +41,31 @@ export default function HomeScreen() {
   const { data: profile, isLoading: profileLoading } = useCurrentProfile();
   const { data: schedule, isLoading: scheduleLoading } = useWeekSchedule(profile?.id);
 
-  const today = new Date();
+  const { completedExercises, completedDays, toggleExercise, toggleDay, checkAndResetWeekly } = useSessionStore();
+
+  const today = useMemo(() => new Date(), []);
   const todayIndex = today.getDay();
+  const currentWeekStart = useMemo(() => getWeekStart(today), [today]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      checkAndResetWeekly(currentWeekStart);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [checkAndResetWeekly, currentWeekStart]);
+
+  const handleToggleExercise = React.useCallback((id: string) => {
+    toggleExercise(id);
+  }, [toggleExercise]);
+
+  const handleToggleDay = React.useCallback((index: number) => {
+    toggleDay(index, currentWeekStart);
+  }, [toggleDay, currentWeekStart]);
+
+  const handleNavigateToExercise = React.useCallback((exerciseId: string) => {
+    router.push(`/exercise/${exerciseId}`);
+  }, [router]);
+
   const todaysEntry = schedule?.find((s) => s.day_of_week === todayIndex);
   // Cast to RoutineWithExercises — the API may return exercises joined
   const todaysRoutine = todaysEntry?.routine as RoutineWithExercises | undefined;
@@ -62,85 +95,150 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* ── 2. "Now" card ── */}
-        <View
-          style={[
-            styles.nowCard,
-            {
-              backgroundColor: t.surface,
-              borderColor: t.surfaceContainerHighest,
-            },
-          ]}
-        >
-          {/* Card header */}
-          <View style={styles.nowCardHeader}>
-            <View style={styles.nowCardHeaderLeft}>
-              <Text style={[styles.nowCardLabel, { color: t.onSurfaceVariant }]}>
-                UP NEXT • {today.getHours()}:{String(today.getMinutes()).padStart(2, '0')}
-              </Text>
-              <Text style={[styles.nowCardTitle, { color: t.onBackground }]}>
-                {todaysRoutine ? todaysRoutine.name.toUpperCase() : 'REST\nDAY'}
-              </Text>
-            </View>
-            {todaysRoutine && (
-              <View
+        {/* ── 2. Weekly Tracker ── */}
+        <View style={styles.weeklyTrackerContainer}>
+          {DAY_NAMES.map((dayName, index) => {
+            const isCompleted = completedDays[index];
+            const isToday = index === todayIndex;
+            return (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleToggleDay(index)}
+                accessibilityRole="button"
+                accessibilityLabel={`${isCompleted ? 'Marked as completed' : 'Mark as completed'} for ${dayName}`}
+                accessibilityState={{ checked: isCompleted }}
                 style={[
-                  styles.nowCardBadge,
-                  {
-                    backgroundColor: `${t.primaryContainer}22`,
-                    borderColor: `${t.primaryContainer}44`,
-                  },
+                  styles.dayBadge,
+                  isToday && { borderColor: t.primaryContainer, borderWidth: 1 },
+                  isCompleted ? { backgroundColor: t.primaryContainer } : { backgroundColor: t.surfaceContainer },
                 ]}
               >
-                <Text style={[styles.nowCardBadgeText, { color: t.primaryContainer }]}>
-                  STRENGTH
+                <Text
+                  style={[
+                    styles.dayName,
+                    isCompleted ? { color: t.onPrimaryContainer } : { color: t.onSurfaceVariant },
+                  ]}
+                >
+                  {dayName.slice(0, 2)}
                 </Text>
-              </View>
-            )}
-          </View>
+                <Text style={[styles.dayIcon, isCompleted ? { color: t.onPrimaryContainer } : { color: t.outlineVariant }]}>
+                  {isCompleted ? '✓' : '✕'}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
 
-          {/* Card stats */}
-          {todaysRoutine && (
-            <View style={styles.nowCardStats}>
-              <View style={styles.nowCardStat}>
-                <Text style={[styles.nowCardStatLabel, { color: t.outline }]}>MOVEMENTS</Text>
-                <Text style={[styles.nowCardStatValue, { color: t.onBackground }]}>
-                  {todaysRoutine.exercises?.length ?? '—'}
+        {/* ── 3. Today's Routine ── */}
+        {todaysRoutine ? (
+          <View style={styles.routineSection}>
+            <View style={styles.routineHeader}>
+              <Text style={[styles.routineTitle, { color: t.onBackground }]}>
+                {todaysRoutine.name.toUpperCase()}
+              </Text>
+              
+              <View style={[styles.helperBox, { backgroundColor: t.surfaceContainerLow, borderColor: t.surfaceContainerHighest }]}>
+                <Text style={[styles.helperText, { color: t.onSurfaceVariant }]}>
+                  <Text style={{ fontWeight: 'bold' }}>Series</Text> = cuántas veces repites el ejercicio
                 </Text>
-              </View>
-              <View style={[styles.nowCardDivider, { backgroundColor: t.surfaceContainerHighest }]} />
-              <View style={styles.nowCardStat}>
-                <Text style={[styles.nowCardStatLabel, { color: t.outline }]}>DURATION</Text>
-                <Text style={[styles.nowCardStatValue, { color: t.onBackground }]}>
-                  {Math.max(30, ((todaysRoutine as RoutineWithExercises).exercises?.length ?? 4) * 8)}m
+                <Text style={[styles.helperText, { color: t.onSurfaceVariant }]}>
+                  <Text style={{ fontWeight: 'bold' }}>Repeticiones</Text> = cuántas veces haces el movimiento en cada serie
                 </Text>
               </View>
             </View>
-          )}
 
-          {/* Primary CTA */}
-          <TouchableOpacity
+            <View style={styles.exerciseList}>
+              {todaysRoutine.exercises?.map((item, index) => {
+                const isCompleted = completedExercises[item.id];
+                return (
+                  <View
+                    key={item.id}
+                    style={[
+                      styles.exerciseCard,
+                      {
+                        backgroundColor: t.surface,
+                        borderColor: isCompleted ? t.primaryContainer : t.surfaceContainerHighest,
+                      },
+                    ]}
+                  >
+                    <TouchableOpacity
+                      style={styles.exerciseInfo}
+                      onPress={() => handleNavigateToExercise(item.exercise_id)}
+                      activeOpacity={0.7}
+                      accessibilityRole="link"
+                      accessibilityLabel={`View details for ${item.exercise?.name}`}
+                    >
+                      <Text style={[
+                        styles.exerciseName, 
+                        { color: t.onSurface },
+                        isCompleted && { textDecorationLine: 'line-through', color: t.outline }
+                      ]}>
+                        {item.exercise?.name.toUpperCase()}
+                      </Text>
+                      <Text style={[styles.exerciseMeta, { color: t.onSurfaceVariant }]}>
+                        {item.sets} series x {item.reps ? `${item.reps} reps` : `${item.duration_seconds}s`}
+                        {item.rest_seconds ? ` • ${item.rest_seconds}s rest` : ''}
+                      </Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity
+                      style={[
+                        styles.checkButton,
+                        isCompleted 
+                          ? { backgroundColor: t.primaryContainer, borderColor: t.primaryContainer }
+                          : { backgroundColor: 'transparent', borderColor: t.outlineVariant }
+                      ]}
+                      onPress={() => handleToggleExercise(item.id)}
+                      accessibilityRole="checkbox"
+                      accessibilityLabel={`Mark ${item.exercise?.name} as completed`}
+                      accessibilityState={{ checked: isCompleted }}
+                    >
+                      {isCompleted && <Text style={{ color: t.onPrimaryContainer, fontWeight: '800', fontSize: 16 }}>✓</Text>}
+                    </TouchableOpacity>
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        ) : (
+          <View
             style={[
-              styles.nowCardCTA,
+              styles.nowCard,
               {
-                backgroundColor: t.primaryContainer,
-                shadowColor: t.primaryContainer,
+                backgroundColor: t.surface,
+                borderColor: t.surfaceContainerHighest,
               },
             ]}
-            activeOpacity={0.85}
-            onPress={() =>
-              todaysRoutine
-                ? router.push({ pathname: '/workout', params: { id: todaysRoutine.id } })
-                : router.push('/exercises')
-            }
           >
-            <Text style={[styles.nowCardCTAText, { color: t.onPrimaryContainer }]}>
-              {todaysRoutine ? '▶  START WORKOUT' : 'BROWSE EXERCISES'}
-            </Text>
-          </TouchableOpacity>
-        </View>
+            <View style={styles.nowCardHeader}>
+              <View style={styles.nowCardHeaderLeft}>
+                <Text style={[styles.nowCardLabel, { color: t.onSurfaceVariant }]}>
+                  TODAY
+                </Text>
+                <Text style={[styles.nowCardTitle, { color: t.onBackground }]}>
+                  REST DAY
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              style={[
+                styles.nowCardCTA,
+                {
+                  backgroundColor: t.primaryContainer,
+                  shadowColor: t.primaryContainer,
+                },
+              ]}
+              activeOpacity={0.85}
+              onPress={() => router.push('/exercises')}
+            >
+              <Text style={[styles.nowCardCTAText, { color: t.onPrimaryContainer }]}>
+                BROWSE EXERCISES
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
-        {/* ── 3. Minimal stats bento ── */}
+        {/* ── 4. Minimal stats bento ── */}
         <View style={styles.statsGrid}>
           <View
             style={[
@@ -148,7 +246,7 @@ export default function HomeScreen() {
               { backgroundColor: t.surface, borderColor: t.surfaceContainerHighest },
             ]}
           >
-            <Text style={[styles.statCardLabel, { color: t.onSurfaceVariant }]}>⚡ Weekly Load</Text>
+            <Text style={[styles.statCardLabel, { color: t.onSurfaceVariant }]}>▲ Weekly Load</Text>
             <Text style={[styles.statCardValue, { color: t.onBackground }]}>
               {(schedule?.filter((s) => s.routine).length ?? 0)}
               <Text style={[styles.statCardUnit, { color: t.outlineVariant }]}> days</Text>
@@ -160,7 +258,7 @@ export default function HomeScreen() {
               { backgroundColor: t.surface, borderColor: t.surfaceContainerHighest },
             ]}
           >
-            <Text style={[styles.statCardLabel, { color: t.onSurfaceVariant }]}>♡ Recovery</Text>
+            <Text style={[styles.statCardLabel, { color: t.onSurfaceVariant }]}>♥ Recovery</Text>
             <Text style={[styles.statCardValue, { color: t.secondary }]}>
               {todaysRoutine ? '72' : '94'}
               <Text style={[styles.statCardUnit, { color: t.outlineVariant }]}>%</Text>
@@ -168,7 +266,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* ── 4. Agenda preview ── */}
+        {/* ── 5. Agenda preview ── */}
         <View style={styles.agendaSection}>
           <Text style={[styles.agendaSectionTitle, { color: t.onBackground }]}>Agenda</Text>
           {scheduleLoading ? (
@@ -257,7 +355,85 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     lineHeight: 52,
   },
-  // Now card
+  // Weekly Tracker
+  weeklyTrackerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+  },
+  dayBadge: {
+    flex: 1,
+    marginHorizontal: 4,
+    borderRadius: 8,
+    paddingVertical: 8,
+    alignItems: 'center',
+    gap: 4,
+  },
+  dayName: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+  },
+  dayIcon: {
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  // Routine Section
+  routineSection: {
+    gap: 16,
+  },
+  routineHeader: {
+    gap: 12,
+  },
+  routineTitle: {
+    fontSize: 32,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: -0.5,
+  },
+  helperBox: {
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 4,
+  },
+  helperText: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  exerciseList: {
+    gap: 12,
+  },
+  exerciseCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    gap: 16,
+  },
+  exerciseInfo: {
+    flex: 1,
+    gap: 4,
+  },
+  exerciseName: {
+    fontSize: 18,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  exerciseMeta: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  checkButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Rest Day card (fallback)
   nowCard: {
     borderRadius: 12,
     borderWidth: 1,
@@ -283,37 +459,6 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
     textTransform: 'uppercase',
   },
-  nowCardBadge: {
-    borderWidth: 1,
-    borderRadius: 99,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  nowCardBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  nowCardStats: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  nowCardStat: { gap: 2 },
-  nowCardStatLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  nowCardStatValue: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  nowCardDivider: { width: 1 },
   nowCardCTA: {
     height: 64,
     borderRadius: 8,

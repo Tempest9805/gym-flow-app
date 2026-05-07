@@ -14,7 +14,6 @@ import {
   TouchableOpacity,
   ScrollView,
   StyleSheet,
-  Image,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,6 +21,7 @@ import { useRouter } from 'expo-router';
 import { AppTopBar } from '@/components/ui/AppTopBar';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useExercises, useExerciseFilters } from '@/lib/hooks';
+import { Image as ExpoImage } from 'expo-image';
 
 export default function ExerciseLibraryScreen() {
   const router = useRouter();
@@ -34,19 +34,25 @@ export default function ExerciseLibraryScreen() {
 
   const categories = useMemo(() => {
     if (!filters?.categories) return ['ALL'];
-    return ['ALL', ...filters.categories.map((c: string) => c.toUpperCase())];
+    return ['ALL', ...filters.categories.map((c: any) => String(c || '').toUpperCase())];
   }, [filters]);
 
   const filteredExercises = useMemo(() => {
     if (!exercises) return [];
     return exercises.filter((e) => {
+      const name = (e.name_en || e.name || '').toLowerCase();
+      const muscleGroup = (e.muscle_group || '').toLowerCase();
+      const searchTerm = search.toLowerCase();
+
       const matchesSearch =
-        e.name.toLowerCase().includes(search.toLowerCase()) ||
-        e.muscle_group.toLowerCase().includes(search.toLowerCase());
+        name.includes(searchTerm) ||
+        muscleGroup.includes(searchTerm);
+        
       const matchesCategory =
         selectedCategory && selectedCategory !== 'ALL'
-          ? e.category?.toUpperCase() === selectedCategory
+          ? (e.category || '').toUpperCase() === selectedCategory
           : true;
+          
       return matchesSearch && matchesCategory;
     });
   }, [exercises, search, selectedCategory]);
@@ -70,7 +76,7 @@ export default function ExerciseLibraryScreen() {
 
             {/* Search bar */}
             <View style={[styles.searchBar, { backgroundColor: t.surface, borderColor: t.surfaceVariant }]}>
-              <Text style={[styles.searchIcon, { color: t.onSurfaceVariant }]}>🔍</Text>
+              <Text style={[styles.searchIcon, { color: t.onSurfaceVariant }]}>⌕</Text>
               <TextInput
                 style={[styles.searchInput, { color: t.onSurface }]}
                 placeholder="Search exercises..."
@@ -133,16 +139,18 @@ export default function ExerciseLibraryScreen() {
           >
             {/* Image placeholder area */}
             <View style={[styles.cardImageArea, { backgroundColor: t.surfaceContainerHighest }]}>
-              {item.demonstration_url ? (
-                <Image
-                  source={{ uri: item.demonstration_url }}
+              {item.media_url || item.demonstration_url ? (
+                <ExpoImage
+                  source={{ uri: (item.media_url || item.demonstration_url) ?? undefined }}
                   style={styles.cardImage}
-                  resizeMode="cover"
+                  contentFit="cover"
+                  transition={200}
+                  placeholder="L35O?*0000_300~qIVD%00-;~q%M"
                 />
               ) : (
                 <View style={[styles.cardImagePlaceholder, { backgroundColor: t.surfaceContainerHigh }]}>
                   <Text style={[styles.cardImagePlaceholderIcon, { color: t.outlineVariant }]}>
-                    🏋️
+                    ◆
                   </Text>
                 </View>
               )}
@@ -168,9 +176,11 @@ export default function ExerciseLibraryScreen() {
             <View style={[styles.cardFooter, { backgroundColor: t.background }]}>
               <View style={styles.cardFooterInfo}>
                 <Text style={[styles.cardMeta, { color: t.onSurfaceVariant }]}>
-                  {item.category?.toUpperCase()} • {item.equipment?.toUpperCase() ?? 'BARBELL'}
+                  {(item.category || 'EXERCISE').toUpperCase()} • {(item.equipment || 'BODYWEIGHT').toUpperCase()}
                 </Text>
-                <Text style={[styles.cardName, { color: t.onSurface }]}>{item.name}</Text>
+                <Text style={[styles.cardName, { color: t.onSurface }]}>
+                  {item.name_en || item.name || 'Untitled Exercise'}
+                </Text>
               </View>
               <TouchableOpacity
                 style={[

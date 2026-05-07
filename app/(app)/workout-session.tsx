@@ -36,7 +36,7 @@ export default function WorkoutSessionScreen() {
     return (
       <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]}>
         <View style={styles.completeView}>
-          <Text style={[styles.completeEmoji]}>🏆</Text>
+          <Text style={[styles.completeEmoji]}>★</Text>
           <Text style={[styles.completeTitle, { color: t.onSurface }]}>PROTOCOL COMPLETE</Text>
           <Text style={[styles.completeSubtitle, { color: t.onSurfaceVariant }]}>
             All objectives achieved. Performance data synced.

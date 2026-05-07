@@ -157,7 +157,7 @@ export default function SignUpScreen() {
                   { backgroundColor: t.surfaceContainer, borderColor: t.surfaceVariant },
                 ]}
               >
-                <Text style={[styles.inputIcon, { color: t.outlineVariant }]}>🔒</Text>
+                <Text style={[styles.inputIcon, { color: t.outlineVariant }]}>◉</Text>
                 <TextInput
                   style={[styles.input, { color: t.onSurface }]}
                   placeholder="MIN. 6 CHARACTERS"

@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PURPLE_THEME } from '@/lib/store/themeStore';
 
@@ -17,19 +18,11 @@ export function LoadingScreen({ message, isOverlay = false }: LoadingScreenProps
 
   const content = (
     <View style={styles.inner}>
-      <Text
-        style={[
-          styles.appTitle,
-          {
-            color: t.primaryContainer,
-            textShadowColor: t.glowPrimary,
-            textShadowOffset: { width: 0, height: 0 },
-            textShadowRadius: 12,
-          },
-        ]}
-      >
-        ELITE PERFORMANCE
-      </Text>
+      <ExpoImage
+        source={require('@/assets/logo_nobk.png')}
+        style={styles.logo}
+        contentFit="contain"
+      />
       <ActivityIndicator
         size="large"
         color={t.primaryContainer}
@@ -66,6 +59,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 24,
     padding: 24,
+  },
+logo: {
+    width: 280,
+    height: 280,
   },
   appTitle: {
     fontSize: 18,

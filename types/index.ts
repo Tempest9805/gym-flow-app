@@ -34,6 +34,11 @@ export interface Exercise extends BaseEntity {
   demonstration_url: string | null;
   description: string | null;
   notes: string | null;
+  media_url: string | null;
+  media_type: string | null;
+  media_source: string | null;
+  media_storage_path: string | null;
+  media_status: string | null;
 }
 
 export interface Routine extends BaseEntity {

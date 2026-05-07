@@ -224,10 +224,10 @@ export default function RoutineBuilderScreen() {
               <View style={styles.blockHeader}>
                 <View style={styles.blockHeaderInfo}>
                   <Text style={[styles.blockName, { color: t.onSurface }]}>
-                    {draft.exercise.name.toUpperCase()}
+                    {(draft.exercise.name_en || draft.exercise.name || 'EXERCISE').toUpperCase()}
                   </Text>
                   <Text style={[styles.blockMeta, { color: t.primaryContainer }]}>
-                    Target: {draft.exercise.muscle_group}
+                    Target: {draft.exercise.muscle_group || 'N/A'}
                   </Text>
                 </View>
                 <View style={styles.blockHeaderActions}>

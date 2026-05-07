@@ -70,7 +70,7 @@ export default function ResetPasswordScreen() {
             <View style={styles.inputGroup}>
               <Text style={[styles.inputLabel, { color: t.onSurfaceVariant }]}>NEW SECURITY CODE</Text>
               <View style={[styles.inputRow, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceVariant }]}>
-                <Text style={[styles.inputIcon, { color: t.outlineVariant }]}>🔒</Text>
+                <Text style={[styles.inputIcon, { color: t.outlineVariant }]}>◉</Text>
                 <TextInput
                   style={[styles.input, { color: t.onSurface }]}
                   placeholder="MIN. 6 CHARACTERS"

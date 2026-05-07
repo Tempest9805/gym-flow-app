@@ -4,7 +4,7 @@ import type { Exercise } from '@/types';
 export const exercisesApi = {
   /** List all exercises with optional muscle group filter */
   list: async (muscleGroup?: string): Promise<Exercise[]> => {
-    let query = supabase.from('exercises').select('*').order('name');
+    let query = supabase.from('exercises').select('*');
     
     if (muscleGroup) {
       query = query.eq('muscle_group', muscleGroup);
@@ -12,7 +12,13 @@ export const exercisesApi = {
 
     const { data, error } = await query;
     if (error) throw error;
-    return data || [];
+    
+    // Client-side sort to handle potential nulls in name fields safely
+    return (data || []).sort((a, b) => {
+      const nameA = a.name_en || a.name || '';
+      const nameB = b.name_en || b.name || '';
+      return nameA.localeCompare(nameB);
+    });
   },
 
   /** Get basic stats about exercise categories/muscle groups */

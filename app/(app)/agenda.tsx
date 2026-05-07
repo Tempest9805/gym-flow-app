@@ -133,7 +133,7 @@ export default function AgendaScreen() {
                             {DAY_NAMES_SHORT[dayIndex]} • TODAY
                           </Text>
                         </View>
-                        <Text style={[styles.todayBoltIcon, { color: t.primaryContainer }]}>⚡</Text>
+                        <Text style={[styles.todayBoltIcon, { color: t.primaryContainer }]}>▲</Text>
                       </View>
                       <Text style={[styles.todayTitle, { color: t.onSurface }]}>
                         {entry?.routine?.name ?? 'Rest Day'}
@@ -141,13 +141,13 @@ export default function AgendaScreen() {
                       {entry?.routine && (
                         <View style={styles.todayMeta}>
                           <View style={styles.todayMetaItem}>
-                            <Text style={[styles.todayMetaIcon, { color: t.onSurfaceVariant }]}>⏱</Text>
+                            <Text style={[styles.todayMetaIcon, { color: t.onSurfaceVariant }]}>◷</Text>
                             <Text style={[styles.todayMetaText, { color: t.onSurfaceVariant }]}>
                               {Math.max(30, ((entry?.routine as RoutineWithExercises)?.exercises?.length ?? 4) * 8)} Min
                             </Text>
                           </View>
                           <View style={styles.todayMetaItem}>
-                            <Text style={[styles.todayMetaIcon, { color: t.onSurfaceVariant }]}>🔥</Text>
+                            <Text style={[styles.todayMetaIcon, { color: t.onSurfaceVariant }]}>◉</Text>
                             <Text style={[styles.todayMetaText, { color: t.onSurfaceVariant }]}>
                               High Intensity
                             </Text>

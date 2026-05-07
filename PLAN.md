@@ -1,13 +1,15 @@
-# PLAN: Gym Flow App (User-Only MVP)
+# PLAN: Gym Flow App (User-Only MVP + Stitch UI System)
 
 ## Project Summary
-`gym-flow-app` is a mobile-first Fitness app for iOS and Android focused on individual users.
+`gym-flow-app` is a mobile-first fitness app for iOS and Android focused on individual users.
 
-The MVP is intentionally simplified to avoid unnecessary complexity and concentrate on the core user experience:
+The product is intentionally simplified to avoid unnecessary complexity and concentrate on the core experience:
 1. Browse exercises by category
 2. View exercise detail with instructions and short media guidance
 3. Build weekly routines from the exercise catalog
-4. Share routines with other users through QR or invite code
+4. Track daily completion and weekly workout progress
+5. Share routines with other users through QR or invite code
+6. Use lightweight utility tools such as Timer and Tabata from the hamburger menu
 
 The app must feel like a kiosk-style ordering system:
 - extremely simple
@@ -16,20 +18,108 @@ The app must feel like a kiosk-style ordering system:
 - visual-first navigation
 - zero unnecessary complexity
 
+## Product Goal
+Provide a fast, low-friction fitness app for individual users that helps them discover exercises, understand correct execution, create weekly routines, track workout completion, and share routines with others.
+
+The app should feel premium, modern, and easy to use, while remaining simple enough for a first-time user to understand immediately.
+
+---
+
+## Source of Truth for UI
+The visual design and layout structure must follow the generated Stitch screens stored in:
+
+- `assets/stitch_gym_flow_app`
+
+These Stitch exports are the source of truth for:
+- screen structure
+- spacing rhythm
+- card hierarchy
+- CTA placement
+- navigation composition
+- dark theme styling
+- visual language consistency
+
+### UI Rules for Stitch Implementation
+- Do not invent new layouts unless strictly necessary
+- Do not redesign the screens from scratch
+- Preserve the Stitch structure as much as possible
+- Keep the app visually consistent across all screens
+- Only change colors/themes through tokens, not layout structure
+- Keep the UX simple, kiosk-style, and mobile-first
+
+---
+
+## Themes
+The app supports two visual themes:
+
+### 1. Neon Purple (Default)
+- This is the default theme on first launch
+- Used for the main visual identity of the app
+- Dark-first with neon purple accents
+
+### 2. Neon Orange
+- Available as an alternate theme
+- Selectable from Profile / Settings
+- Persists across app launches
+- Must preserve the same layout structure and only change accent tokens
+
+### Theme Rules
+- Theme changes must affect colors, borders, active states, buttons, tabs, and highlights
+- Do not create separate layouts for each theme
+- Keep both themes visually premium and readable
+- Use theme tokens instead of hardcoded colors
+
+---
+
 ## Business Goal
-Provide a fast, low-friction fitness app for individual users that helps them discover exercises, understand correct execution, create weekly routines, and share routines with others.
+Provide a scalable, low-friction fitness tool for individuals that focuses on exercise discovery, routine creation, workout tracking, and routine sharing without forcing gym-based or coach-based complexity.
+
+---
 
 ## Authorization Model
 For the MVP, the system is user-only.
 
 ### Access Rules
-- Each authenticated user manages only their own data.
-- A user can read the shared exercise catalog.
-- A user can create, edit, and delete only their own routines.
-- A user can share routines with another user through QR or share code.
-- A user can accept or duplicate routines shared by other users.
+- Each authenticated user manages only their own data
+- A user can read the shared exercise catalog
+- A user can create, edit, and delete only their own routines
+- A user can share routines with another user through QR or share code
+- A user can accept or duplicate routines shared by other users
 
 No gym logic, no coach/trainer roles, and no multi-tenant permissions are part of the MVP.
+
+---
+
+## Auth Flow
+The final auth flow must include:
+- Login
+- Sign Up
+- Forgot Password
+- Reset Password
+
+### Auth Rules
+- Keep auth flow clean and stable
+- Profile creation must be handled by the backend, not manually in the UI
+- No loading deadlocks
+- No broken redirects
+- No race conditions between session and profile loading
+- Guest/dev login options should not be part of the final user-facing flow unless explicitly reintroduced later
+
+---
+
+## Language Support
+The app supports two languages:
+- Spanish (ES)
+- English (EN)
+
+### Language Rules
+- Users can switch language from Profile / Settings or a clearly visible place
+- The selected language must persist
+- UI text should adapt cleanly
+- Keep labels short and readable
+- Avoid cluttering screens with duplicate bilingual text
+
+---
 
 ## Database Schema (Supabase / PostgreSQL)
 Use a simple user-centered model linked to `auth.users`.
@@ -91,7 +181,7 @@ Use a simple user-centered model linked to `auth.users`.
   - `created_at`
   - `accepted_at` (nullable)
 
-- **workout_schedules** (optional but useful for weekly planning)
+- **workout_schedules** (used for weekly agenda / weekly tracking)
   - `id`
   - `user_id` (FK to `profiles.id`)
   - `routine_id` (FK to `routines.id`)
@@ -111,53 +201,87 @@ Use a simple user-centered model linked to `auth.users`.
 - `workout_schedules.routine_id` references `routines.id`
 
 ### Integrity Rules
-- A profile belongs to exactly one authenticated user.
-- A routine must belong to exactly one user.
-- A routine exercise must belong to exactly one routine.
-- A share code must be unique while active.
-- A shared routine must always have a valid authorization path.
-- No recursive RLS policies are allowed.
-- No gym-based or role-based dependencies are allowed in the MVP.
+- A profile belongs to exactly one authenticated user
+- A routine must belong to exactly one user
+- A routine exercise must belong to exactly one routine
+- A share code must be unique while active
+- A shared routine must always have a valid authorization path
+- No recursive RLS policies are allowed
+- No gym-based or role-based dependencies are allowed in the MVP
+
+---
 
 ## MVP Feature Roadmap
+
 ### Phase 1: Core User Foundation
 - [x] Supabase Auth + Profiles setup
   - [x] Create Supabase client with expo-secure-store persistence
   - [x] Setup environment variables
   - [x] Create Auth Context / Store
-  - [x] Implement simple login screen
-  - [x] Implement basic route protection
+  - [x] Implement login screen
+  - [x] Implement route protection
+  - [x] Implement sign up / forgot password / reset password flow
+
 - [x] Exercise catalog integration
   - [x] Connect real exercises table
   - [x] Group/filter by category
   - [x] Search by name
+
 - [x] Exercise detail experience
   - [x] Description
   - [x] Gif/video guide
   - [x] Clear back navigation
+
 - [x] Routine creation
   - [x] Weekly routine builder
   - [x] Sets, reps, weight, day-of-week
   - [x] Save and edit routines
+
 - [x] Routine sharing
   - [x] Share code
   - [x] QR generation
   - [x] Accept or duplicate shared routines
 
+- [x] UI system from Stitch
+  - [x] Stitch-based layout implementation
+  - [x] Neon Purple theme default
+  - [x] Neon Orange alternate theme
+  - [x] Theme selector in Profile / Settings
+  - [x] Theme persistence across app launches
+  - [x] ES / EN language switching
+
 ### Phase 2: Kiosk UX & Workflows
 - [x] Weekly workout agenda
   - [x] User schedule visualization
   - [x] Day-by-day routine overview
+  - [x] Weekly progress tracking
+
+- [x] Home routine improvements
+  - [x] Routine display on Home
+  - [x] Beginner-friendly explanations for sets and reps
+  - [x] Exercise completion state
+  - [x] Tappable exercise names that open detail
+  - [x] Weekly day completion checks
+
 - [ ] Workout session improvements
 - [ ] Better exercise search and filters
 - [ ] Better progress display
 
-### Phase 3: Growth Features
+### Phase 3: Utility Tools
+- [ ] Timer (hamburger menu)
+- [ ] Tabata (hamburger menu)
+- [ ] Timer and Tabata should each have:
+  - setup view
+  - active session view
+
+### Phase 4: Growth Features
 - [ ] Progress history
 - [ ] Notifications
 - [ ] Basic analytics
 - [ ] Routine templates
 - [ ] Saved favorites
+
+---
 
 ## UX Enforcement Rules (Critical)
 These are mandatory constraints, not guidelines.
@@ -204,11 +328,16 @@ A first-time user of any age must be able to:
 - browse exercises easily
 - create a routine without confusion
 - share or receive a routine with minimal friction
+- switch themes without confusion
+- switch language without confusion
+
+---
 
 ## UI & UX Architecture
 - **Framework:** Expo (React Native) + Expo Router
 - **Styling:** NativeWind only
 - **Design principle:** kiosk-style simplicity
+- **Design source of truth:** Stitch exports in `assets/stitch_gym_flow_app`
 - **UX Principles:**
   - One primary action per screen
   - Large touch targets
@@ -217,6 +346,10 @@ A first-time user of any age must be able to:
   - Clear visual hierarchy
   - No cluttered navigation
   - Fast comprehension at a glance
+  - Keep layouts faithful to Stitch
+  - Do not invent new layout structures unless technically unavoidable
+
+---
 
 ## API & Data Access
 - All data access must go through `lib/api`
@@ -226,20 +359,30 @@ A first-time user of any age must be able to:
 - Use Supabase RLS policies as the final security boundary
 - Keep all policies non-recursive and minimal
 
-## Wireframe Plan (Stitch MCP)
-Generate wireframes using Stitch MCP for the MVP screens only.
+---
 
-### Required Wireframes
+## Wireframe / UI Plan
+The project now uses Stitch-generated designs as the visual implementation base.
+
+### Required UI Areas
 1. Login
-2. Home
-3. Exercise List
-4. Exercise Detail
-5. Routine Builder
-6. Weekly Agenda
-7. Share Routine
-8. Accept Shared Routine
+2. Sign Up
+3. Forgot Password
+4. Reset Password
+5. Home
+6. Exercise List
+7. Exercise Detail
+8. Routine Builder
+9. Weekly Agenda
+10. Share Routine
+11. Import Routine
+12. Profile / Settings
+13. Theme selector
+14. Language selector
+15. Timer setup / Timer active screens
+16. Tabata setup / Tabata active screens
 
-### Wireframe Requirements
+### UI Requirements
 - Mobile-first
 - Ultra simple
 - Kiosk-style like a modern ordering terminal
@@ -250,15 +393,17 @@ Generate wireframes using Stitch MCP for the MVP screens only.
 - Card-based exercise browsing
 - One primary action per screen
 - No decorative complexity
-- No high-fidelity polish in MVP wireframes
+- Dark mode first
+- Neon Purple default theme
+- Neon Orange alternate theme
 
-### Wireframe Output Goal
-Define structure, spacing, hierarchy, and interaction flow suitable for direct implementation in Expo React Native.
+---
 
 ## Scalability Notes
-- The MVP is intentionally user-only to reduce complexity and improve stability.
-- The schema should support future expansion into social features, notifications, analytics, and richer routine sharing.
-- RLS policies must remain simple and non-recursive.
-- The exercise catalog should support future filtering, favorites, and recommendations without restructuring core entities.
+- The MVP is intentionally user-only to reduce complexity and improve stability
+- The schema should support future expansion into social features, notifications, analytics, richer routine sharing, and workout utilities
+- RLS policies must remain simple and non-recursive
+- The exercise catalog should support future filtering, favorites, and recommendations without restructuring core entities
+- Stitch-based UI should remain the visual baseline for future screens and refinements
 
 **STOP: Awaiting approval for PLAN.md.**

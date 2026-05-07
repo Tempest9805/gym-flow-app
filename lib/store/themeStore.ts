@@ -47,6 +47,10 @@ export interface ThemeTokens {
   // Glow shadow (rgba string for box-shadow-like effects)
   glowPrimary: string;
   glowPrimaryStrong: string;
+  // Tabata phase colors
+  tabataPrepare: string;
+  tabataWork: string;
+  tabataRest: string;
 }
 
 export interface Theme {
@@ -91,6 +95,9 @@ export const PURPLE_THEME: Theme = {
     onError: '#690005',
     glowPrimary: 'rgba(188, 19, 254, 0.3)',
     glowPrimaryStrong: 'rgba(188, 19, 254, 0.5)',
+    tabataPrepare: '#BF00FF',
+    tabataWork: '#7B2FFF',
+    tabataRest: '#FF00FF',
   },
 };
 
@@ -130,6 +137,9 @@ export const ORANGE_THEME: Theme = {
     onError: '#690005',
     glowPrimary: 'rgba(255, 95, 31, 0.3)',
     glowPrimaryStrong: 'rgba(255, 95, 31, 0.5)',
+    tabataPrepare: '#FF6600',
+    tabataWork: '#FF9900',
+    tabataRest: '#FF3300',
   },
 };
 

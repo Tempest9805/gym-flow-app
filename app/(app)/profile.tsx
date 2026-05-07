@@ -120,7 +120,7 @@ export default function ProfileScreen() {
                 <Text style={styles.statUnitWhite}>DAYS</Text>
               </View>
               {/* Decorative fire icon */}
-              <Text style={styles.fireIcon}>🔥</Text>
+              <Text style={styles.fireIcon}>◆</Text>
             </View>
           </View>
         </View>

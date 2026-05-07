@@ -11,11 +11,10 @@ import {
   View,
   Text,
   ScrollView,
-  Image,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AppTopBar } from '@/components/ui/AppTopBar';
@@ -37,7 +36,12 @@ export default function ExerciseDetailScreen() {
         <AppTopBar />
         <View style={styles.notFound}>
           <Text style={[styles.notFoundText, { color: t.onSurfaceVariant }]}>Exercise not found</Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+          <TouchableOpacity 
+            onPress={() => router.back()} 
+            style={styles.backBtn}
+            accessibilityRole="button"
+            accessibilityLabel="Go back to previous screen"
+          >
             <Text style={[styles.backBtnText, { color: t.primaryContainer }]}>← Go Back</Text>
           </TouchableOpacity>
         </View>
@@ -57,7 +61,7 @@ export default function ExerciseDetailScreen() {
     exercise.muscle_group,
     exercise.category,
     exercise.equipment,
-  ].filter(Boolean);
+  ].filter((tag): tag is string => typeof tag === 'string' && tag.length > 0);
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
@@ -69,15 +73,16 @@ export default function ExerciseDetailScreen() {
         >
           {/* ── 1. Hero Media Area ── */}
           <View style={styles.heroArea}>
-            {exercise.demonstration_url ? (
-              <Image
-                source={{ uri: exercise.demonstration_url }}
+            {exercise.media_url || exercise.demonstration_url ? (
+              <ExpoImage
+                source={{ uri: (exercise.media_url || exercise.demonstration_url) ?? undefined }}
                 style={styles.heroImage}
-                resizeMode="cover"
+                contentFit="cover"
+                transition={300}
               />
             ) : (
               <View style={[styles.heroPlaceholder, { backgroundColor: t.surfaceContainerHighest }]}>
-                <Text style={styles.heroPlaceholderIcon}>🏋️</Text>
+                <Text style={styles.heroPlaceholderIcon}>◆</Text>
               </View>
             )}
             {/* Gradient overlay */}
@@ -101,16 +106,16 @@ export default function ExerciseDetailScreen() {
           <View style={[styles.headerContent, { borderBottomColor: t.surfaceContainer }]}>
             <View style={styles.exerciseTypeRow}>
               <Text style={[styles.exerciseType, { color: t.primaryContainer }]}>
-                {exercise.type?.toUpperCase() ?? 'COMPOUND MOVEMENT'}
+                {(exercise.type || 'STRENGTH').toUpperCase()}
               </Text>
               <View style={[styles.typeDot, { backgroundColor: t.outlineVariant }]} />
               <Text style={[styles.exerciseEquip, { color: t.onSurfaceVariant }]}>
-                {exercise.equipment?.toUpperCase() ?? 'BARBELL'}
+                {(exercise.equipment || 'BODYWEIGHT').toUpperCase()}
               </Text>
             </View>
 
             <Text style={[styles.exerciseName, { color: t.onSurface }]}>
-              {exercise.name.toUpperCase()}
+              {(exercise.name_en || exercise.name || 'UNTITLED EXERCISE').toUpperCase()}
             </Text>
 
             {/* Muscle group tags */}
@@ -207,6 +212,8 @@ export default function ExerciseDetailScreen() {
             ]}
             activeOpacity={0.85}
             onPress={() => router.push('/routine-builder')}
+            accessibilityRole="button"
+            accessibilityLabel="Add this exercise to your routine"
           >
             <Text style={[styles.ctaButtonText, { color: '#000' }]}>+ ADD TO ROUTINE</Text>
           </TouchableOpacity>

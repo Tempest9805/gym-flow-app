@@ -133,8 +133,12 @@ export default function AppLayout() {
       <Tabs.Screen name="day-detail" options={{ href: null }} />
       <Tabs.Screen name="routine-builder" options={{ href: null }} />
       <Tabs.Screen name="import-routine" options={{ href: null }} />
-      <Tabs.Screen name="exercise" options={{ href: null }} />
-      <Tabs.Screen name="share" options={{ href: null }} />
+      <Tabs.Screen name="exercise/[id]" options={{ href: null }} />
+      <Tabs.Screen name="share/[id]" options={{ href: null }} />
+      <Tabs.Screen name="timer" options={{ href: null }} />
+      <Tabs.Screen name="timer-active" options={{ href: null }} />
+      <Tabs.Screen name="tabata" options={{ href: null }} />
+      <Tabs.Screen name="tabata-active" options={{ href: null }} />
     </Tabs>
   );
 }

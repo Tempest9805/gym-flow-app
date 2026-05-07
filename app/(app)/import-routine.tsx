@@ -213,7 +213,7 @@ export default function ImportRoutineScreen() {
             activeOpacity={0.7}
             onPress={startScanning}
           >
-            <Text style={[styles.scanButtonIcon, { color: t.onSurfaceVariant }]}>📷</Text>
+            <Text style={[styles.scanButtonIcon, { color: t.onSurfaceVariant }]}>◎</Text>
             <Text style={[styles.scanButtonText, { color: t.onSurfaceVariant }]}>
               OPEN CAMERA
             </Text>

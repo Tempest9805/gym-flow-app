@@ -1,7 +1,7 @@
 /**
  * Login Screen — Stitch `login_canonical_purple` layout:
  *   1. TopAppBar (static, no tabs)
- *   2. "SYSTEM ACCESS" hero text + subtitle
+ *   2. Logo + subtitle
  *   3. Email input (h-64, icon prefix)
  *   4. Password input (h-64, icon prefix, forgot password link)
  *   5. LOG IN primary CTA (h-64, neon glow)
@@ -142,7 +142,7 @@ export default function LoginScreen() {
                   },
                 ]}
               >
-                <Text style={[styles.inputIcon, { color: t.outlineVariant }]}>🔒</Text>
+                <Text style={[styles.inputIcon, { color: t.outlineVariant }]}>◉</Text>
                 <TextInput
                   style={[styles.input, { color: t.onSurface }]}
                   placeholder="••••••••••••"
