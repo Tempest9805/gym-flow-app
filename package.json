@@ -8,7 +8,13 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "eslint . --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "convert:webp": "node scripts/convert-to-webp.js",
+    "convert:webp:force": "node scripts/convert-to-webp.js --force",
+    "convert:webp:hires": "node scripts/convert-to-webp.js --hires",
+    "media:index": "node scripts/generate-media-index.js",
+    "media:pipeline": "node scripts/convert-to-webp.js && node scripts/generate-media-index.js",
+    "media:sync": "node scripts/sync-exercises-to-supabase.mjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

@@ -20,25 +20,42 @@ export interface Profile extends BaseEntity {
 }
 
 export interface Exercise extends BaseEntity {
+  /** URL-friendly unique identifier */
   slug: string | null;
-  name: string;
-  name_en: string | null;
+  /** English display name (canonical) */
+  name_en: string;
+  /** Spanish display name */
   name_es: string | null;
+  /** Body region: arms | back | chest | legs | core | shoulders | cardio | functional */
   category: string;
+  /** Target muscle(s), e.g. "biceps", "glutes/hamstrings" */
   muscle_group: string;
+  /** Equipment required, e.g. "barbell", "bodyweight" */
   equipment: string | null;
+  /** beginner | intermediate | advanced */
   difficulty: string | null;
+  /** gym | calisthenics | cardio | functional */
   type: string | null;
+  /** True when exercise recruits multiple major muscle groups */
   is_compound: boolean | null;
+  /** Movement taxonomy, e.g. "hip_hinge", "vertical_pull" */
   movement_pattern: string | null;
-  demonstration_url: string | null;
+  /** Short summary / overview */
   description: string | null;
-  notes: string | null;
-  media_url: string | null;
-  media_type: string | null;
-  media_source: string | null;
+  /** Step-by-step execution guide */
+  instructions: string | null;
+  /** GIF / video / normalized image URL for live demo */
+  demonstration_url: string | null;
+  /** Lightweight WebP thumbnail for list views */
+  thumbnail_url: string | null;
+  /** High-resolution WebP for zoom views */
+  hires_url: string | null;
+  /** Internal storage path */
   media_storage_path: string | null;
+  /** Status of media upload */
   media_status: string | null;
+  /** Coach or trainer notes */
+  notes: string | null;
 }
 
 export interface Routine extends BaseEntity {

@@ -81,7 +81,7 @@ export default function WorkoutSessionScreen() {
         <View style={styles.focusArea}>
           <Text style={[styles.movementLabel, { color: t.outline }]}>CURRENT OBJECTIVE</Text>
           <Text style={[styles.exerciseName, { color: t.onSurface }]}>
-            {currentItem.exercise?.name.toUpperCase()}
+            {currentItem.exercise?.name_en?.toUpperCase()}
           </Text>
           
           <View style={[styles.targetRow, { borderTopColor: t.surfaceContainer, borderBottomColor: t.surfaceContainer }]}>

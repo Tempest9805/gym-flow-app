@@ -40,7 +40,7 @@ export default function ExerciseLibraryScreen() {
   const filteredExercises = useMemo(() => {
     if (!exercises) return [];
     return exercises.filter((e) => {
-      const name = (e.name_en || e.name || '').toLowerCase();
+      const name = (e.name_en || '').toLowerCase();
       const muscleGroup = (e.muscle_group || '').toLowerCase();
       const searchTerm = search.toLowerCase();
 
@@ -131,74 +131,7 @@ export default function ExerciseLibraryScreen() {
             )}
           </View>
         }
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={() => router.push(`/exercise/${item.id}`)}
-            style={[styles.exerciseCard, { backgroundColor: t.surface, borderColor: t.surfaceVariant }]}
-          >
-            {/* Image placeholder area */}
-            <View style={[styles.cardImageArea, { backgroundColor: t.surfaceContainerHighest }]}>
-              {item.media_url || item.demonstration_url ? (
-                <ExpoImage
-                  source={{ uri: (item.media_url || item.demonstration_url) ?? undefined }}
-                  style={styles.cardImage}
-                  contentFit="cover"
-                  transition={200}
-                  placeholder="L35O?*0000_300~qIVD%00-;~q%M"
-                />
-              ) : (
-                <View style={[styles.cardImagePlaceholder, { backgroundColor: t.surfaceContainerHigh }]}>
-                  <Text style={[styles.cardImagePlaceholderIcon, { color: t.outlineVariant }]}>
-                    ◆
-                  </Text>
-                </View>
-              )}
-              {/* Gradient overlay */}
-              <View style={styles.cardImageGradient} />
-              {/* Category chip */}
-              <View
-                style={[
-                  styles.cardChip,
-                  {
-                    backgroundColor: `${t.primaryContainer}22`,
-                    borderColor: `${t.primaryContainer}44`,
-                  },
-                ]}
-              >
-                <Text style={[styles.cardChipText, { color: t.primaryContainer }]}>
-                  {item.type?.toUpperCase() ?? 'STRENGTH'}
-                </Text>
-              </View>
-            </View>
-
-            {/* Card footer */}
-            <View style={[styles.cardFooter, { backgroundColor: t.background }]}>
-              <View style={styles.cardFooterInfo}>
-                <Text style={[styles.cardMeta, { color: t.onSurfaceVariant }]}>
-                  {(item.category || 'EXERCISE').toUpperCase()} • {(item.equipment || 'BODYWEIGHT').toUpperCase()}
-                </Text>
-                <Text style={[styles.cardName, { color: t.onSurface }]}>
-                  {item.name_en || item.name || 'Untitled Exercise'}
-                </Text>
-              </View>
-              <TouchableOpacity
-                style={[
-                  styles.cardAddButton,
-                  {
-                    backgroundColor: t.primaryContainer,
-                    shadowColor: t.primaryContainer,
-                  },
-                ]}
-                activeOpacity={0.8}
-                onPress={() => router.push(`/exercise/${item.id}`)}
-                accessibilityLabel={`View ${item.name}`}
-              >
-                <Text style={[styles.cardAddIcon, { color: t.onPrimaryContainer }]}>+</Text>
-              </TouchableOpacity>
-            </View>
-          </TouchableOpacity>
-        )}
+        renderItem={({ item }) => <ExerciseListItem item={item} t={t} router={router} />}
         ListEmptyComponent={
           !isLoading ? (
             <View style={styles.emptyState}>
@@ -210,6 +143,81 @@ export default function ExerciseLibraryScreen() {
         }
       />
     </SafeAreaView>
+  );
+}
+
+// ── Item Component ────────────────────────────────────────────────────────
+
+function ExerciseListItem({ item, t, router }: { item: any; t: any; router: any }) {
+  const imageUrl = item.thumbnail_url || item.demonstration_url;
+
+  return (
+    <TouchableOpacity
+      activeOpacity={0.85}
+      onPress={() => router.push(`/exercise/${item.id}`)}
+      style={[styles.exerciseCard, { backgroundColor: t.surface, borderColor: t.surfaceVariant }]}
+    >
+      {/* Image placeholder area */}
+      <View style={[styles.cardImageArea, { backgroundColor: t.surfaceContainerHighest }]}>
+        {imageUrl ? (
+          <ExpoImage
+            source={{ uri: imageUrl }}
+            style={styles.cardImage}
+            contentFit="cover"
+            transition={200}
+            placeholder="L35O?*0000_300~qIVD%00-;~q%M"
+          />
+        ) : (
+          <View style={[styles.cardImagePlaceholder, { backgroundColor: t.surfaceContainerHigh }]}>
+            <Text style={[styles.cardImagePlaceholderIcon, { color: t.outlineVariant }]}>
+              ◆
+            </Text>
+          </View>
+        )}
+        {/* Gradient overlay */}
+        <View style={styles.cardImageGradient} />
+        {/* Category chip */}
+        <View
+          style={[
+            styles.cardChip,
+            {
+              backgroundColor: `${t.primaryContainer}22`,
+              borderColor: `${t.primaryContainer}44`,
+            },
+          ]}
+        >
+          <Text style={[styles.cardChipText, { color: t.primaryContainer }]}>
+            {item.type?.toUpperCase() ?? 'STRENGTH'}
+          </Text>
+        </View>
+      </View>
+
+      {/* Card footer */}
+      <View style={[styles.cardFooter, { backgroundColor: t.background }]}>
+        <View style={styles.cardFooterInfo}>
+          <Text style={[styles.cardMeta, { color: t.onSurfaceVariant }]}>
+            {(item.category || 'EXERCISE').toUpperCase()} • {(item.equipment || 'BODYWEIGHT').toUpperCase()}
+          </Text>
+          <Text style={[styles.cardName, { color: t.onSurface }]}>
+            {item.name_en || 'Untitled Exercise'}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={[
+            styles.cardAddButton,
+            {
+              backgroundColor: t.primaryContainer,
+              shadowColor: t.primaryContainer,
+            },
+          ]}
+          activeOpacity={0.8}
+          onPress={() => router.push(`/exercise/${item.id}`)}
+          accessibilityLabel={`View ${item.name_en}`}
+        >
+          <Text style={[styles.cardAddIcon, { color: t.onPrimaryContainer }]}>+</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
   );
 }
 

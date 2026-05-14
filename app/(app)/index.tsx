@@ -166,14 +166,14 @@ export default function HomeScreen() {
                       onPress={() => handleNavigateToExercise(item.exercise_id)}
                       activeOpacity={0.7}
                       accessibilityRole="link"
-                      accessibilityLabel={`View details for ${item.exercise?.name}`}
+                      accessibilityLabel={`View details for ${item.exercise?.name_en}`}
                     >
                       <Text style={[
                         styles.exerciseName, 
                         { color: t.onSurface },
                         isCompleted && { textDecorationLine: 'line-through', color: t.outline }
                       ]}>
-                        {item.exercise?.name.toUpperCase()}
+                        {item.exercise?.name_en?.toUpperCase()}
                       </Text>
                       <Text style={[styles.exerciseMeta, { color: t.onSurfaceVariant }]}>
                         {item.sets} series x {item.reps ? `${item.reps} reps` : `${item.duration_seconds}s`}
@@ -190,7 +190,7 @@ export default function HomeScreen() {
                       ]}
                       onPress={() => handleToggleExercise(item.id)}
                       accessibilityRole="checkbox"
-                      accessibilityLabel={`Mark ${item.exercise?.name} as completed`}
+                      accessibilityLabel={`Mark ${item.exercise?.name_en} as completed`}
                       accessibilityState={{ checked: isCompleted }}
                     >
                       {isCompleted && <Text style={{ color: t.onPrimaryContainer, fontWeight: '800', fontSize: 16 }}>✓</Text>}

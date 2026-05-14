@@ -112,7 +112,7 @@ export default function WorkoutDetailScreen() {
                   </View>
                   <View style={styles.exerciseInfo}>
                     <Text style={[styles.exerciseName, { color: t.onSurface }]}>
-                      {item.exercise?.name.toUpperCase()}
+                      {item.exercise?.name_en?.toUpperCase()}
                     </Text>
                     <Text style={[styles.exerciseMeta, { color: t.onSurfaceVariant }]}>
                       {item.sets} SETS • {item.reps ? `${item.reps} REPS` : `${item.duration_seconds}s`}

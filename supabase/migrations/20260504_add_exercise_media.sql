@@ -13,18 +13,12 @@ ON CONFLICT (id) DO NOTHING;
 
 -- 3. Set up Storage RLS policies for the new bucket
 -- Allow public read access to the exercise-media bucket
+DROP POLICY IF EXISTS "Public Access" ON storage.objects;
 CREATE POLICY "Public Access" 
 ON storage.objects FOR SELECT 
 USING ( bucket_id = 'exercise-media' );
 
--- Allow authenticated users to upload (or anyone for local admin scripts if needed)
--- Assuming admin script uses ANON key for now, we'll allow anon inserts for the migration,
--- but usually you'd restrict this to authenticated or service_role. 
--- For the sake of the pipeline script working without auth:
-CREATE POLICY "Anon Upload Access" 
-ON storage.objects FOR INSERT 
-WITH CHECK ( bucket_id = 'exercise-media' );
-
-CREATE POLICY "Anon Update Access" 
-ON storage.objects FOR UPDATE 
-USING ( bucket_id = 'exercise-media' );
+-- Removed insecure Anon Upload and Update policies to prevent unauthorized public writes.
+-- The sync script must use the SUPABASE_SERVICE_ROLE_KEY to upload media, which bypasses RLS.
+DROP POLICY IF EXISTS "Anon Upload Access" ON storage.objects;
+DROP POLICY IF EXISTS "Anon Update Access" ON storage.objects;

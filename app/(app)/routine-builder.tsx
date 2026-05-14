@@ -84,8 +84,10 @@ export default function RoutineBuilderScreen() {
   const filteredExercises = useMemo(() => {
     if (!allExercises) return [];
     if (!searchQuery) return allExercises;
+    const q = searchQuery.toLowerCase();
     return allExercises.filter((e) =>
-      e.name.toLowerCase().includes(searchQuery.toLowerCase())
+      (e.name_en || '').toLowerCase().includes(q) ||
+      (e.muscle_group || '').toLowerCase().includes(q)
     );
   }, [allExercises, searchQuery]);
 
@@ -224,7 +226,7 @@ export default function RoutineBuilderScreen() {
               <View style={styles.blockHeader}>
                 <View style={styles.blockHeaderInfo}>
                   <Text style={[styles.blockName, { color: t.onSurface }]}>
-                    {(draft.exercise.name_en || draft.exercise.name || 'EXERCISE').toUpperCase()}
+                    {(draft.exercise.name_en || 'EXERCISE').toUpperCase()}
                   </Text>
                   <Text style={[styles.blockMeta, { color: t.primaryContainer }]}>
                     Target: {draft.exercise.muscle_group || 'N/A'}
@@ -399,7 +401,7 @@ export default function RoutineBuilderScreen() {
               >
                 <View>
                   <Text style={[styles.modalExerciseName, { color: t.onSurface }]}>
-                    {exercise.name}
+                    {exercise.name_en}
                   </Text>
                   <Text style={[styles.modalExerciseMeta, { color: t.onSurfaceVariant }]}>
                     {exercise.muscle_group}

@@ -104,7 +104,7 @@ export default function RoutinesScreen() {
                     ]}
                   >
                     <Text style={[styles.exercisePillText, { color: t.onSurface }]}>
-                      {ex.exercise?.name ?? 'Exercise'}
+                      {ex.exercise?.name_en ?? 'Exercise'}
                     </Text>
                   </View>
                 ))}

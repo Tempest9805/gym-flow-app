@@ -4,7 +4,7 @@ import { exercisesApi } from '@/lib/api';
 export const useExercises = (muscleGroup?: string) => {
   return useQuery({
     queryKey: ['exercises', { muscleGroup }],
-    queryFn: () => exercisesApi.list(muscleGroup),
+    queryFn: () => exercisesApi.list(muscleGroup ? { muscleGroup } : undefined),
   });
 };
 
