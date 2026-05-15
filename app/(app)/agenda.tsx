@@ -14,7 +14,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -55,30 +54,33 @@ export default function AgendaScreen() {
   const weekNum = Math.ceil(today.getDate() / 7);
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: t.background }} edges={['top']}>
       <AppTopBar />
       <ScrollView
-        style={[styles.scroll, { backgroundColor: t.background }]}
-        contentContainerStyle={styles.content}
+        className="flex-1"
+        style={{ backgroundColor: t.background }}
+        contentContainerStyle={{
+          paddingTop: 24,
+          paddingHorizontal: 20,
+          paddingBottom: 120,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* ── Header ── */}
-        <View style={styles.headerSection}>
+        <View className="gap-2 mb-6">
           <View
-            style={[
-              styles.syncBadge,
-              {
-                backgroundColor: `${t.primaryContainer}22`,
-                borderColor: `${t.primaryContainer}44`,
-              },
-            ]}
+            className="flex-row items-center gap-2 border rounded-full px-3 py-1 self-start"
+            style={{
+              backgroundColor: `${t.primaryContainer}22`,
+              borderColor: `${t.primaryContainer}44`,
+            }}
           >
-            <Text style={[styles.syncBadgeText, { color: t.primaryContainer }]}>
+            <Text className="text-[11px] font-bold tracking-[1.5px] uppercase" style={{ color: t.primaryContainer }}>
               ↻  SYNCED TO CLOUD
             </Text>
           </View>
-          <Text style={[styles.pageTitle, { color: t.onSurface }]}>AGENDA</Text>
-          <Text style={[styles.pageSubtitle, { color: t.onSurfaceVariant }]}>
+          <Text className="text-[48px] font-extrabold tracking-tighter leading-[52px]" style={{ color: t.onSurface }}>AGENDA</Text>
+          <Text className="text-base leading-6" style={{ color: t.onSurfaceVariant }}>
             Week {weekNum} • Training Phase
           </Text>
         </View>
@@ -87,15 +89,14 @@ export default function AgendaScreen() {
         {isLoading ? (
           <ActivityIndicator color={t.primaryContainer} style={{ marginTop: 24 }} />
         ) : (
-          <View style={styles.daysContainer}>
+          <View className="gap-2">
             {ORDERED_DAYS.map((dayIndex) => {
               const entry = scheduleMap[dayIndex];
               const date = getDateForDay(dayIndex);
               const isToday = dayIndex === todayIndex;
-              const isPast = !isToday && ((dayIndex - todayIndex + 7) % 7) > 3 || (dayIndex < todayIndex && !isToday);
               // Simpler approach: days before today in the week = done
               const dayDiff = ((dayIndex - todayIndex) + 7) % 7;
-              const isDone = dayDiff !== 0 && dayDiff >= 4; // days 4-6 relative positions = past (Mon-today wrap)
+              const isDone = dayDiff !== 0 && dayDiff >= 4; 
               const isUpcoming = !isToday && dayDiff > 0 && dayDiff <= 3;
               const isRestDay = !entry?.routine;
 
@@ -105,50 +106,47 @@ export default function AgendaScreen() {
                 return (
                   <View
                     key={dayIndex}
-                    style={[
-                      styles.todayCard,
-                      {
-                        backgroundColor: t.surfaceContainerHighest,
-                        borderColor: t.primaryContainer,
-                        shadowColor: t.primaryContainer,
-                      },
-                    ]}
+                    className="rounded-2xl border-[1.5px] overflow-hidden my-2 shadow-2xl elevation-md"
+                    style={{
+                      backgroundColor: t.surfaceContainerHighest,
+                      borderColor: t.primaryContainer,
+                      shadowColor: t.primaryContainer,
+                      shadowOpacity: 0.3,
+                      shadowOffset: { width: 0, height: 0 },
+                      shadowRadius: 15,
+                    }}
                   >
                     {/* Decorative glow */}
                     <View
-                      style={[
-                        styles.todayGlow,
-                        { backgroundColor: `${t.primaryContainer}22` },
-                      ]}
+                      className="absolute -top-10 -right-10 w-32 h-32 rounded-full"
+                      style={{ backgroundColor: `${t.primaryContainer}22` }}
                     />
-                    <View style={styles.todayContent}>
-                      <View style={styles.todayTopRow}>
+                    <View className="p-4 gap-3">
+                      <View className="flex-row justify-between items-center">
                         <View
-                          style={[
-                            styles.todayDateBadge,
-                            { backgroundColor: `${t.primaryContainer}18` },
-                          ]}
+                          className="px-2 py-1 rounded-[4px]"
+                          style={{ backgroundColor: `${t.primaryContainer}18` }}
                         >
-                          <Text style={[styles.todayDateText, { color: t.primaryContainer }]}>
+                          <Text className="text-[11px] font-bold tracking-[1.5px] uppercase" style={{ color: t.primaryContainer }}>
                             {DAY_NAMES_SHORT[dayIndex]} • TODAY
                           </Text>
                         </View>
-                        <Text style={[styles.todayBoltIcon, { color: t.primaryContainer }]}>▲</Text>
+                        <Text className="text-lg" style={{ color: t.primaryContainer }}>▲</Text>
                       </View>
-                      <Text style={[styles.todayTitle, { color: t.onSurface }]}>
+                      <Text className="text-[32px] font-bold leading-9 tracking-tight" style={{ color: t.onSurface }}>
                         {entry?.routine?.name ?? 'Rest Day'}
                       </Text>
                       {entry?.routine && (
-                        <View style={styles.todayMeta}>
-                          <View style={styles.todayMetaItem}>
-                            <Text style={[styles.todayMetaIcon, { color: t.onSurfaceVariant }]}>◷</Text>
-                            <Text style={[styles.todayMetaText, { color: t.onSurfaceVariant }]}>
+                        <View className="flex-row gap-4">
+                          <View className="flex-row items-center gap-[6px]">
+                            <Text className="text-sm" style={{ color: t.onSurfaceVariant }}>◷</Text>
+                            <Text className="text-sm leading-5" style={{ color: t.onSurfaceVariant }}>
                               {Math.max(30, ((entry?.routine as RoutineWithExercises)?.exercises?.length ?? 4) * 8)} Min
                             </Text>
                           </View>
-                          <View style={styles.todayMetaItem}>
-                            <Text style={[styles.todayMetaIcon, { color: t.onSurfaceVariant }]}>◉</Text>
-                            <Text style={[styles.todayMetaText, { color: t.onSurfaceVariant }]}>
+                          <View className="flex-row items-center gap-[6px]">
+                            <Text className="text-sm" style={{ color: t.onSurfaceVariant }}>◉</Text>
+                            <Text className="text-sm leading-5" style={{ color: t.onSurfaceVariant }}>
                               High Intensity
                             </Text>
                           </View>
@@ -157,13 +155,11 @@ export default function AgendaScreen() {
                     </View>
                     {/* Primary CTA */}
                     <TouchableOpacity
-                      style={[
-                        styles.todayCTA,
-                        {
-                          backgroundColor: t.primaryContainer,
-                          borderTopColor: `${t.primaryContainer}88`,
-                        },
-                      ]}
+                      className="h-16 items-center justify-center border-t"
+                      style={{
+                        backgroundColor: t.primaryContainer,
+                        borderTopColor: `${t.primaryContainer}88`,
+                      }}
                       activeOpacity={0.85}
                       onPress={() =>
                         entry?.routine
@@ -171,7 +167,7 @@ export default function AgendaScreen() {
                           : router.push('/exercises')
                       }
                     >
-                      <Text style={[styles.todayCTAText, { color: '#000' }]}>
+                      <Text className="text-[12px] font-bold tracking-[3px] uppercase text-black">
                         {entry?.routine ? 'START WORKOUT  ▶' : 'BROWSE EXERCISES'}
                       </Text>
                     </TouchableOpacity>
@@ -189,37 +185,35 @@ export default function AgendaScreen() {
                       ? router.push({ pathname: '/workout', params: { id: entry.routine.id } })
                       : undefined
                   }
-                  style={[
-                    styles.dayCard,
-                    {
-                      backgroundColor: isDone ? t.surfaceContainerLow : t.surfaceContainer,
-                      borderColor: t.surfaceContainerHighest,
-                      opacity: isDone ? 0.5 : isRestDay && isUpcoming ? 0.7 : 1,
-                    },
-                  ]}
+                  className="rounded-xl p-4 flex-row items-center justify-between border"
+                  style={{
+                    backgroundColor: isDone ? t.surfaceContainerLow : t.surfaceContainer,
+                    borderColor: t.surfaceContainerHighest,
+                    opacity: isDone ? 0.5 : isRestDay && isUpcoming ? 0.7 : 1,
+                  }}
                 >
-                  <View style={styles.dayCardInfo}>
-                    <Text style={[styles.dayCardDate, { color: t.onSurfaceVariant }]}>
+                  <View className="gap-1">
+                    <Text className="text-[11px] font-bold tracking-[1.5px] uppercase" style={{ color: t.onSurfaceVariant }}>
                       {dateLabel}
                     </Text>
                     <Text
+                      className="text-2xl font-semibold"
                       style={[
-                        styles.dayCardName,
                         { color: t.onSurface },
-                        isDone && styles.strikethrough,
+                        isDone && { textDecorationLine: 'line-through' },
                       ]}
                     >
                       {entry?.routine?.name ?? 'Rest Day'}
                     </Text>
                   </View>
                   {isDone ? (
-                    <View style={[styles.doneBadge, { backgroundColor: t.surface }]}>
-                      <Text style={[styles.doneBadgeText, { color: t.onSurfaceVariant }]}>✓ DONE</Text>
+                    <View className="flex-row items-center gap-[6px] p-2 rounded-lg" style={{ backgroundColor: t.surface }}>
+                      <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: t.onSurfaceVariant }}>✓ DONE</Text>
                     </View>
                   ) : isRestDay ? (
-                    <Text style={[styles.snoozeIcon, { color: t.outline }]}>💤</Text>
+                    <Text className="text-xl" style={{ color: t.outline }}>💤</Text>
                   ) : (
-                    <Text style={[styles.upcomingLabel, { color: t.outline }]}>UPCOMING</Text>
+                    <Text className="text-[11px] font-bold tracking-[2px] uppercase" style={{ color: t.outline }}>UPCOMING</Text>
                   )}
                 </TouchableOpacity>
               );
@@ -230,156 +224,3 @@ export default function AgendaScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  scroll: { flex: 1 },
-  content: {
-    paddingTop: 24,
-    paddingHorizontal: 20,
-    paddingBottom: 120,
-    gap: 24,
-  },
-  // Header
-  headerSection: { gap: 8 },
-  syncBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderRadius: 99,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    alignSelf: 'flex-start',
-  },
-  syncBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-  pageTitle: {
-    fontSize: 48,
-    fontWeight: '800',
-    letterSpacing: -1,
-    lineHeight: 52,
-  },
-  pageSubtitle: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  // Days
-  daysContainer: { gap: 8 },
-  dayCard: {
-    borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderWidth: 1,
-  },
-  dayCardInfo: { gap: 4 },
-  dayCardDate: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-  dayCardName: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  strikethrough: {
-    textDecorationLine: 'line-through',
-  },
-  doneBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    padding: 8,
-    borderRadius: 8,
-  },
-  doneBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  upcomingLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  snoozeIcon: { fontSize: 20 },
-  // Today card
-  todayCard: {
-    borderRadius: 16,
-    borderWidth: 1.5,
-    overflow: 'hidden',
-    marginTop: 8,
-    marginBottom: 8,
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 15,
-    elevation: 8,
-  },
-  todayGlow: {
-    position: 'absolute',
-    top: -40,
-    right: -40,
-    width: 128,
-    height: 128,
-    borderRadius: 99,
-  },
-  todayContent: {
-    padding: 16,
-    gap: 12,
-  },
-  todayTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  todayDateBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  todayDateText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-  todayBoltIcon: { fontSize: 18 },
-  todayTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    lineHeight: 36,
-    letterSpacing: -0.5,
-  },
-  todayMeta: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  todayMetaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  todayMetaIcon: { fontSize: 14 },
-  todayMetaText: { fontSize: 14, lineHeight: 20 },
-  todayCTA: {
-    height: 64,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderTopWidth: 1,
-  },
-  todayCTAText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-  },
-});

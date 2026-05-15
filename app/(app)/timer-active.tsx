@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTheme } from '@/lib/hooks/useTheme';
@@ -76,29 +76,40 @@ export default function TimerActiveScreen() {
   const textColor = isDone ? t.onSurface : isRest ? t.onSecondaryContainer : t.onBackground;
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: bgColor }]} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={[styles.backIcon, { color: textColor }]}>✕</Text>
+    <SafeAreaView 
+      className="flex-1" 
+      style={{ backgroundColor: bgColor }} 
+      edges={['top', 'bottom']}
+    >
+      <View className="flex-row items-center justify-between px-5 h-16">
+        <TouchableOpacity onPress={() => router.back()} className="w-12 h-12 items-start justify-center">
+          <Text className="text-2xl font-light" style={{ color: textColor }}>✕</Text>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: textColor }]}>
+        <Text className="text-sm font-bold tracking-[2px]" style={{ color: textColor }}>
           {totalRounds > 1 ? `ROUND ${currentRound}/${totalRounds}` : 'INTERVAL TIMER'}
         </Text>
-        <View style={{ width: 48 }} />
+        <View className="w-12" />
       </View>
 
-      <View style={styles.main}>
-        <View style={styles.phaseBadge}>
-          <Text style={[styles.phaseText, { color: accentColor }]}>
+      <View className="flex-1 items-center justify-center px-5">
+        <View 
+          className="px-4 py-2 rounded-full border-2 mb-6"
+          style={{ borderColor: 'rgba(255,255,255,0.1)' }}
+        >
+          <Text className="text-lg font-extrabold tracking-[4px]" style={{ color: accentColor }}>
             {isDone ? 'COMPLETED' : phase}
           </Text>
         </View>
 
         <Text
-          style={[
-            styles.timeDisplay,
-            { color: textColor, textShadowColor: isRest ? 'transparent' : t.glowPrimary },
-          ]}
+          className="font-extrabold tracking-tighter text-center"
+          style={{ 
+            color: textColor, 
+            fontSize: width * 0.35,
+            textShadowColor: isRest ? 'transparent' : t.glowPrimary,
+            textShadowOffset: { width: 0, height: 0 },
+            textShadowRadius: 20,
+          }}
           adjustsFontSizeToFit
           numberOfLines={1}
         >
@@ -106,23 +117,33 @@ export default function TimerActiveScreen() {
         </Text>
       </View>
 
-      <View style={styles.controls}>
+      <View className="px-10 pb-10 items-center gap-6">
         {!isDone && (
           <TouchableOpacity
-            style={[styles.playBtn, { backgroundColor: accentColor }]}
+            className="w-24 h-24 rounded-full items-center justify-center shadow-2xl elevation-md"
+            style={{ 
+              backgroundColor: accentColor,
+              shadowOpacity: 0.3,
+              shadowRadius: 16,
+              shadowOffset: { width: 0, height: 8 },
+            }}
             onPress={togglePause}
             activeOpacity={0.8}
           >
-            <Text style={[styles.playIcon, { color: isRest ? t.secondaryContainer : t.onPrimaryContainer }]}>
+            <Text 
+              className="text-4xl ml-1" 
+              style={{ color: isRest ? t.secondaryContainer : t.onPrimaryContainer }}
+            >
               {isRunning ? '❚❚' : '▶'}
             </Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
-          style={[styles.resetBtn, { borderColor: accentColor }]}
+          className="px-8 py-3 rounded-full border-2"
+          style={{ borderColor: accentColor }}
           onPress={isDone ? () => router.back() : resetTimer}
         >
-          <Text style={[styles.resetText, { color: accentColor }]}>
+          <Text className="text-sm font-bold tracking-[2px]" style={{ color: accentColor }}>
             {isDone ? 'DONE' : 'RESET'}
           </Text>
         </TouchableOpacity>
@@ -130,85 +151,3 @@ export default function TimerActiveScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    height: 64,
-  },
-  backBtn: {
-    width: 48,
-    height: 48,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  backIcon: { fontSize: 24, fontWeight: '300' },
-  headerTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-  main: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  phaseBadge: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 99,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.1)',
-    marginBottom: 24,
-  },
-  phaseText: {
-    fontSize: 18,
-    fontWeight: '800',
-    letterSpacing: 4,
-  },
-  timeDisplay: {
-    fontSize: width * 0.35,
-    fontWeight: '800',
-    fontVariant: ['tabular-nums'],
-    letterSpacing: -2,
-    textAlign: 'center',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 20,
-  },
-  controls: {
-    paddingHorizontal: 40,
-    paddingBottom: 40,
-    alignItems: 'center',
-    gap: 24,
-  },
-  playBtn: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-  },
-  playIcon: {
-    fontSize: 40,
-    marginLeft: 4,
-  },
-  resetBtn: {
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    borderRadius: 24,
-    borderWidth: 2,
-  },
-  resetText: {
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-});

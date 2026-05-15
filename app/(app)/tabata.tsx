@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppTopBar } from '@/components/ui/AppTopBar';
 import { useTheme } from '@/lib/hooks/useTheme';
@@ -40,59 +40,88 @@ export default function TabataSetupScreen() {
     });
   };
 
-  const ControlRow = ({ label, val, setVal, step = 5, min = 0 }: any) => (
-    <View style={[styles.controlRow, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-      <Text style={[styles.controlLabel, { color: t.onSurfaceVariant }]}>{label}</Text>
-      <View style={styles.timeControls}>
-        <TouchableOpacity onPress={() => setVal(Math.max(min, val - step))} style={styles.btn}>
-          <Text style={[styles.btnText, { color: colors.accent }]}>-</Text>
+  const ControlRow = ({ label, val, setVal, step = 5, min = 0 }: { label: string, val: number, setVal: (v: number) => void, step?: number, min?: number }) => (
+    <View 
+      className="flex-row items-center justify-between p-5 rounded-2xl border" 
+      style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
+    >
+      <Text className="flex-1 text-[12px] font-bold tracking-[2px] uppercase" style={{ color: t.onSurfaceVariant }}>{label}</Text>
+      <View className="flex-row items-center gap-4">
+        <TouchableOpacity 
+          onPress={() => setVal(Math.max(min, val - step))} 
+          className="w-10 h-10 rounded-full items-center justify-center"
+          style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+        >
+          <Text className="text-2xl leading-[28px]" style={{ color: colors.accent }}>-</Text>
         </TouchableOpacity>
-        <Text style={[styles.timeVal, { color: t.onSurface }]}>{val}</Text>
-        <TouchableOpacity onPress={() => setVal(val + step)} style={styles.btn}>
-          <Text style={[styles.btnText, { color: colors.accent }]}>+</Text>
+        <Text className="text-2xl font-extrabold w-10 text-center" style={{ color: t.onSurface }}>{val}</Text>
+        <TouchableOpacity 
+          onPress={() => setVal(val + step)} 
+          className="w-10 h-10 rounded-full items-center justify-center"
+          style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+        >
+          <Text className="text-2xl leading-[28px]" style={{ color: colors.accent }}>+</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: t.background }} edges={['top']}>
       <AppTopBar />
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scroll}>
-          <View style={styles.header}>
+      <View className="flex-1 relative">
+        <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
+          <View className="gap-2 mb-2">
             <TouchableOpacity onPress={() => router.back()}>
-              <Text style={[styles.backText, { color: t.outlineVariant }]}>← Back</Text>
+              <Text className="text-base font-semibold" style={{ color: t.outlineVariant }}>← Back</Text>
             </TouchableOpacity>
-            <Text style={[styles.title, { color: t.onSurface }]}>TABATA PROTOCOL</Text>
+            <Text className="text-[32px] font-extrabold tracking-tighter" style={{ color: t.onSurface }}>TABATA PROTOCOL</Text>
           </View>
 
-          <View style={[styles.themeToggle, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-            <Text style={[styles.themeLabel, { color: t.onSurfaceVariant }]}>THEME</Text>
-            <View style={styles.themeSwitches}>
+          <View 
+            className="flex-row items-center justify-between p-5 rounded-2xl border" 
+            style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
+          >
+            <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: t.onSurfaceVariant }}>THEME</Text>
+            <View className="flex-row gap-3">
               <TouchableOpacity
-                style={[
-                  styles.themePill,
-                  { backgroundColor: tabataThemeId === 'purple' ? colors.prepare : 'transparent', borderColor: colors.prepare },
-                ]}
+                className="px-4 py-2 rounded-full border-2"
+                style={{ 
+                  backgroundColor: tabataThemeId === 'purple' ? colors.prepare : 'transparent', 
+                  borderColor: colors.prepare 
+                }}
                 onPress={() => setTabataTheme('purple')}
               >
-                <Text style={[styles.themePillText, { color: tabataThemeId === 'purple' ? '#000' : colors.prepare }]}>PURPLE</Text>
+                <Text 
+                  className="text-[12px] font-bold tracking-widest" 
+                  style={{ color: tabataThemeId === 'purple' ? '#000' : colors.prepare }}
+                >
+                  PURPLE
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.themePill,
-                  { backgroundColor: tabataThemeId === 'orange' ? TABATA_THEMES.orange.prepare : 'transparent', borderColor: TABATA_THEMES.orange.prepare },
-                ]}
+                className="px-4 py-2 rounded-full border-2"
+                style={{ 
+                  backgroundColor: tabataThemeId === 'orange' ? TABATA_THEMES.orange.prepare : 'transparent', 
+                  borderColor: TABATA_THEMES.orange.prepare 
+                }}
                 onPress={() => setTabataTheme('orange')}
               >
-                <Text style={[styles.themePillText, { color: tabataThemeId === 'orange' ? '#000' : TABATA_THEMES.orange.prepare }]}>ORANGE</Text>
+                <Text 
+                  className="text-[12px] font-bold tracking-widest" 
+                  style={{ color: tabataThemeId === 'orange' ? '#000' : TABATA_THEMES.orange.prepare }}
+                >
+                  ORANGE
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          <View style={[styles.infoCard, { backgroundColor: `${colors.accent}11`, borderColor: `${colors.accent}33` }]}>
-            <Text style={[styles.infoText, { color: colors.accent }]}>
+          <View 
+            className="p-4 rounded-xl border mb-2" 
+            style={{ backgroundColor: `${colors.accent}11`, borderColor: `${colors.accent}33` }}
+          >
+            <Text className="text-sm font-semibold leading-5" style={{ color: colors.accent }}>
               Classic Tabata is 8 rounds of 20 seconds work and 10 seconds rest. Total time: 4 minutes.
             </Text>
           </View>
@@ -102,8 +131,11 @@ export default function TabataSetupScreen() {
           <ControlRow label="ROUNDS" val={rounds} setVal={setRounds} step={1} min={1} />
           <ControlRow label="PREP TIME (SEC)" val={prepTime} setVal={setPrepTime} step={5} min={0} />
 
-          <View style={[styles.switchRow, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-            <Text style={[styles.controlLabel, { color: t.onSurfaceVariant }]}>SOUND CUES</Text>
+          <View 
+            className="flex-row items-center justify-between p-5 rounded-2xl border" 
+            style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
+          >
+            <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: t.onSurfaceVariant }}>SOUND CUES</Text>
             <Switch
               value={soundEnabled}
               onValueChange={setSoundEnabled}
@@ -115,130 +147,20 @@ export default function TabataSetupScreen() {
           <View style={{ height: 100 }} />
         </ScrollView>
 
-        <View style={[styles.footer, { backgroundColor: t.background, borderTopColor: t.surfaceContainerHighest }]}>
+        <View 
+          className="absolute bottom-0 left-0 right-0 p-5 border-t" 
+          style={{ backgroundColor: t.background, borderTopColor: t.surfaceContainerHighest }}
+        >
           <TouchableOpacity
-            style={[styles.cta, { backgroundColor: colors.accent, shadowColor: colors.accent }]}
+            className="h-16 rounded-xl items-center justify-center shadow-2xl"
+            style={{ backgroundColor: colors.accent, shadowColor: colors.accent }}
             activeOpacity={0.8}
             onPress={startTabata}
           >
-            <Text style={[styles.ctaText, { color: '#000000' }]}>START TABATA  ◆</Text>
+            <Text className="text-lg font-extrabold tracking-[2px] text-black">START TABATA  ◆</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { flex: 1, position: 'relative' },
-  scroll: { padding: 20, gap: 16 },
-  header: { gap: 8, marginBottom: 8 },
-  backText: { fontSize: 16, fontWeight: '600' },
-  title: { fontSize: 32, fontWeight: '800', letterSpacing: -0.5 },
-
-  themeToggle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  themeLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  themeSwitches: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  themePill: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 2,
-  },
-  themePillText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-
-  infoCard: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: 8,
-  },
-  infoText: {
-    fontSize: 14,
-    fontWeight: '600',
-    lineHeight: 20,
-  },
-
-  controlRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-  controlLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    flex: 1,
-  },
-  timeControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  btn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnText: { fontSize: 24, fontWeight: '400', lineHeight: 28 },
-  timeVal: { fontSize: 24, fontWeight: '800', fontVariant: ['tabular-nums'], width: 40, textAlign: 'center' },
-
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 20,
-    borderTopWidth: 1,
-  },
-  cta: {
-    height: 64,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  ctaText: {
-    fontSize: 18,
-    fontWeight: '800',
-    letterSpacing: 2,
-  },
-});

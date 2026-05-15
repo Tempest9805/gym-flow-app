@@ -17,7 +17,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -104,20 +103,25 @@ export default function ExerciseDetailScreen() {
 
   if (!exercise) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+      <SafeAreaView 
+        className="flex-1" 
+        style={{ backgroundColor: t.background }} 
+        edges={['top']}
+      >
         <AppTopBar />
-        <View style={styles.notFound}>
-          <Text style={[styles.notFoundEmoji]}>🏋️</Text>
-          <Text style={[styles.notFoundText, { color: t.onSurfaceVariant }]}>
+        <View className="flex-1 items-center justify-center p-6 gap-4">
+          <Text className="text-6xl">🏋️</Text>
+          <Text className="text-lg" style={{ color: t.onSurfaceVariant }}>
             Exercise not found
           </Text>
           <TouchableOpacity
             onPress={() => router.back()}
-            style={[styles.backBtn, { backgroundColor: t.surfaceContainer }]}
+            className="px-6 py-3 rounded-full"
+            style={{ backgroundColor: t.surfaceContainer }}
             accessibilityRole="button"
             accessibilityLabel="Go back to previous screen"
           >
-            <Text style={[styles.backBtnText, { color: t.primaryContainer }]}>← Go Back</Text>
+            <Text className="text-base font-semibold" style={{ color: t.primaryContainer }}>← Go Back</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -130,63 +134,75 @@ export default function ExerciseDetailScreen() {
   // ── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView 
+      className="flex-1" 
+      style={{ backgroundColor: t.background }} 
+      edges={['top']}
+    >
       <AppTopBar />
 
-      <View style={[styles.container, { backgroundColor: t.background }]}>
+      <View className="flex-1" style={{ backgroundColor: t.background }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={{ paddingBottom: 40 }}
         >
 
           {/* ── 1. Hero Media ── */}
-          <View style={styles.heroArea}>
+          <View className="w-full aspect-[4/3] relative overflow-hidden">
             {detailUrl ? (
               <ZoomableImage
                 source={{ uri: detailUrl }}
                 zoomSource={zoomUrl ? { uri: zoomUrl } : undefined}
-                style={styles.heroImage}
+                className="w-full h-full opacity-[0.85]"
                 contentFit="cover"
                 accessibilityLabel={`Demonstration of ${displayName}`}
                 showZoomHint
               />
             ) : (
-              <View style={[styles.heroPlaceholder, { backgroundColor: t.surfaceContainerHighest }]}>
-                <Text style={styles.heroPlaceholderEmoji}>🏋️</Text>
-                <Text style={[styles.heroPlaceholderLabel, { color: t.onSurfaceVariant }]}>
+              <View 
+                className="flex-1 items-center justify-center gap-3" 
+                style={{ backgroundColor: t.surfaceContainerHighest }}
+              >
+                <Text className="text-[72px]">🏋️</Text>
+                <Text 
+                  className="text-sm font-semibold tracking-widest" 
+                  style={{ color: t.onSurfaceVariant }}
+                >
                   No demo available
                 </Text>
               </View>
             )}
 
             {/* Bottom fade */}
-            <View style={[styles.heroGradient, { backgroundColor: t.background }]} />
+            <View 
+              className="absolute bottom-0 left-0 right-0 h-20 opacity-90" 
+              style={{ backgroundColor: t.background }} 
+            />
 
             {/* DEMO badge — only when media exists */}
             {hasMedia && (
               <View
-                style={[
-                  styles.demoBadge,
-                  { backgroundColor: 'rgba(0,0,0,0.6)', borderColor: t.outlineVariant },
-                ]}
+                className="absolute bottom-4 right-4 flex-row items-center gap-2 px-3 py-1.5 rounded-full border"
+                style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: t.outlineVariant }}
               >
-                <Text style={[styles.demoBadgeIcon, { color: t.primaryContainer }]}>▶</Text>
-                <Text style={[styles.demoBadgeText, { color: t.onSurface }]}>DEMO</Text>
+                <Text className="text-[12px]" style={{ color: t.primaryContainer }}>▶</Text>
+                <Text className="text-[11px] font-bold tracking-[1.5px]" style={{ color: t.onSurface }}>DEMO</Text>
               </View>
             )}
           </View>
 
           {/* ── 2. Meta row: TYPE · EQUIPMENT · DIFFICULTY ── */}
-          <View style={[styles.metaRow, { borderBottomColor: t.surfaceContainer }]}>
+          <View 
+            className="flex-row flex-wrap gap-2 px-5 py-4 border-b"
+            style={{ borderBottomColor: t.surfaceContainer }}
+          >
             {/* Type */}
             {exercise.type && (
               <View
-                style={[
-                  styles.metaChip,
-                  { backgroundColor: `${t.primaryContainer}20`, borderColor: `${t.primaryContainer}40` },
-                ]}
+                className="px-3 py-1 rounded-full border"
+                style={{ backgroundColor: `${t.primaryContainer}20`, borderColor: `${t.primaryContainer}40` }}
               >
-                <Text style={[styles.metaChipText, { color: t.primaryContainer }]}>
+                <Text className="text-[11px] font-bold tracking-[1.5px]" style={{ color: t.primaryContainer }}>
                   {exercise.type.toUpperCase()}
                 </Text>
               </View>
@@ -195,12 +211,10 @@ export default function ExerciseDetailScreen() {
             {/* Equipment */}
             {exercise.equipment && (
               <View
-                style={[
-                  styles.metaChip,
-                  { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest },
-                ]}
+                className="px-3 py-1 rounded-full border"
+                style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
               >
-                <Text style={[styles.metaChipText, { color: t.onSurfaceVariant }]}>
+                <Text className="text-[11px] font-bold tracking-[1.5px]" style={{ color: t.onSurfaceVariant }}>
                   {exercise.equipment.toUpperCase()}
                 </Text>
               </View>
@@ -209,12 +223,10 @@ export default function ExerciseDetailScreen() {
             {/* Difficulty badge */}
             {exercise.difficulty && (
               <View
-                style={[
-                  styles.metaChip,
-                  { backgroundColor: `${diffColor}20`, borderColor: `${diffColor}50` },
-                ]}
+                className="px-3 py-1 rounded-full border"
+                style={{ backgroundColor: `${diffColor}20`, borderColor: `${diffColor}50` }}
               >
-                <Text style={[styles.metaChipText, { color: diffColor }]}>
+                <Text className="text-[11px] font-bold tracking-[1.5px]" style={{ color: diffColor }}>
                   {exercise.difficulty.toUpperCase()}
                 </Text>
               </View>
@@ -222,23 +234,28 @@ export default function ExerciseDetailScreen() {
           </View>
 
           {/* ── 3. Exercise name + muscle tags ── */}
-          <View style={[styles.headerContent, { borderBottomColor: t.surfaceContainer }]}>
+          <View 
+            className="px-5 pt-6 pb-6 border-b gap-4"
+            style={{ borderBottomColor: t.surfaceContainer }}
+          >
             {/* Exercise name */}
-            <Text style={[styles.exerciseName, { color: t.onSurface }]} numberOfLines={3}>
+            <Text 
+              className="text-[42px] font-extrabold leading-[46px] tracking-tighter" 
+              style={{ color: t.onSurface }} 
+              numberOfLines={3}
+            >
               {displayName.toUpperCase()}
             </Text>
 
             {/* Muscle group tags */}
-            <View style={styles.muscleTagsRow}>
+            <View className="flex-row flex-wrap gap-2">
               {muscleTags.map((tag, i) => (
                 <View
                   key={i}
-                  style={[
-                    styles.muscleTag,
-                    { backgroundColor: `${t.secondary}20`, borderColor: `${t.secondary}33` },
-                  ]}
+                  className="px-3.5 py-1.5 rounded-full border"
+                  style={{ backgroundColor: `${t.secondary}20`, borderColor: `${t.secondary}33` }}
                 >
-                  <Text style={[styles.muscleTagText, { color: t.secondary }]}>
+                  <Text className="text-[12px] font-bold tracking-widest" style={{ color: t.secondary }}>
                     {tag.toUpperCase()}
                   </Text>
                 </View>
@@ -247,12 +264,10 @@ export default function ExerciseDetailScreen() {
               {/* Compound indicator */}
               {exercise.is_compound === true && (
                 <View
-                  style={[
-                    styles.muscleTag,
-                    { backgroundColor: `${t.secondary}20`, borderColor: `${t.secondary}33` },
-                  ]}
+                  className="px-3.5 py-1.5 rounded-full border"
+                  style={{ backgroundColor: `${t.secondary}20`, borderColor: `${t.secondary}33` }}
                 >
-                  <Text style={[styles.muscleTagText, { color: t.secondary }]}>
+                  <Text className="text-[12px] font-bold tracking-widest" style={{ color: t.secondary }}>
                     COMPOUND
                   </Text>
                 </View>
@@ -263,57 +278,58 @@ export default function ExerciseDetailScreen() {
           {/* ── 4. Description (short summary) ── */}
           {!!exercise.description && (
             <View
-              style={[
-                styles.descCard,
-                { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest },
-              ]}
+              className="mx-5 mt-6 p-5 rounded-xl border gap-2.5"
+              style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
             >
-              <Text style={[styles.descCardLabel, { color: t.primaryContainer }]}>OVERVIEW</Text>
-              <Text style={[styles.descCardText, { color: t.onSurface }]}>
+              <Text className="text-[11px] font-bold tracking-[2px]" style={{ color: t.primaryContainer }}>OVERVIEW</Text>
+              <Text className="text-base leading-6" style={{ color: t.onSurface }}>
                 {exercise.description}
               </Text>
             </View>
           )}
 
           {/* ── 5. Instructions — numbered steps ── */}
-          <View style={styles.cuesSection}>
-            <View style={styles.cuesSectionHeader}>
-              <Text style={[styles.cuesSectionIcon, { color: t.primaryContainer }]}>◉</Text>
-              <Text style={[styles.cuesSectionTitle, { color: t.onSurface }]}>
+          <View className="px-5 pt-8 gap-7">
+            <View className="flex-row items-center gap-3">
+              <Text className="text-xl" style={{ color: t.primaryContainer }}>◉</Text>
+              <Text className="text-[22px] font-bold tracking-widest" style={{ color: t.onSurface }}>
                 EXECUTION
               </Text>
             </View>
 
-            <View style={styles.cuesTimeline}>
+            <View className="relative gap-8 pl-12">
               {/* Vertical connector line */}
               <View
-                style={[styles.timelineLine, { backgroundColor: t.surfaceContainerHighest }]}
+                className="absolute left-4 top-2 bottom-2 w-0.5"
+                style={{ backgroundColor: t.surfaceContainerHighest }}
               />
 
               {steps.map((step, index) => (
-                <View key={index} style={styles.cueItem}>
+                <View key={index} className="flex-row gap-4">
                   {/* Numbered circle */}
                   <View
-                    style={[
-                      styles.cueCircle,
-                      {
-                        backgroundColor: t.surfaceContainer,
-                        borderColor: t.primaryContainer,
-                        shadowColor: t.primaryContainer,
-                      },
-                    ]}
+                    className="absolute -left-12 w-8 h-8 rounded-full border items-center justify-center"
+                    style={{
+                      backgroundColor: t.surfaceContainer,
+                      borderColor: t.primaryContainer,
+                      shadowColor: t.primaryContainer,
+                      shadowOpacity: 0.3,
+                      shadowOffset: { width: 0, height: 0 },
+                      shadowRadius: 8,
+                      elevation: 4,
+                    }}
                   >
-                    <Text style={[styles.cueNum, { color: t.primaryContainer }]}>
+                    <Text className="text-sm font-bold leading-4" style={{ color: t.primaryContainer }}>
                       {index + 1}
                     </Text>
                   </View>
 
                   {/* Step content */}
-                  <View style={styles.cueContent}>
-                    <Text style={[styles.cueLabel, { color: t.onSurface }]}>
+                  <View className="flex-1 gap-1.5">
+                    <Text className="text-[13px] font-bold tracking-widest" style={{ color: t.onSurface }}>
                       {STEP_LABELS[index] ?? `STEP ${index + 1}`}
                     </Text>
-                    <Text style={[styles.cueText, { color: t.onSurfaceVariant }]}>
+                    <Text className="text-base leading-6" style={{ color: t.onSurfaceVariant }}>
                       {step.trim()}
                     </Text>
                   </View>
@@ -325,27 +341,25 @@ export default function ExerciseDetailScreen() {
           {/* ── 6. Optional extras: movement_pattern · notes ── */}
           {(!!exercise.movement_pattern || !!exercise.notes) && (
             <View
-              style={[
-                styles.extrasCard,
-                { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest },
-              ]}
+              className="mx-5 mt-7 p-5 rounded-xl border gap-3.5"
+              style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
             >
               {!!exercise.movement_pattern && (
-                <View style={styles.extrasRow}>
-                  <Text style={[styles.extrasLabel, { color: t.onSurfaceVariant }]}>
+                <View className="gap-1">
+                  <Text className="text-[11px] font-bold tracking-widest" style={{ color: t.onSurfaceVariant }}>
                     Pattern
                   </Text>
-                  <Text style={[styles.extrasValue, { color: t.onSurface }]}>
+                  <Text className="text-[15px] leading-6 capitalize" style={{ color: t.onSurface }}>
                     {exercise.movement_pattern.replace(/_/g, ' ')}
                   </Text>
                 </View>
               )}
               {!!exercise.notes && (
-                <View style={styles.extrasRow}>
-                  <Text style={[styles.extrasLabel, { color: t.onSurfaceVariant }]}>
+                <View className="gap-1">
+                  <Text className="text-[11px] font-bold tracking-widest" style={{ color: t.onSurfaceVariant }}>
                     Notes
                   </Text>
-                  <Text style={[styles.extrasValue, { color: t.onSurface }]}>
+                  <Text className="text-[15px] leading-6" style={{ color: t.onSurface }}>
                     {exercise.notes}
                   </Text>
                 </View>
@@ -354,235 +368,32 @@ export default function ExerciseDetailScreen() {
           )}
 
           {/* Spacer for sticky CTA */}
-          <View style={{ height: 120 }} />
+          <View className="h-[120px]" />
         </ScrollView>
 
         {/* ── 7. Sticky CTA ── */}
-        <View style={[styles.ctaArea, { backgroundColor: t.background }]}>
+        <View 
+          className="absolute bottom-20 left-0 right-0 px-5 py-4"
+          style={{ backgroundColor: t.background }}
+        >
           <TouchableOpacity
-            style={[
-              styles.ctaButton,
-              { backgroundColor: t.primaryContainer, shadowColor: t.primaryContainer },
-            ]}
+            className="h-16 rounded-lg items-center justify-center shadow-2xl elevation-md"
+            style={{ 
+              backgroundColor: t.primaryContainer, 
+              shadowColor: t.primaryContainer,
+              shadowOpacity: 0.4,
+              shadowOffset: { width: 0, height: 0 },
+              shadowRadius: 16,
+            }}
             activeOpacity={0.85}
             onPress={() => router.push('/routine-builder')}
             accessibilityRole="button"
             accessibilityLabel={`Add ${displayName} to your routine`}
           >
-            <Text style={[styles.ctaButtonText, { color: '#000' }]}>+ ADD TO ROUTINE</Text>
+            <Text className="text-lg font-bold tracking-widest" style={{ color: '#000' }}>+ ADD TO ROUTINE</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-// ── Styles ─────────────────────────────────────────────────────────────────
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { flex: 1 },
-  scrollContent: { paddingBottom: 40 },
-
-  // Not-found
-  notFound: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-    padding: 24,
-  },
-  notFoundEmoji: { fontSize: 64 },
-  notFoundText: { fontSize: 18 },
-  backBtn: { paddingHorizontal: 24, paddingVertical: 12, borderRadius: 99 },
-  backBtnText: { fontSize: 16, fontWeight: '600' },
-
-  // Hero
-  heroArea: {
-    width: '100%',
-    aspectRatio: 4 / 3,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  heroImage: { width: '100%', height: '100%', opacity: 0.85 },
-  heroPlaceholder: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  heroPlaceholderEmoji: { fontSize: 72 },
-  heroPlaceholderLabel: { fontSize: 14, fontWeight: '600', letterSpacing: 1 },
-  heroGradient: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 80,
-    opacity: 0.9,
-  },
-  demoBadge: {
-    position: 'absolute',
-    bottom: 16,
-    right: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 99,
-    borderWidth: 1,
-  },
-  demoBadgeIcon: { fontSize: 12 },
-  demoBadgeText: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5 },
-
-  // Meta row
-  metaRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-  },
-  metaChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 99,
-    borderWidth: 1,
-  },
-  metaChipText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-  },
-
-  // Header
-  headerContent: {
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 24,
-    borderBottomWidth: 1,
-    gap: 16,
-  },
-  exerciseName: {
-    fontSize: 42,
-    fontWeight: '800',
-    lineHeight: 46,
-    letterSpacing: -1,
-  },
-  muscleTagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  muscleTag: {
-    paddingHorizontal: 14,
-    paddingVertical: 7,
-    borderRadius: 99,
-    borderWidth: 1,
-  },
-  muscleTagText: { fontSize: 12, fontWeight: '700', letterSpacing: 1 },
-
-  // Description card
-  descCard: {
-    marginHorizontal: 20,
-    marginTop: 24,
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 10,
-  },
-  descCardLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-  descCardText: {
-    fontSize: 16,
-    lineHeight: 26,
-  },
-
-  // Execution steps
-  cuesSection: {
-    paddingHorizontal: 20,
-    paddingTop: 32,
-    gap: 28,
-  },
-  cuesSectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  cuesSectionIcon: { fontSize: 20 },
-  cuesSectionTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-  cuesTimeline: {
-    position: 'relative',
-    gap: 32,
-    paddingLeft: 48,
-  },
-  timelineLine: {
-    position: 'absolute',
-    left: 15,
-    top: 8,
-    bottom: 8,
-    width: 2,
-  },
-  cueItem: { flexDirection: 'row', gap: 16 },
-  cueCircle: {
-    position: 'absolute',
-    left: -48,
-    width: 32,
-    height: 32,
-    borderRadius: 99,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  cueNum: { fontSize: 14, fontWeight: '700', lineHeight: 16 },
-  cueContent: { flex: 1, gap: 6 },
-  cueLabel: { fontSize: 13, fontWeight: '700', letterSpacing: 1.5 },
-  cueText: { fontSize: 16, lineHeight: 26 },
-
-  // Extras card (movement pattern + notes)
-  extrasCard: {
-    marginHorizontal: 20,
-    marginTop: 28,
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 14,
-  },
-  extrasRow: { gap: 4 },
-  extrasLabel: { fontSize: 11, fontWeight: '700', letterSpacing: 1.5 },
-  extrasValue: { fontSize: 15, lineHeight: 24, textTransform: 'capitalize' },
-
-  // Sticky CTA
-  ctaArea: {
-    position: 'absolute',
-    bottom: 80,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-  },
-  ctaButton: {
-    height: 64,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.4,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  ctaButtonText: {
-    fontSize: 18,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-});

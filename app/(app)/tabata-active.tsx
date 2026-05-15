@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTabataThemeStore, TABATA_THEMES } from '@/lib/store/tabataThemeStore';
@@ -97,59 +97,78 @@ export default function TabataActiveScreen() {
   const nextColor = getPhaseColor(nextPhase);
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: '#111111' }]} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <Text style={[styles.backIcon, { color: '#fff' }]}>✕</Text>
+    <SafeAreaView 
+      className="flex-1" 
+      style={{ backgroundColor: '#111111' }} 
+      edges={['top', 'bottom']}
+    >
+      <View className="flex-row items-center justify-between px-5 h-16">
+        <TouchableOpacity onPress={() => router.back()} className="w-12 h-12 items-start justify-center">
+          <Text className="text-2xl font-light text-white">✕</Text>
         </TouchableOpacity>
-        <Text style={[styles.headerTitle, { color: '#fff' }]}>
+        <Text className="text-base font-black tracking-[2px] text-white">
           ROUND {Math.min(currentRound, totalRounds)} / {totalRounds}
         </Text>
-        <View style={{ width: 48 }} />
+        <View className="w-12" />
       </View>
 
-      <View style={[styles.mainPanel, { backgroundColor: currentColor }]}>
-        <View style={[styles.phaseBadge, { backgroundColor: `${currentColor}33`, borderColor: '#00000044' }]}>
-          <Text style={[styles.phaseText, { color: '#000000' }]}>
+      <View className="flex-1 items-center justify-center px-5 mx-5 rounded-[24px]" style={{ backgroundColor: currentColor }}>
+        <View 
+          className="px-6 py-3 rounded-full border-2 mb-6"
+          style={{ backgroundColor: `${currentColor}33`, borderColor: '#00000044' }}
+        >
+          <Text className="text-2xl font-black tracking-[4px] text-black">
             {phase === 'PREP' ? 'GET READY' : phase}
           </Text>
         </View>
 
         <Text
-          style={[
-            styles.timeDisplay,
-            { color: '#000000', textShadowColor: phase === 'WORK' ? currentColor : 'transparent' },
-          ]}
+          className="font-black tracking-[-4px] text-center"
+          style={{ 
+            color: '#000000', 
+            fontSize: width * 0.45,
+            textShadowColor: phase === 'WORK' ? currentColor : 'transparent',
+            textShadowOffset: { width: 0, height: 0 },
+            textShadowRadius: 24,
+          }}
           adjustsFontSizeToFit
           numberOfLines={1}
         >
           {timeLeft}
         </Text>
 
-        <View style={[styles.nextPreview, { backgroundColor: `${nextColor}88` }]}>
-          <Text style={[styles.nextPreviewText, { color: '#000000' }]}>
+        <View className="mt-6 px-5 py-[10px] rounded-[20px]" style={{ backgroundColor: `${nextColor}88` }}>
+          <Text className="text-sm font-bold tracking-[2px] text-black">
             NEXT: {nextPhase === 'DONE' ? 'FINISH' : nextPhase}
           </Text>
         </View>
       </View>
 
-      <View style={[styles.controls, { backgroundColor: '#111111' }]}>
+      <View className="px-10 py-10 items-center gap-6" style={{ backgroundColor: '#111111' }}>
         {phase !== 'DONE' && (
           <TouchableOpacity
-            style={[styles.playBtn, { backgroundColor: currentColor, borderColor: currentColor }]}
+            className="w-[100px] h-[100px] rounded-full items-center justify-center shadow-2xl border-4"
+            style={{ 
+              backgroundColor: currentColor, 
+              borderColor: currentColor,
+              shadowOpacity: 0.4,
+              shadowRadius: 16,
+              shadowOffset: { width: 0, height: 8 },
+            }}
             onPress={togglePause}
             activeOpacity={0.8}
           >
-            <Text style={[styles.playIcon, { color: '#000000' }]}>
+            <Text className="text-[48px] ml-[6px] text-black">
               {isRunning ? '❚❚' : '▶'}
             </Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity
-          style={[styles.resetBtn, { borderColor: '#444444' }]}
+          className="px-8 py-3 rounded-full border-2"
+          style={{ borderColor: '#444444' }}
           onPress={phase === 'DONE' ? () => router.back() : resetTimer}
         >
-          <Text style={[styles.resetText, { color: '#888888' }]}>
+          <Text className="text-sm font-bold tracking-[2px]" style={{ color: '#888888' }}>
             {phase === 'DONE' ? 'DONE' : 'RESET'}
           </Text>
         </TouchableOpacity>
@@ -157,98 +176,3 @@ export default function TabataActiveScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    height: 64,
-  },
-  backBtn: {
-    width: 48,
-    height: 48,
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  backIcon: { fontSize: 24, fontWeight: '300' },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 2,
-  },
-  mainPanel: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-    marginHorizontal: 20,
-    borderRadius: 24,
-  },
-  phaseBadge: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 99,
-    borderWidth: 2,
-    marginBottom: 24,
-  },
-  phaseText: {
-    fontSize: 24,
-    fontWeight: '900',
-    letterSpacing: 4,
-  },
-  timeDisplay: {
-    fontSize: width * 0.45,
-    fontWeight: '900',
-    fontVariant: ['tabular-nums'],
-    letterSpacing: -4,
-    textAlign: 'center',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 24,
-  },
-  nextPreview: {
-    marginTop: 24,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 20,
-  },
-  nextPreviewText: {
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-  controls: {
-    paddingHorizontal: 40,
-    paddingVertical: 40,
-    alignItems: 'center',
-    gap: 24,
-  },
-  playBtn: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 8 },
-    borderWidth: 4,
-  },
-  playIcon: {
-    fontSize: 48,
-    marginLeft: 6,
-  },
-  resetBtn: {
-    paddingHorizontal: 32,
-    paddingVertical: 12,
-    borderRadius: 24,
-    borderWidth: 2,
-  },
-  resetText: {
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-});

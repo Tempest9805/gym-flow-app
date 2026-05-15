@@ -11,7 +11,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -32,12 +31,12 @@ export default function WorkoutDetailScreen() {
 
   if (!routine) {
     return (
-      <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+      <SafeAreaView className="flex-1" style={{ backgroundColor: t.background }} edges={['top']}>
         <AppTopBar />
-        <View style={styles.notFound}>
-          <Text style={[styles.notFoundText, { color: t.onSurfaceVariant }]}>Routine not found</Text>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-            <Text style={[styles.backBtnText, { color: t.primaryContainer }]}>← Go Back</Text>
+        <View className="flex-1 items-center justify-center gap-4">
+          <Text className="text-lg" style={{ color: t.onSurfaceVariant }}>Routine not found</Text>
+          <TouchableOpacity onPress={() => router.back()} className="p-3">
+            <Text className="text-base font-semibold" style={{ color: t.primaryContainer }}>← Go Back</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -47,78 +46,77 @@ export default function WorkoutDetailScreen() {
   const typedRoutine = routine as RoutineWithExercises;
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: t.background }} edges={['top']}>
       <AppTopBar />
-      <View style={[styles.container, { backgroundColor: t.background }]}>
+      <View className="flex-1" style={{ backgroundColor: t.background }}>
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={{ paddingBottom: 40 }}
         >
           {/* ── 1. Hero Section ── */}
-          <View style={styles.heroSection}>
+          <View className="px-5 pt-8 pb-6 gap-4">
             <View
-              style={[
-                styles.heroBadge,
-                {
-                  backgroundColor: `${t.primaryContainer}22`,
-                  borderColor: `${t.primaryContainer}44`,
-                },
-              ]}
+              className="px-3 py-1 rounded-full border self-start"
+              style={{
+                backgroundColor: `${t.primaryContainer}22`,
+                borderColor: `${t.primaryContainer}44`,
+              }}
             >
-              <Text style={[styles.heroBadgeText, { color: t.primaryContainer }]}>
+              <Text className="text-[11px] font-bold tracking-[2px] uppercase" style={{ color: t.primaryContainer }}>
                 READY TO TRAIN
               </Text>
             </View>
-            <Text style={[styles.routineName, { color: t.onSurface }]}>
+            <Text className="text-[48px] font-extrabold leading-[52px] tracking-tighter" style={{ color: t.onSurface }}>
               {typedRoutine.name.toUpperCase()}
             </Text>
             
             {/* Stats Bento */}
-            <View style={styles.statsRow}>
-              <View style={[styles.statBox, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-                <Text style={[styles.statLabel, { color: t.outline }]}>MOVEMENTS</Text>
-                <Text style={[styles.statValue, { color: t.onSurface }]}>{typedRoutine.exercises?.length ?? 0}</Text>
+            <View className="flex-row gap-3 mt-2">
+              <View className="flex-1 p-4 rounded-xl border gap-1" style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}>
+                <Text className="text-[10px] font-bold tracking-widest" style={{ color: t.outline }}>MOVEMENTS</Text>
+                <Text className="text-xl font-extrabold" style={{ color: t.onSurface }}>{typedRoutine.exercises?.length ?? 0}</Text>
               </View>
-              <View style={[styles.statBox, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-                <Text style={[styles.statLabel, { color: t.outline }]}>EST. TIME</Text>
-                <Text style={[styles.statValue, { color: t.onSurface }]}>45m</Text>
+              <View className="flex-1 p-4 rounded-xl border gap-1" style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}>
+                <Text className="text-[10px] font-bold tracking-widest" style={{ color: t.outline }}>EST. TIME</Text>
+                <Text className="text-xl font-extrabold" style={{ color: t.onSurface }}>45m</Text>
               </View>
-              <View style={[styles.statBox, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-                <Text style={[styles.statLabel, { color: t.outline }]}>DIFFICULTY</Text>
-                <Text style={[styles.statValue, { color: t.onSurface }]}>HARD</Text>
+              <View className="flex-1 p-4 rounded-xl border gap-1" style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}>
+                <Text className="text-[10px] font-bold tracking-widest" style={{ color: t.outline }}>DIFFICULTY</Text>
+                <Text className="text-xl font-extrabold" style={{ color: t.onSurface }}>HARD</Text>
               </View>
             </View>
           </View>
 
           {/* ── 2. Exercise List ── */}
-          <View style={styles.exerciseSection}>
-            <Text style={[styles.sectionTitle, { color: t.onSurfaceVariant }]}>EXERCISE PROTOCOL</Text>
-            <View style={styles.exerciseList}>
+          <View className="px-5 mt-6 gap-4">
+            <Text className="text-[12px] font-bold tracking-[3px] uppercase" style={{ color: t.onSurfaceVariant }}>EXERCISE PROTOCOL</Text>
+            <View className="gap-3">
               {typedRoutine.exercises?.map((item, index) => (
                 <TouchableOpacity
                   key={item.id}
-                  style={[
-                    styles.exerciseCard,
-                    {
-                      backgroundColor: t.surfaceContainer,
-                      borderColor: t.surfaceContainerHighest,
-                    },
-                  ]}
+                  className="flex-row items-center p-4 rounded-2xl border gap-4"
+                  style={{
+                    backgroundColor: t.surfaceContainer,
+                    borderColor: t.surfaceContainerHighest,
+                  }}
                   activeOpacity={0.7}
                   onPress={() => router.push(`/exercise/${item.exercise_id}`)}
                 >
-                  <View style={[styles.exerciseIndex, { backgroundColor: t.surfaceContainerHigh }]}>
-                    <Text style={[styles.exerciseIndexText, { color: t.primaryContainer }]}>{index + 1}</Text>
+                  <View 
+                    className="w-10 h-10 rounded-full items-center justify-center" 
+                    style={{ backgroundColor: t.surfaceContainerHigh }}
+                  >
+                    <Text className="text-lg font-extrabold" style={{ color: t.primaryContainer }}>{index + 1}</Text>
                   </View>
-                  <View style={styles.exerciseInfo}>
-                    <Text style={[styles.exerciseName, { color: t.onSurface }]}>
+                  <View className="flex-1 gap-1">
+                    <Text className="text-lg font-bold" style={{ color: t.onSurface }}>
                       {item.exercise?.name_en?.toUpperCase()}
                     </Text>
-                    <Text style={[styles.exerciseMeta, { color: t.onSurfaceVariant }]}>
+                    <Text className="text-[13px] font-semibold" style={{ color: t.onSurfaceVariant }}>
                       {item.sets} SETS • {item.reps ? `${item.reps} REPS` : `${item.duration_seconds}s`}
                     </Text>
                   </View>
-                  <Text style={[styles.chevron, { color: t.outlineVariant }]}>→</Text>
+                  <Text className="text-xl font-light" style={{ color: t.outlineVariant }}>→</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -129,152 +127,26 @@ export default function WorkoutDetailScreen() {
         </ScrollView>
 
         {/* ── 3. Sticky CTA ── */}
-        <View style={[styles.ctaArea, { backgroundColor: t.background }]}>
+        <View 
+          className="absolute bottom-0 left-0 right-0 px-5 pt-4 pb-10 border-t" 
+          style={{ backgroundColor: t.background, borderTopColor: 'rgba(255,255,255,0.05)' }}
+        >
           <TouchableOpacity
-            style={[
-              styles.ctaButton,
-              {
-                backgroundColor: t.primaryContainer,
-                shadowColor: t.primaryContainer,
-              },
-            ]}
+            className="h-20 rounded-xl items-center justify-center shadow-2xl elevation-md"
+            style={{
+              backgroundColor: t.primaryContainer,
+              shadowColor: t.primaryContainer,
+              shadowOpacity: 0.4,
+              shadowOffset: { width: 0, height: 0 },
+              shadowRadius: 20,
+            }}
             activeOpacity={0.85}
             onPress={() => router.push({ pathname: '/workout-session', params: { id: typedRoutine.id } })}
           >
-            <Text style={[styles.ctaButtonText, { color: '#000' }]}>START SESSION  ▶</Text>
+            <Text className="text-xl font-extrabold tracking-[3px] uppercase" style={{ color: '#000' }}>START SESSION  ▶</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { flex: 1 },
-  scrollContent: { paddingBottom: 40 },
-  notFound: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 },
-  notFoundText: { fontSize: 18 },
-  backBtn: { padding: 12 },
-  backBtnText: { fontSize: 16, fontWeight: '600' },
-  // Hero
-  heroSection: {
-    paddingHorizontal: 20,
-    paddingTop: 32,
-    paddingBottom: 24,
-    gap: 16,
-  },
-  heroBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 99,
-    borderWidth: 1,
-    alignSelf: 'flex-start',
-  },
-  heroBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  routineName: {
-    fontSize: 48,
-    fontWeight: '800',
-    lineHeight: 52,
-    letterSpacing: -1,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 8,
-  },
-  statBox: {
-    flex: 1,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    gap: 4,
-  },
-  statLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  // Exercises
-  exerciseSection: {
-    paddingHorizontal: 20,
-    marginTop: 24,
-    gap: 16,
-  },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-  },
-  exerciseList: { gap: 12 },
-  exerciseCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    gap: 16,
-  },
-  exerciseIndex: {
-    width: 40,
-    height: 40,
-    borderRadius: 99,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  exerciseIndexText: {
-    fontSize: 18,
-    fontWeight: '800',
-  },
-  exerciseInfo: { flex: 1, gap: 4 },
-  exerciseName: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  exerciseMeta: {
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  chevron: {
-    fontSize: 20,
-    fontWeight: '300',
-  },
-  // CTA
-  ctaArea: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 40,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
-  },
-  ctaButton: {
-    height: 80,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.4,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 20,
-    elevation: 10,
-  },
-  ctaButtonText: {
-    fontSize: 20,
-    fontWeight: '800',
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-  },
-});

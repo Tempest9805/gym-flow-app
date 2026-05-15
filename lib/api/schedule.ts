@@ -1,5 +1,8 @@
 import { supabase } from '@/lib/supabase';
-import type { WorkoutSchedule, WorkoutScheduleWithRoutine, DayOfWeek } from '@/types';
+import { WorkoutScheduleWithRoutineSchema } from './schemas';
+import type { WorkoutScheduleWithRoutine } from './schemas';
+
+export type DayOfWeek = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 export const scheduleApi = {
   /** Get the user's weekly schedule with routine names */
@@ -14,7 +17,7 @@ export const scheduleApi = {
       .order('day_of_week');
 
     if (error) throw error;
-    return (data || []) as unknown as WorkoutScheduleWithRoutine[];
+    return WorkoutScheduleWithRoutineSchema.array().parse(data || []);
   },
 
   toggleDay: async (

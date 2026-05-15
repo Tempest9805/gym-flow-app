@@ -17,7 +17,6 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  StyleSheet,
   Modal,
   Image,
 } from 'react-native';
@@ -39,159 +38,185 @@ export default function ProfileScreen() {
   const athleteName = profile?.full_name || profile?.email?.split('@')[0] || 'Athlete';
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView 
+      className="flex-1" 
+      style={{ backgroundColor: t.background }} 
+      edges={['top']}
+    >
       <AppTopBar />
       <ScrollView
-        style={[styles.scroll, { backgroundColor: t.background }]}
-        contentContainerStyle={styles.content}
+        className="flex-1"
+        style={{ backgroundColor: t.background }}
+        contentContainerStyle={{ 
+          paddingTop: 16, 
+          paddingHorizontal: 24, 
+          paddingBottom: 120, 
+          gap: 40 
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* ── Profile Header Bento ── */}
-        <View style={styles.profileHeaderBento}>
+        <View className="flex-row gap-4 flex-wrap">
           {/* Avatar card */}
-          <View style={[styles.avatarCard, { backgroundColor: t.surfaceContainer }]}>
+          <View 
+            className="flex-1 min-w-[140px] rounded-xl p-6 items-center justify-center min-h-[200px] gap-3"
+            style={{ backgroundColor: t.surfaceContainer }}
+          >
             <View
-              style={[
-                styles.avatarRing,
-                {
-                  borderColor: t.primaryContainer,
-                  shadowColor: t.primaryContainer,
-                },
-              ]}
+              className="w-24 h-24 rounded-full border-2 overflow-hidden shadow-2xl elevation-md"
+              style={{
+                borderColor: t.primaryContainer,
+                shadowColor: t.primaryContainer,
+                shadowOpacity: 0.3,
+                shadowOffset: { width: 0, height: 0 },
+                shadowRadius: 15,
+              }}
             >
               {profile?.avatar_url ? (
                 <Image
                   source={{ uri: profile.avatar_url }}
-                  style={styles.avatarImage}
+                  className="w-full h-full"
                 />
               ) : (
-                <View style={[styles.avatarPlaceholder, { backgroundColor: t.surfaceContainerHigh }]}>
-                  <Text style={[styles.avatarInitial, { color: t.primaryContainer }]}>
+                <View 
+                  className="flex-1 items-center justify-center" 
+                  style={{ backgroundColor: t.surfaceContainerHigh }}
+                >
+                  <Text 
+                    className="text-[36px] font-extrabold" 
+                    style={{ color: t.primaryContainer }}
+                  >
                     {athleteName.charAt(0).toUpperCase()}
                   </Text>
                 </View>
               )}
             </View>
-            <Text style={styles.profileName}>{athleteName}</Text>
-            <Text style={[styles.profileRank, { color: t.primaryContainer }]}>ELITE ATHLETE</Text>
+            <Text className="text-[22px] font-bold text-white text-center">{athleteName}</Text>
+            <Text className="text-[11px] font-bold tracking-[2px] uppercase text-center" style={{ color: t.primaryContainer }}>ELITE ATHLETE</Text>
           </View>
 
           {/* Stats grid (2x2) */}
-          <View style={styles.statsGrid}>
-            <View style={[styles.statCard, { backgroundColor: '#1E1E1E' }]}>
-              <Text style={[styles.statLabel, { color: t.onSurfaceVariant }]}>Current Level</Text>
-              <View style={styles.statValueRow}>
-                <Text style={styles.statBigNum}>1</Text>
-                <Text style={[styles.statUnit, { color: t.secondary }]}>ROOKIE</Text>
+          <View className="flex-1 gap-4 min-w-[140px]">
+            <View 
+              className="flex-1 rounded-xl p-5 justify-center min-h-[90px] border border-transparent"
+              style={{ backgroundColor: '#1E1E1E' }}
+            >
+              <Text className="text-sm leading-5 mb-1.5" style={{ color: t.onSurfaceVariant }}>Current Level</Text>
+              <View className="flex-row items-end gap-2">
+                <Text className="text-[48px] font-bold leading-[52px] text-white">1</Text>
+                <Text className="text-[12px] font-bold tracking-widest uppercase mb-1.5" style={{ color: t.secondary }}>ROOKIE</Text>
               </View>
             </View>
-            <View style={[styles.statCard, { backgroundColor: '#1E1E1E' }]}>
-              <Text style={[styles.statLabel, { color: t.onSurfaceVariant }]}>Total Workouts</Text>
-              <View style={styles.statValueRow}>
-                <Text style={styles.statBigNum}>0</Text>
-                <Text style={[styles.statUnit, { color: t.secondary }]}>SESSIONS</Text>
+            <View 
+              className="flex-1 rounded-xl p-5 justify-center min-h-[90px] border border-transparent"
+              style={{ backgroundColor: '#1E1E1E' }}
+            >
+              <Text className="text-sm leading-5 mb-1.5" style={{ color: t.onSurfaceVariant }}>Total Workouts</Text>
+              <View className="flex-row items-end gap-2">
+                <Text className="text-[48px] font-bold leading-[52px] text-white">0</Text>
+                <Text className="text-[12px] font-bold tracking-widest uppercase mb-1.5" style={{ color: t.secondary }}>SESSIONS</Text>
               </View>
             </View>
             {/* Active Streak — full width */}
             <View
-              style={[
-                styles.statCardWide,
-                {
-                  backgroundColor: t.surfaceContainer,
-                  borderColor: `${t.primaryContainer}44`,
-                },
-              ]}
+              className="rounded-xl p-5 justify-center min-h-[90px] border overflow-hidden relative"
+              style={{
+                backgroundColor: t.surfaceContainer,
+                borderColor: `${t.primaryContainer}44`,
+              }}
             >
-              <Text style={[styles.statLabel, { color: t.onSurfaceVariant }]}>Active Streak</Text>
-              <View style={styles.statValueRow}>
+              <Text className="text-sm leading-5 mb-1.5" style={{ color: t.onSurfaceVariant }}>Active Streak</Text>
+              <View className="flex-row items-end gap-2">
                 <Text
-                  style={[
-                    styles.statBigNum,
-                    {
-                      color: t.primaryContainer,
-                      textShadowColor: t.glowPrimary,
-                      textShadowOffset: { width: 0, height: 0 },
-                      textShadowRadius: 8,
-                    },
-                  ]}
+                  className="text-[48px] font-bold leading-[52px]"
+                  style={{
+                    color: t.primaryContainer,
+                    textShadowColor: t.glowPrimary,
+                    textShadowOffset: { width: 0, height: 0 },
+                    textShadowRadius: 8,
+                  }}
                 >
                   0
                 </Text>
-                <Text style={styles.statUnitWhite}>DAYS</Text>
+                <Text className="text-[12px] font-bold tracking-widest uppercase mb-1.5 text-white">DAYS</Text>
               </View>
               {/* Decorative fire icon */}
-              <Text style={styles.fireIcon}>◆</Text>
+              <Text className="absolute -bottom-2.5 -right-2.5 text-[80px] opacity-10">◆</Text>
             </View>
           </View>
         </View>
 
         {/* ── Preferences Section ── */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: t.onSurfaceVariant, borderLeftColor: t.primaryContainer }]}>
+        <View className="gap-4">
+          <Text 
+            className="text-lg font-medium uppercase tracking-widest pl-2 border-l-2"
+            style={{ color: t.onSurfaceVariant, borderLeftColor: t.primaryContainer }}
+          >
             Preferences
           </Text>
-          <View style={[styles.settingsCard, { backgroundColor: t.surfaceContainer }]}>
+          <View className="rounded-xl overflow-hidden" style={{ backgroundColor: t.surfaceContainer }}>
             {/* Theme Setting */}
             <TouchableOpacity
-              style={styles.settingsRow}
+              className="flex-row items-center justify-between p-6 min-h-[72px]"
               activeOpacity={0.7}
               onPress={() => setThemeModalVisible(true)}
             >
-              <View style={styles.settingsRowLeft}>
-                <Text style={[styles.settingsIcon, { color: t.onSurfaceVariant }]}>🎨</Text>
-                <View style={styles.settingsRowInfo}>
-                  <Text style={styles.settingsRowTitle}>Theme</Text>
-                  <Text style={[styles.settingsRowValue, { color: t.onSurfaceVariant }]}>
+              <View className="flex-row items-center gap-4">
+                <Text className="text-xl" style={{ color: t.onSurfaceVariant }}>🎨</Text>
+                <View className="gap-0.5">
+                  <Text className="text-lg font-medium text-white">Theme</Text>
+                  <Text className="text-sm leading-5" style={{ color: t.onSurfaceVariant }}>
                     {THEMES[themeId].label}
                   </Text>
                 </View>
               </View>
-              <Text style={[styles.chevron, { color: t.onSurfaceVariant }]}>›</Text>
+              <Text className="text-2xl" style={{ color: t.onSurfaceVariant }}>›</Text>
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: 'rgba(255,255,255,0.05)' }]} />
+            <View className="h-[1px]" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
 
             {/* Language */}
-            <TouchableOpacity style={styles.settingsRow} activeOpacity={0.7}>
-              <View style={styles.settingsRowLeft}>
-                <Text style={[styles.settingsIcon, { color: t.onSurfaceVariant }]}>🌐</Text>
-                <View style={styles.settingsRowInfo}>
-                  <Text style={styles.settingsRowTitle}>Language</Text>
-                  <Text style={[styles.settingsRowValue, { color: t.onSurfaceVariant }]}>
+            <TouchableOpacity className="flex-row items-center justify-between p-6 min-h-[72px]" activeOpacity={0.7}>
+              <View className="flex-row items-center gap-4">
+                <Text className="text-xl" style={{ color: t.onSurfaceVariant }}>🌐</Text>
+                <View className="gap-0.5">
+                  <Text className="text-lg font-medium text-white">Language</Text>
+                  <Text className="text-sm leading-5" style={{ color: t.onSurfaceVariant }}>
                     English (US)
                   </Text>
                 </View>
               </View>
-              <Text style={[styles.chevron, { color: t.onSurfaceVariant }]}>›</Text>
+              <Text className="text-2xl" style={{ color: t.onSurfaceVariant }}>›</Text>
             </TouchableOpacity>
 
-            <View style={[styles.divider, { backgroundColor: 'rgba(255,255,255,0.05)' }]} />
+            <View className="h-[1px]" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
 
             {/* Units */}
-            <TouchableOpacity style={styles.settingsRow} activeOpacity={0.7}>
-              <View style={styles.settingsRowLeft}>
-                <Text style={[styles.settingsIcon, { color: t.onSurfaceVariant }]}>⚖️</Text>
-                <View style={styles.settingsRowInfo}>
-                  <Text style={styles.settingsRowTitle}>Units</Text>
-                  <Text style={[styles.settingsRowValue, { color: t.onSurfaceVariant }]}>
+            <TouchableOpacity className="flex-row items-center justify-between p-6 min-h-[72px]" activeOpacity={0.7}>
+              <View className="flex-row items-center gap-4">
+                <Text className="text-xl" style={{ color: t.onSurfaceVariant }}>⚖️</Text>
+                <View className="gap-0.5">
+                  <Text className="text-lg font-medium text-white">Units</Text>
+                  <Text className="text-sm leading-5" style={{ color: t.onSurfaceVariant }}>
                     Imperial (lbs, miles)
                   </Text>
                 </View>
               </View>
-              <Text style={[styles.chevron, { color: t.onSurfaceVariant }]}>›</Text>
+              <Text className="text-2xl" style={{ color: t.onSurfaceVariant }}>›</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {/* ── Danger Zone ── */}
-        <View style={styles.dangerZone}>
+        <View className="items-center mt-3">
           <TouchableOpacity
-            style={[styles.logoutButton, { borderColor: 'rgba(255, 68, 68, 0.3)' }]}
+            className="flex-row items-center gap-2 px-8 py-4 rounded border-2 min-h-[48px]"
+            style={{ borderColor: 'rgba(255, 68, 68, 0.3)' }}
             activeOpacity={0.8}
             onPress={signOut}
           >
-            <Text style={styles.logoutIcon}>⎋</Text>
-            <Text style={styles.logoutText}>LOGOUT</Text>
+            <Text className="text-base" style={{ color: '#ef4444' }}>⎋</Text>
+            <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: '#ef4444' }}>LOGOUT</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -204,17 +229,19 @@ export default function ProfileScreen() {
         onRequestClose={() => setThemeModalVisible(false)}
       >
         <TouchableOpacity
-          style={styles.modalOverlay}
+          className="flex-1 justify-end"
+          style={{ backgroundColor: 'rgba(0,0,0,0.72)' }}
           activeOpacity={1}
           onPress={() => setThemeModalVisible(false)}
         >
           <View
-            style={[styles.modalSheet, { backgroundColor: t.surfaceContainerLow, borderColor: t.surfaceVariant }]}
+            className="rounded-t-[20px] border-t p-6 pb-12 gap-3"
+            style={{ backgroundColor: t.surfaceContainerLow, borderColor: t.surfaceVariant }}
             // Prevent closing when tapping the sheet itself
             onStartShouldSetResponder={() => true}
           >
-            <Text style={[styles.modalTitle, { color: '#fff' }]}>Select Theme</Text>
-            <Text style={[styles.modalSubtitle, { color: 'rgba(255,255,255,0.5)' }]}>
+            <Text className="text-[22px] font-bold mb-1 text-white">Select Theme</Text>
+            <Text className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
               Theme applies across the entire app
             </Text>
 
@@ -225,17 +252,15 @@ export default function ProfileScreen() {
               return (
                 <TouchableOpacity
                   key={id}
-                  style={[
-                    styles.themeOption,
-                    {
-                      backgroundColor: isActive
-                        ? `${theme.tokens.primaryContainer}18`
-                        : 'rgba(255,255,255,0.04)',
-                      borderColor: isActive
-                        ? theme.tokens.primaryContainer
-                        : 'rgba(255,255,255,0.1)',
-                    },
-                  ]}
+                  className="flex-row items-center rounded-xl border p-4 gap-4 min-h-[64px]"
+                  style={{
+                    backgroundColor: isActive
+                      ? `${theme.tokens.primaryContainer}18`
+                      : 'rgba(255,255,255,0.04)',
+                    borderColor: isActive
+                      ? theme.tokens.primaryContainer
+                      : 'rgba(255,255,255,0.1)',
+                  }}
                   activeOpacity={0.8}
                   onPress={() => {
                     setTheme(id);
@@ -244,31 +269,30 @@ export default function ProfileScreen() {
                 >
                   {/* Color swatch */}
                   <View
-                    style={[
-                      styles.themeSwatch,
-                      { backgroundColor: theme.tokens.primaryContainer },
-                    ]}
+                    className="w-9 h-9 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: theme.tokens.primaryContainer }}
                   />
-                  <View style={styles.themeOptionInfo}>
-                    <Text style={styles.themeOptionLabel}>{theme.label}</Text>
+                  <View className="flex-1">
+                    <Text className="text-lg font-semibold text-white">{theme.label}</Text>
                     {isActive && (
-                      <Text style={[styles.themeOptionActive, { color: theme.tokens.primaryContainer }]}>
+                      <Text className="text-[12px] font-bold tracking-widest uppercase" style={{ color: theme.tokens.primaryContainer }}>
                         Active
                       </Text>
                     )}
                   </View>
                   {isActive && (
-                    <Text style={[styles.themeCheck, { color: theme.tokens.primaryContainer }]}>✓</Text>
+                    <Text className="text-xl font-bold" style={{ color: theme.tokens.primaryContainer }}>✓</Text>
                   )}
                 </TouchableOpacity>
               );
             })}
 
             <TouchableOpacity
-              style={[styles.modalDismiss, { borderColor: 'rgba(255,255,255,0.1)' }]}
+              className="h-12 border rounded-lg items-center justify-center mt-2"
+              style={{ borderColor: 'rgba(255,255,255,0.1)' }}
               onPress={() => setThemeModalVisible(false)}
             >
-              <Text style={[styles.modalDismissText, { color: 'rgba(255,255,255,0.5)' }]}>
+              <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 CANCEL
               </Text>
             </TouchableOpacity>
@@ -278,256 +302,3 @@ export default function ProfileScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  scroll: { flex: 1 },
-  content: {
-    paddingTop: 16,
-    paddingHorizontal: 24,
-    paddingBottom: 120,
-    gap: 40,
-  },
-  // Profile header bento
-  profileHeaderBento: {
-    flexDirection: 'row',
-    gap: 16,
-    flexWrap: 'wrap',
-  },
-  avatarCard: {
-    flex: 1,
-    minWidth: 140,
-    borderRadius: 12,
-    padding: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 200,
-    gap: 12,
-  },
-  avatarRing: {
-    width: 96,
-    height: 96,
-    borderRadius: 99,
-    borderWidth: 2,
-    overflow: 'hidden',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 15,
-    elevation: 8,
-  },
-  avatarImage: { width: '100%', height: '100%' },
-  avatarPlaceholder: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarInitial: {
-    fontSize: 36,
-    fontWeight: '800',
-  },
-  profileName: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#fff',
-    textAlign: 'center',
-  },
-  profileRank: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-  },
-  // Stats grid
-  statsGrid: {
-    flex: 1,
-    gap: 16,
-    minWidth: 140,
-  },
-  statCard: {
-    flex: 1,
-    borderRadius: 12,
-    padding: 20,
-    justifyContent: 'center',
-    minHeight: 90,
-    borderWidth: 1,
-    borderColor: 'transparent',
-  },
-  statCardWide: {
-    borderRadius: 12,
-    padding: 20,
-    justifyContent: 'center',
-    minHeight: 90,
-    borderWidth: 1,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  statLabel: {
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 6,
-  },
-  statValueRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: 8,
-  },
-  statBigNum: {
-    fontSize: 48,
-    fontWeight: '700',
-    lineHeight: 52,
-    color: '#fff',
-  },
-  statUnit: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: 6,
-  },
-  statUnitWhite: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    marginBottom: 6,
-    color: '#fff',
-  },
-  fireIcon: {
-    position: 'absolute',
-    bottom: -10,
-    right: -10,
-    fontSize: 80,
-    opacity: 0.1,
-  },
-  // Settings
-  section: { gap: 16 },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '500',
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-    paddingLeft: 8,
-    borderLeftWidth: 2,
-  },
-  settingsCard: {
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  settingsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 24,
-    minHeight: 72,
-  },
-  settingsRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  settingsIcon: { fontSize: 20 },
-  settingsRowInfo: { gap: 2 },
-  settingsRowTitle: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#fff',
-  },
-  settingsRowValue: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  chevron: { fontSize: 24 },
-  divider: { height: 1, marginHorizontal: 0 },
-  // Danger zone
-  dangerZone: {
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 4,
-    borderWidth: 2,
-    minHeight: 48,
-  },
-  logoutIcon: { fontSize: 16, color: '#ef4444' },
-  logoutText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-    color: '#ef4444',
-  },
-  // Theme modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.72)',
-    justifyContent: 'flex-end',
-  },
-  modalSheet: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    borderTopWidth: 1,
-    padding: 24,
-    paddingBottom: 48,
-    gap: 12,
-  },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  modalSubtitle: {
-    fontSize: 14,
-    marginBottom: 8,
-  },
-  themeOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 12,
-    borderWidth: 1.5,
-    padding: 16,
-    gap: 16,
-    minHeight: 64,
-  },
-  themeSwatch: {
-    width: 36,
-    height: 36,
-    borderRadius: 99,
-    flexShrink: 0,
-  },
-  themeOptionInfo: { flex: 1 },
-  themeOptionLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  themeOptionActive: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  themeCheck: {
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  modalDismiss: {
-    height: 48,
-    borderWidth: 1,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
-  },
-  modalDismissText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-});

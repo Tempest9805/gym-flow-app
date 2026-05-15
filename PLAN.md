@@ -1,5 +1,16 @@
 # PLAN: Gym Flow App (User-Only MVP + Stitch UI System)
 
+## 🟢 Current Status
+- **Exercises**: 147 synced to Supabase ✅
+- **Security**: Production RLS active on all tables ✅
+- **Validation**: Zod schemas cover all lib/api responses ✅
+- **TypeScript**: 0 compiler errors ✅
+- **Phase 1**: Complete ✅
+- **Phase 2**: Complete ✅
+- **Phase 3**: Complete (Timer + Tabata) ✅
+- **Phase 4**: In progress — styling and type hardening pending
+- **Next**: NativeWind migration (StyleSheet.create → utility classes)
+
 ## Project Summary
 `gym-flow-app` is a mobile-first fitness app for iOS and Android focused on individual users.
 
@@ -268,13 +279,21 @@ Use a simple user-centered model linked to `auth.users`.
 - [ ] Better progress display
 
 ### Phase 3: Utility Tools
-- [ ] Timer (hamburger menu)
-- [ ] Tabata (hamburger menu)
-- [ ] Timer and Tabata should each have:
-  - setup view
-  - active session view
+- [x] Timer (hamburger menu)
+- [x] Tabata (hamburger menu)
+- [x] Timer and Tabata should each have:
+  - [x] setup view
+  - [x] active session view
 
-### Phase 4: Growth Features
+### Phase 4: Growth & Remediation
+- [x] Hardened RLS for routines, routine_exercises, workout_schedules, profiles
+- [x] Revoked temporary bypass policies (temp_anon_write, allow_anon_insert)
+- [x] Implement Zod validation in lib/api (schemas.ts, all 6 entities)
+- [x] Global type alignment — types/index.ts re-exports Zod-inferred types
+- [x] TSC passes with 0 errors (npx tsc --noEmit)
+- [x] Fix sharing RLS — recipient can read pending shared routines
+- [ ] Refactor styles to NativeWind (02-styling.md compliance)
+- [ ] TypeScript hardening — eliminate remaining any in UI components
 - [ ] Progress history
 - [ ] Notifications
 - [ ] Basic analytics
@@ -405,5 +424,3 @@ The project now uses Stitch-generated designs as the visual implementation base.
 - RLS policies must remain simple and non-recursive
 - The exercise catalog should support future filtering, favorites, and recommendations without restructuring core entities
 - Stitch-based UI should remain the visual baseline for future screens and refinements
-
-**STOP: Awaiting approval for PLAN.md.**

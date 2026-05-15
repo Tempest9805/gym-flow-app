@@ -16,7 +16,6 @@ import {
   TouchableOpacity,
   Modal,
   Alert,
-  StyleSheet,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -169,16 +168,27 @@ export default function RoutineBuilderScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView 
+      className="flex-1" 
+      style={{ backgroundColor: t.background }} 
+      edges={['top']}
+    >
       <AppTopBar />
       <ScrollView
-        style={[styles.scroll, { backgroundColor: t.background }]}
-        contentContainerStyle={styles.content}
+        className="flex-1"
+        style={{ backgroundColor: t.background }}
+        contentContainerStyle={{ 
+          paddingTop: 24, 
+          paddingHorizontal: 20, 
+          paddingBottom: 120, 
+          gap: 48 
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* ── Routine Name ── */}
         <TextInput
-          style={[styles.routineNameInput, { color: t.onBackground }]}
+          className="text-5xl font-extrabold leading-[52px] tracking-tighter uppercase p-0 bg-transparent"
+          style={{ color: t.onBackground }}
           placeholder="ROUTINE NAME"
           placeholderTextColor={t.surfaceVariant}
           value={name}
@@ -187,139 +197,120 @@ export default function RoutineBuilderScreen() {
         />
 
         {/* ── Tag Pills ── */}
-        <View style={styles.tagRow}>
+        <View className="flex-row gap-3 flex-wrap">
           <View
-            style={[
-              styles.tag,
-              {
-                backgroundColor: `${t.primaryContainer}22`,
-                borderColor: `${t.primaryContainer}44`,
-              },
-            ]}
+            className="px-3 py-1 rounded-full border"
+            style={{
+              backgroundColor: `${t.primaryContainer}22`,
+              borderColor: `${t.primaryContainer}44`,
+            }}
           >
-            <Text style={[styles.tagText, { color: t.primaryContainer }]}>STRENGTH</Text>
+            <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: t.primaryContainer }}>STRENGTH</Text>
           </View>
           <View
-            style={[
-              styles.tag,
-              { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest },
-            ]}
+            className="px-3 py-1 rounded-full border"
+            style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
           >
-            <Text style={[styles.tagText, { color: t.onSurfaceVariant }]}>HYPERTROPHY</Text>
+            <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: t.onSurfaceVariant }}>HYPERTROPHY</Text>
           </View>
         </View>
 
         {/* ── Exercise Blocks ── */}
-        <View style={styles.exercisesContainer}>
+        <View className="gap-3">
           {exercises.map((draft, exIndex) => (
             <View
               key={exIndex}
-              style={[
-                styles.exerciseBlock,
-                {
-                  backgroundColor: t.surfaceContainer,
-                  borderColor: t.surfaceContainerHighest,
-                },
-              ]}
+              className="rounded-xl p-6 gap-6 border shadow-2xl elevation-md"
+              style={{
+                backgroundColor: t.surfaceContainer,
+                borderColor: t.surfaceContainerHighest,
+                shadowColor: '#000',
+              }}
             >
               {/* Block header */}
-              <View style={styles.blockHeader}>
-                <View style={styles.blockHeaderInfo}>
-                  <Text style={[styles.blockName, { color: t.onSurface }]}>
+              <View className="flex-row justify-between items-start">
+                <View className="gap-1">
+                  <Text className="text-xl font-bold uppercase" style={{ color: t.onSurface }}>
                     {(draft.exercise.name_en || 'EXERCISE').toUpperCase()}
                   </Text>
-                  <Text style={[styles.blockMeta, { color: t.primaryContainer }]}>
+                  <Text className="text-sm leading-5" style={{ color: t.primaryContainer }}>
                     Target: {draft.exercise.muscle_group || 'N/A'}
                   </Text>
                 </View>
-                <View style={styles.blockHeaderActions}>
+                <View className="flex-row gap-2">
                   <TouchableOpacity
-                    style={styles.blockIconBtn}
+                    className="w-9 h-9 rounded-full items-center justify-center"
                     onPress={() => handleRemoveExercise(exIndex)}
                   >
-                    <Text style={[styles.blockIconText, { color: t.outlineVariant }]}>✕</Text>
+                    <Text className="text-base" style={{ color: t.outlineVariant }}>✕</Text>
                   </TouchableOpacity>
                 </View>
               </View>
 
               {/* Sets table */}
-              <View style={styles.setsContainer}>
+              <View className="gap-3">
                 {/* Column headers */}
-                <View style={styles.setsHeaderRow}>
-                  <Text style={[styles.setColLabel, { color: t.outlineVariant, flex: 0.4 }]}>SET</Text>
-                  <Text style={[styles.setColLabel, { color: t.outlineVariant, flex: 1 }]}>LBS</Text>
-                  <Text style={[styles.setColLabel, { color: t.outlineVariant, flex: 1 }]}>REPS</Text>
-                  <View style={{ width: 48 }} />
+                <View className="flex-row items-center gap-4 px-2">
+                  <Text className="text-[11px] font-bold tracking-widest uppercase text-center flex-[0.4]" style={{ color: t.outlineVariant }}>SET</Text>
+                  <Text className="text-[11px] font-bold tracking-widest uppercase text-center flex-1" style={{ color: t.outlineVariant }}>LBS</Text>
+                  <Text className="text-[11px] font-bold tracking-widest uppercase text-center flex-1" style={{ color: t.outlineVariant }}>REPS</Text>
+                  <View className="w-12" />
                 </View>
 
                 {draft.sets.map((set, setIndex) => (
-                  <View key={setIndex} style={styles.setRow}>
+                  <View key={setIndex} className="flex-row items-center gap-4">
                     <Text
-                      style={[
-                        styles.setNum,
-                        { color: t.surfaceVariant, flex: 0.4 },
-                      ]}
+                      className="text-xl font-semibold text-center flex-[0.4]"
+                      style={{ color: t.surfaceVariant }}
                     >
                       {setIndex + 1}
                     </Text>
                     <TextInput
-                      style={[
-                        styles.setInput,
-                        {
-                          backgroundColor: t.surfaceContainerHigh,
-                          color: t.onSurface,
-                          flex: 1,
-                        },
-                      ]}
+                      className="h-12 rounded-lg text-xl font-semibold text-center flex-1"
+                      style={{
+                        backgroundColor: t.surfaceContainerHigh,
+                        color: t.onSurface,
+                      }}
                       keyboardType="numeric"
                       value={String(set.weight)}
                       onChangeText={(v) =>
                         handleUpdateSet(exIndex, setIndex, 'weight', parseInt(v) || 0)
                       }
-                      textAlign="center"
                     />
                     <TextInput
-                      style={[
-                        styles.setInput,
-                        {
-                          backgroundColor: t.surfaceContainerHigh,
-                          color: t.onSurface,
-                          flex: 1,
-                        },
-                      ]}
+                      className="h-12 rounded-lg text-xl font-semibold text-center flex-1"
+                      style={{
+                        backgroundColor: t.surfaceContainerHigh,
+                        color: t.onSurface,
+                      }}
                       keyboardType="numeric"
                       value={String(set.reps)}
                       onChangeText={(v) =>
                         handleUpdateSet(exIndex, setIndex, 'reps', parseInt(v) || 0)
                       }
-                      textAlign="center"
                     />
                     <TouchableOpacity
-                      style={[
-                        styles.copyBtn,
-                        { backgroundColor: t.surfaceContainerHighest },
-                      ]}
+                      className="w-12 h-12 rounded-lg items-center justify-center"
+                      style={{ backgroundColor: t.surfaceContainerHighest }}
                       onPress={() => {
                         const lastSet = draft.sets.at(-1) ?? set;
                         handleAddSet(exIndex);
                       }}
                     >
-                      <Text style={[styles.copyBtnText, { color: t.outline }]}>⧉</Text>
+                      <Text className="text-lg" style={{ color: t.outline }}>⧉</Text>
                     </TouchableOpacity>
                   </View>
                 ))}
 
                 {/* Add set */}
                 <TouchableOpacity
-                  style={[
-                    styles.addSetBtn,
-                    {
-                      borderColor: `${t.primaryContainer}44`,
-                    },
-                  ]}
+                  className="h-12 rounded-lg border border-dashed items-center justify-center mt-2"
+                  style={{
+                    borderColor: `${t.primaryContainer}44`,
+                  }}
                   onPress={() => handleAddSet(exIndex)}
                 >
-                  <Text style={[styles.addSetBtnText, { color: t.primaryContainer }]}>
+                  <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: t.primaryContainer }}>
                     + ADD SET
                   </Text>
                 </TouchableOpacity>
@@ -330,35 +321,32 @@ export default function RoutineBuilderScreen() {
 
         {/* ── ADD EXERCISE dashed button ── */}
         <TouchableOpacity
-          style={[
-            styles.addExerciseBtn,
-            {
-              borderColor: t.surfaceContainerHighest,
-            },
-          ]}
+          className="w-full h-16 rounded-xl border-2 border-dashed flex-row items-center justify-center gap-3"
+          style={{ borderColor: t.surfaceContainerHighest }}
           activeOpacity={0.7}
           onPress={() => setIsExerciseModalVisible(true)}
         >
-          <Text style={[styles.addExerciseBtnIcon, { color: t.onSurfaceVariant }]}>⊕</Text>
-          <Text style={[styles.addExerciseBtnText, { color: t.onSurfaceVariant }]}>
+          <Text className="text-xl" style={{ color: t.onSurfaceVariant }}>⊕</Text>
+          <Text className="text-base font-semibold uppercase tracking-widest" style={{ color: t.onSurfaceVariant }}>
             ADD EXERCISE
           </Text>
         </TouchableOpacity>
 
         {/* ── SAVE ROUTINE CTA ── */}
         <TouchableOpacity
-          style={[
-            styles.saveBtn,
-            {
-              backgroundColor: t.primaryContainer,
-              shadowColor: t.primaryContainer,
-            },
-          ]}
+          className="w-full h-20 rounded-xl items-center justify-center shadow-2xl elevation-md"
+          style={{
+            backgroundColor: t.primaryContainer,
+            shadowColor: t.primaryContainer,
+            shadowOpacity: 0.3,
+            shadowOffset: { width: 0, height: 0 },
+            shadowRadius: 16,
+          }}
           activeOpacity={0.85}
           onPress={handleSave}
           disabled={createRoutine.isPending}
         >
-          <Text style={[styles.saveBtnText, { color: t.onPrimaryContainer }]}>
+          <Text className="text-xl font-bold tracking-[3px] uppercase" style={{ color: t.onPrimaryContainer }}>
             {createRoutine.isPending ? 'SAVING...' : 'SAVE ROUTINE'}
           </Text>
         </TouchableOpacity>
@@ -371,22 +359,23 @@ export default function RoutineBuilderScreen() {
         presentationStyle="pageSheet"
         onRequestClose={() => setIsExerciseModalVisible(false)}
       >
-        <SafeAreaView style={[styles.modalSafeArea, { backgroundColor: t.surfaceContainer }]}>
-          <View style={styles.modalHeader}>
-            <Text style={[styles.modalTitle, { color: t.onSurface }]}>Select Exercise</Text>
+        <SafeAreaView 
+          className="flex-1 p-6 gap-4" 
+          style={{ backgroundColor: t.surfaceContainer }}
+        >
+          <View className="flex-row justify-between items-center mt-4 mb-2">
+            <Text className="text-2xl font-bold" style={{ color: t.onSurface }}>Select Exercise</Text>
             <TouchableOpacity onPress={() => setIsExerciseModalVisible(false)}>
-              <Text style={[styles.modalClose, { color: t.primaryContainer }]}>Close</Text>
+              <Text className="text-base font-semibold" style={{ color: t.primaryContainer }}>Close</Text>
             </TouchableOpacity>
           </View>
           <TextInput
-            style={[
-              styles.modalSearch,
-              {
-                backgroundColor: t.surfaceContainerHigh,
-                color: t.onSurface,
-                borderColor: t.surfaceContainerHighest,
-              },
-            ]}
+            className="h-16 rounded-xl px-4 text-lg border"
+            style={{
+              backgroundColor: t.surfaceContainerHigh,
+              color: t.onSurface,
+              borderColor: t.surfaceContainerHighest,
+            }}
             placeholder="Search exercises..."
             placeholderTextColor={t.onSurfaceVariant}
             value={searchQuery}
@@ -396,18 +385,19 @@ export default function RoutineBuilderScreen() {
             {filteredExercises.map((exercise) => (
               <TouchableOpacity
                 key={exercise.id}
-                style={[styles.modalExerciseRow, { backgroundColor: t.surfaceContainerHigh }]}
+                className="p-4 rounded-xl mb-3 flex-row justify-between items-center"
+                style={{ backgroundColor: t.surfaceContainerHigh }}
                 onPress={() => handleAddExercise(exercise)}
               >
                 <View>
-                  <Text style={[styles.modalExerciseName, { color: t.onSurface }]}>
+                  <Text className="text-lg font-bold" style={{ color: t.onSurface }}>
                     {exercise.name_en}
                   </Text>
-                  <Text style={[styles.modalExerciseMeta, { color: t.onSurfaceVariant }]}>
+                  <Text className="text-sm mt-0.5" style={{ color: t.onSurfaceVariant }}>
                     {exercise.muscle_group}
                   </Text>
                 </View>
-                <Text style={[styles.modalExerciseAdd, { color: t.primaryContainer }]}>+</Text>
+                <Text className="text-2xl font-bold" style={{ color: t.primaryContainer }}>+</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -416,192 +406,3 @@ export default function RoutineBuilderScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  scroll: { flex: 1 },
-  content: {
-    paddingTop: 24,
-    paddingHorizontal: 20,
-    paddingBottom: 120,
-    gap: 48,
-  },
-  // Routine name
-  routineNameInput: {
-    fontSize: 48,
-    fontWeight: '800',
-    lineHeight: 52,
-    letterSpacing: -1,
-    textTransform: 'uppercase',
-    padding: 0,
-    borderWidth: 0,
-    backgroundColor: 'transparent',
-  },
-  // Tags
-  tagRow: { flexDirection: 'row', gap: 12, flexWrap: 'wrap' },
-  tag: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 99,
-    borderWidth: 1,
-  },
-  tagText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  // Exercise blocks
-  exercisesContainer: { gap: 12 },
-  exerciseBlock: {
-    borderRadius: 12,
-    padding: 24,
-    gap: 24,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  blockHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  blockHeaderInfo: { gap: 4 },
-  blockName: {
-    fontSize: 20,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  blockMeta: { fontSize: 14, lineHeight: 20 },
-  blockHeaderActions: { flexDirection: 'row', gap: 8 },
-  blockIconBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 99,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  blockIconText: { fontSize: 16 },
-  // Sets
-  setsContainer: { gap: 12 },
-  setsHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    paddingHorizontal: 8,
-  },
-  setColLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-    textAlign: 'center',
-  },
-  setRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  setNum: {
-    fontSize: 20,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  setInput: {
-    height: 48,
-    borderRadius: 8,
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  copyBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  copyBtnText: { fontSize: 18 },
-  addSetBtn: {
-    height: 48,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 8,
-  },
-  addSetBtnText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  // Add exercise / Save
-  addExerciseBtn: {
-    width: '100%',
-    height: 64,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderStyle: 'dashed',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 12,
-  },
-  addExerciseBtnIcon: { fontSize: 20 },
-  addExerciseBtnText: {
-    fontSize: 16,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-    letterSpacing: 2,
-  },
-  saveBtn: {
-    width: '100%',
-    height: 80,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 16,
-    elevation: 8,
-  },
-  saveBtnText: {
-    fontSize: 20,
-    fontWeight: '700',
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-  },
-  // Modal
-  modalSafeArea: { flex: 1, padding: 24, gap: 16 },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  modalTitle: { fontSize: 24, fontWeight: '700' },
-  modalClose: { fontSize: 16, fontWeight: '600' },
-  modalSearch: {
-    height: 64,
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 18,
-    borderWidth: 1,
-  },
-  modalExerciseRow: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  modalExerciseName: { fontSize: 18, fontWeight: '700' },
-  modalExerciseMeta: { fontSize: 14, marginTop: 2 },
-  modalExerciseAdd: { fontSize: 24, fontWeight: '700' },
-});

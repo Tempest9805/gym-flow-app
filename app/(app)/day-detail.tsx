@@ -11,7 +11,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
   ScrollView,
   Alert,
 } from 'react-native';
@@ -62,77 +61,90 @@ export default function DayDetailScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: t.background }} edges={['top']}>
       <AppTopBar />
-      <View style={[styles.container, { backgroundColor: t.background }]}>
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <View className="flex-1" style={{ backgroundColor: t.background }}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
           {/* ── 1. Hero Area ── */}
-          <View style={styles.hero}>
-            <View style={[styles.heroBadge, { backgroundColor: `${t.primaryContainer}22`, borderColor: `${t.primaryContainer}44` }]}>
-              <Text style={[styles.heroBadgeText, { color: t.primaryContainer }]}>DAILY PROTOCOL</Text>
+          <View className="px-6 pt-8 gap-3">
+            <View 
+              className="px-3 py-1 rounded-full border self-start" 
+              style={{ backgroundColor: `${t.primaryContainer}22`, borderColor: `${t.primaryContainer}44` }}
+            >
+              <Text className="text-[11px] font-bold tracking-[2px]" style={{ color: t.primaryContainer }}>DAILY PROTOCOL</Text>
             </View>
-            <Text style={[styles.dayTitle, { color: t.onSurface }]}>{dayName}</Text>
+            <Text className="text-[48px] font-black tracking-tighter" style={{ color: t.onSurface }}>{dayName}</Text>
           </View>
 
           {/* ── 2. Protocol Assignment ── */}
           {routineForDay ? (
-            <View style={styles.protocolArea}>
-              <View style={[styles.protocolCard, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-                <Text style={[styles.protocolLabel, { color: t.outline }]}>ASSIGNED ROUTINE</Text>
-                <Text style={[styles.protocolName, { color: t.onSurface }]}>{routineForDay.name.toUpperCase()}</Text>
+            <View className="p-5 mt-6">
+              <View 
+                className="rounded-3xl border p-6 gap-5" 
+                style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
+              >
+                <Text className="text-[10px] font-extrabold tracking-[2px]" style={{ color: t.outline }}>ASSIGNED ROUTINE</Text>
+                <Text className="text-[32px] font-extrabold leading-[38px]" style={{ color: t.onSurface }}>{routineForDay.name.toUpperCase()}</Text>
                 
-                <View style={styles.statsRow}>
-                  <View style={styles.stat}>
-                    <Text style={[styles.statValue, { color: t.onSurface }]}>{routineForDay.exercises?.length ?? 0}</Text>
-                    <Text style={[styles.statLabel, { color: t.onSurfaceVariant }]}>MOVEMENTS</Text>
+                <View className="flex-row items-center py-3">
+                  <View className="flex-1 items-center gap-1">
+                    <Text className="text-2xl font-extrabold" style={{ color: t.onSurface }}>{routineForDay.exercises?.length ?? 0}</Text>
+                    <Text className="text-[10px] font-bold tracking-widest" style={{ color: t.onSurfaceVariant }}>MOVEMENTS</Text>
                   </View>
-                  <View style={[styles.statDivider, { backgroundColor: t.surfaceContainerHighest }]} />
-                  <View style={styles.stat}>
-                    <Text style={[styles.statValue, { color: t.onSurface }]}>45m</Text>
-                    <Text style={[styles.statLabel, { color: t.onSurfaceVariant }]}>EST. TIME</Text>
+                  <View className="w-[1px] h-10" style={{ backgroundColor: t.surfaceContainerHighest }} />
+                  <View className="flex-1 items-center gap-1">
+                    <Text className="text-2xl font-extrabold" style={{ color: t.onSurface }}>45m</Text>
+                    <Text className="text-[10px] font-bold tracking-widest" style={{ color: t.onSurfaceVariant }}>EST. TIME</Text>
                   </View>
                 </View>
 
-                <View style={styles.cardActions}>
+                <View className="gap-3 mt-3">
                   <TouchableOpacity
-                    style={[styles.primaryBtn, { backgroundColor: t.primaryContainer, shadowColor: t.primaryContainer }]}
+                    className="h-16 rounded-xl items-center justify-center shadow-2xl elevation-md"
+                    style={{ backgroundColor: t.primaryContainer, shadowColor: t.primaryContainer }}
                     onPress={() => router.push({ pathname: '/workout', params: { id: routineForDay.id } })}
                   >
-                    <Text style={[styles.primaryBtnText, { color: '#000' }]}>VIEW & START</Text>
+                    <Text className="text-base font-extrabold tracking-[2px] text-black">VIEW & START</Text>
                   </TouchableOpacity>
                   
                   <TouchableOpacity
-                    style={[styles.clearBtn, { borderColor: t.surfaceContainerHighest }]}
+                    className="h-14 rounded-xl border items-center justify-center"
+                    style={{ borderColor: t.surfaceContainerHighest }}
                     onPress={handleClearDay}
                   >
-                    <Text style={[styles.clearBtnText, { color: t.error || '#ff4444' }]}>CLEAR FROM SCHEDULE</Text>
+                    <Text className="text-[13px] font-bold tracking-widest" style={{ color: t.error || '#ff4444' }}>CLEAR FROM SCHEDULE</Text>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           ) : (
-            <View style={styles.restArea}>
-              <View style={styles.restIconWrapper}>
-                <Text style={styles.restIcon}>💤</Text>
+            <View className="flex-1 p-8 items-center gap-4 mt-10">
+              <View 
+                className="w-[100px] h-[100px] rounded-full items-center justify-center mb-4" 
+                style={{ backgroundColor: 'rgba(255,255,255,0.03)' }}
+              >
+                <Text className="text-[48px]">💤</Text>
               </View>
-              <Text style={[styles.restTitle, { color: t.onSurface }]}>REST & RECOVERY</Text>
-              <Text style={[styles.restSubtitle, { color: t.onSurfaceVariant }]}>
+              <Text className="text-[28px] font-extrabold tracking-[-0.5px]" style={{ color: t.onSurface }}>REST & RECOVERY</Text>
+              <Text className="text-base text-center leading-6 mb-8" style={{ color: t.onSurfaceVariant }}>
                 No training protocol assigned for this period. Rest is essential for peak performance.
               </Text>
 
-              <View style={styles.restActions}>
+              <View className="w-full gap-3">
                 <TouchableOpacity
-                  style={[styles.primaryBtn, { backgroundColor: t.primaryContainer, shadowColor: t.primaryContainer }]}
+                  className="h-16 rounded-xl items-center justify-center shadow-2xl elevation-md"
+                  style={{ backgroundColor: t.primaryContainer, shadowColor: t.primaryContainer }}
                   onPress={() => router.push('/routines')}
                 >
-                  <Text style={[styles.primaryBtnText, { color: '#000' }]}>ASSIGN ROUTINE</Text>
+                  <Text className="text-base font-extrabold tracking-[2px] text-black">ASSIGN ROUTINE</Text>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
-                  style={[styles.secondaryBtn, { borderColor: t.surfaceContainerHighest }]}
+                  className="h-14 rounded-xl border items-center justify-center"
+                  style={{ borderColor: t.surfaceContainerHighest }}
                   onPress={() => router.push('/routine-builder')}
                 >
-                  <Text style={[styles.secondaryBtnText, { color: t.onSurface }]}>BUILD NEW PROTOCOL</Text>
+                  <Text className="text-sm font-semibold tracking-widest" style={{ color: t.onSurface }}>BUILD NEW PROTOCOL</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -142,150 +154,3 @@ export default function DayDetailScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { flex: 1 },
-  scrollContent: { paddingBottom: 40 },
-  hero: {
-    paddingHorizontal: 24,
-    paddingTop: 32,
-    gap: 12,
-  },
-  heroBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 99,
-    borderWidth: 1,
-    alignSelf: 'flex-start',
-  },
-  heroBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 2,
-  },
-  dayTitle: {
-    fontSize: 48,
-    fontWeight: '900',
-    letterSpacing: -1,
-  },
-  protocolArea: {
-    padding: 20,
-    marginTop: 24,
-  },
-  protocolCard: {
-    borderRadius: 24,
-    borderWidth: 1,
-    padding: 24,
-    gap: 20,
-  },
-  protocolLabel: {
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 2,
-  },
-  protocolName: {
-    fontSize: 32,
-    fontWeight: '800',
-    lineHeight: 38,
-  },
-  statsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  stat: {
-    flex: 1,
-    alignItems: 'center',
-    gap: 4,
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '800',
-  },
-  statLabel: {
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  statDivider: {
-    width: 1,
-    height: 40,
-  },
-  cardActions: {
-    gap: 12,
-    marginTop: 12,
-  },
-  primaryBtn: {
-    height: 64,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 12,
-    elevation: 6,
-  },
-  primaryBtnText: {
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 2,
-  },
-  clearBtn: {
-    height: 56,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  clearBtnText: {
-    fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 1,
-  },
-  // Rest Area
-  restArea: {
-    flex: 1,
-    padding: 32,
-    alignItems: 'center',
-    gap: 16,
-    marginTop: 40,
-  },
-  restIconWrapper: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: 'rgba(255,255,255,0.03)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
-  },
-  restIcon: { fontSize: 48 },
-  restTitle: {
-    fontSize: 28,
-    fontWeight: '800',
-    letterSpacing: -0.5,
-  },
-  restSubtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    lineHeight: 24,
-    marginBottom: 32,
-  },
-  restActions: {
-    width: '100%',
-    gap: 12,
-  },
-  secondaryBtn: {
-    height: 56,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryBtnText: {
-    fontSize: 14,
-    fontWeight: '600',
-    letterSpacing: 1,
-  },
-});

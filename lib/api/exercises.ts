@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
-import type { Exercise } from '@/types';
+import { ExerciseSchema } from './schemas';
+import type { Exercise } from './schemas';
 
 /** Columns we always select — avoids pulling media_* legacy columns if they still exist */
 const EXERCISE_COLUMNS = [
@@ -40,7 +41,7 @@ export const exercisesApi = {
     const { data, error } = await query.order('name_en', { ascending: true });
     if (error) throw error;
 
-    return (data || []) as unknown as Exercise[];
+    return ExerciseSchema.array().parse(data || []);
   },
 
   /** Return unique filter option values for the library UI */
@@ -52,10 +53,10 @@ export const exercisesApi = {
     if (error) throw error;
 
     return {
-      muscleGroups: Array.from(new Set(data.map((d) => d.muscle_group).filter(Boolean))).sort(),
-      categories:   Array.from(new Set(data.map((d) => d.category).filter(Boolean))).sort(),
-      difficulties: Array.from(new Set(data.map((d) => d.difficulty).filter(Boolean))).sort(),
-      equipment:    Array.from(new Set(data.map((d) => d.equipment).filter(Boolean))).sort(),
+      muscleGroups: Array.from(new Set(data.map((d) => d.muscle_group).filter(Boolean))).sort() as string[],
+      categories:   Array.from(new Set(data.map((d) => d.category).filter(Boolean))).sort() as string[],
+      difficulties: Array.from(new Set(data.map((d) => d.difficulty).filter(Boolean))).sort() as string[],
+      equipment:    Array.from(new Set(data.map((d) => d.equipment).filter(Boolean))).sort() as string[],
     };
   },
 
@@ -71,7 +72,7 @@ export const exercisesApi = {
       if (error.code === 'PGRST116') return null;
       throw error;
     }
-    return data as unknown as Exercise;
+    return ExerciseSchema.parse(data);
   },
 
   /** Get a single exercise by slug */
@@ -86,6 +87,6 @@ export const exercisesApi = {
       if (error.code === 'PGRST116') return null;
       throw error;
     }
-    return data as unknown as Exercise;
+    return ExerciseSchema.parse(data);
   },
 };

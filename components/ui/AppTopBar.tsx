@@ -4,7 +4,7 @@
  * Now includes a Hamburger Menu Modal for Utility Features (Timer, Tabata).
  */
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useRouter } from 'expo-router';
@@ -37,43 +37,39 @@ export function AppTopBar({ onMenuPress }: AppTopBarProps) {
   return (
     <>
       <View
-        style={[
-          styles.bar,
-          {
-            backgroundColor: '#0A0A0A',
-            borderBottomColor: '#2A2A2A',
-          },
-        ]}
+        className="flex-row items-center justify-between h-16 px-5 border-b"
+        style={{
+          backgroundColor: '#0A0A0A',
+          borderBottomColor: '#2A2A2A',
+        }}
       >
         {/* Left: Menu icon */}
         <TouchableOpacity
-          style={styles.iconButton}
+          className="w-12 h-12 items-center justify-center"
           onPress={handleMenuPress}
           activeOpacity={0.7}
           accessibilityLabel="Open menu"
         >
-          <Text style={[styles.icon, { color: t.primaryContainer }]}>☰</Text>
+          <Text className="text-2xl" style={{ color: t.primaryContainer }}>☰</Text>
         </TouchableOpacity>
 
         {/* Center: App title */}
         <Text
-          style={[
-            styles.title,
-            {
-              color: t.primaryContainer,
-              textShadowColor: t.glowPrimary,
-              textShadowOffset: { width: 0, height: 0 },
-              textShadowRadius: 8,
-            },
-          ]}
+          className="flex-1 text-center font-black text-lg tracking-tight uppercase"
+          style={{
+            color: t.primaryContainer,
+            textShadowColor: t.glowPrimary,
+            textShadowOffset: { width: 0, height: 0 },
+            textShadowRadius: 8,
+          }}
           numberOfLines={1}
         >
           ELITE PERFORMANCE
         </Text>
 
         {/* Right: Language toggle placeholder */}
-        <View style={styles.iconButton}>
-          <Text style={[styles.langLabel, { color: t.primaryContainer }]}>EN</Text>
+        <View className="w-12 h-12 items-center justify-center">
+          <Text className="text-[12px] font-bold tracking-widest uppercase" style={{ color: t.primaryContainer }}>EN</Text>
         </View>
       </View>
 
@@ -84,34 +80,39 @@ export function AppTopBar({ onMenuPress }: AppTopBarProps) {
         animationType="fade"
         onRequestClose={closeMenu}
       >
-        <View style={styles.modalOverlay}>
+        <View className="flex-1 flex-row">
           <TouchableWithoutFeedback onPress={closeMenu}>
-            <View style={styles.modalBackground} />
+            <View className="absolute inset-0 bg-black/60" />
           </TouchableWithoutFeedback>
-          <SafeAreaView style={[styles.menuContainer, { backgroundColor: t.surface }]}>
-            <View style={[styles.menuHeader, { borderBottomColor: t.surfaceContainerHighest }]}>
-              <Text style={[styles.menuTitle, { color: t.onSurface }]}>UTILITIES</Text>
-              <TouchableOpacity onPress={closeMenu} style={styles.closeBtn}>
-                <Text style={[styles.closeIcon, { color: t.onSurfaceVariant }]}>✕</Text>
+          <SafeAreaView 
+            className="w-3/4 max-w-[320px] h-full shadow-2xl elevation-24" 
+            style={{ backgroundColor: t.surface, shadowColor: '#000', shadowOffset: { width: 4, height: 0 }, shadowOpacity: 0.5, shadowRadius: 20 }}
+          >
+            <View className="flex-row items-center justify-between p-6 pt-4 border-b" style={{ borderBottomColor: t.surfaceContainerHighest }}>
+              <Text className="text-base font-extrabold tracking-[2px] uppercase" style={{ color: t.onSurface }}>UTILITIES</Text>
+              <TouchableOpacity onPress={closeMenu} className="p-2 -mr-2">
+                <Text className="text-xl font-semibold" style={{ color: t.onSurfaceVariant }}>✕</Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.menuItems}>
+            <View className="flex-1 px-4 pt-4">
               <TouchableOpacity
-                style={[styles.menuItem, { borderBottomColor: t.surfaceContainerHighest }]}
+                className="flex-row items-center justify-between py-5 border-b"
+                style={{ borderBottomColor: t.surfaceContainerHighest }}
                 activeOpacity={0.7}
                 onPress={() => navigateTo('/timer')}
               >
-                <Text style={[styles.menuItemText, { color: t.onSurface }]}>⚡ Interval Timer</Text>
-                <Text style={[styles.chevron, { color: t.outlineVariant }]}>›</Text>
+                <Text className="text-lg font-bold" style={{ color: t.onSurface }}>⚡ Interval Timer</Text>
+                <Text className="text-2xl" style={{ color: t.outlineVariant }}>›</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.menuItem, { borderBottomColor: t.surfaceContainerHighest }]}
+                className="flex-row items-center justify-between py-5 border-b"
+                style={{ borderBottomColor: t.surfaceContainerHighest }}
                 activeOpacity={0.7}
                 onPress={() => navigateTo('/tabata')}
               >
-                <Text style={[styles.menuItemText, { color: t.onSurface }]}>◆ Tabata Protocol</Text>
-                <Text style={[styles.chevron, { color: t.outlineVariant }]}>›</Text>
+                <Text className="text-lg font-bold" style={{ color: t.onSurface }}>◆ Tabata Protocol</Text>
+                <Text className="text-2xl" style={{ color: t.outlineVariant }}>›</Text>
               </TouchableOpacity>
             </View>
           </SafeAreaView>
@@ -120,97 +121,3 @@ export function AppTopBar({ onMenuPress }: AppTopBarProps) {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  bar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: 64,
-    paddingHorizontal: 20,
-    borderBottomWidth: 1,
-  },
-  iconButton: {
-    width: 48,
-    height: 48,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    fontSize: 24,
-  },
-  title: {
-    fontWeight: '900',
-    fontSize: 18,
-    letterSpacing: -0.5,
-    textTransform: 'uppercase',
-    flex: 1,
-    textAlign: 'center',
-  },
-  langLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 1,
-    textTransform: 'uppercase',
-  },
-  // Modal Styles
-  modalOverlay: {
-    flex: 1,
-    flexDirection: 'row',
-  },
-  modalBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-  },
-  menuContainer: {
-    width: '75%',
-    maxWidth: 320,
-    height: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 4, height: 0 },
-    shadowOpacity: 0.5,
-    shadowRadius: 20,
-    elevation: 24,
-  },
-  menuHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 24,
-    paddingTop: 16,
-    borderBottomWidth: 1,
-  },
-  menuTitle: {
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  closeBtn: {
-    padding: 8,
-    marginRight: -8,
-  },
-  closeIcon: {
-    fontSize: 20,
-    fontWeight: '600',
-  },
-  menuItems: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-  },
-  menuItemText: {
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  chevron: {
-    fontSize: 24,
-  },
-});

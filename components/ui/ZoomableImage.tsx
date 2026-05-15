@@ -27,7 +27,6 @@ import {
   View,
   Modal,
   TouchableOpacity,
-  StyleSheet,
   Text,
   ScrollView,
   Dimensions,
@@ -36,6 +35,7 @@ import {
 } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { cn } from '@/lib/utils/cn';
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get('window');
 
@@ -50,6 +50,7 @@ interface ZoomableImageProps {
   showZoomHint?: boolean;
   /** Rendered when source is null */
   placeholder?: React.ReactNode;
+  className?: string;
 }
 
 export function ZoomableImage({
@@ -61,6 +62,7 @@ export function ZoomableImage({
   accessibilityLabel,
   showZoomHint = true,
   placeholder,
+  className,
 }: ZoomableImageProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const bestZoomSource = zoomSource ?? source;
@@ -79,7 +81,8 @@ export function ZoomableImage({
     <>
       {/* ── Thumbnail (list/card) ── */}
       <TouchableOpacity
-        style={[styles.thumbnailWrapper, style]}
+        className={cn("overflow-hidden relative", className)}
+        style={style}
         onPress={openZoom}
         activeOpacity={0.9}
         accessibilityRole="imagebutton"
@@ -88,15 +91,16 @@ export function ZoomableImage({
       >
         <ExpoImage
           source={source}
-          style={[styles.thumbnailImage, imageStyle]}
+          className="w-full h-full"
+          style={imageStyle}
           contentFit={contentFit}
           transition={300}
         />
 
         {/* Zoom hint badge */}
         {showZoomHint && (
-          <View style={styles.zoomHint} pointerEvents="none">
-            <Text style={styles.zoomHintText}>⤢ ZOOM</Text>
+          <View className="absolute bottom-3 right-3 bg-black/55 px-3 py-1 rounded-full border border-white/15" pointerEvents="none">
+            <Text className="text-white/85 text-[10px] font-bold tracking-[1.5px]">⤢ ZOOM</Text>
           </View>
         )}
       </TouchableOpacity>
@@ -110,22 +114,29 @@ export function ZoomableImage({
         statusBarTranslucent
       >
         <StatusBar hidden />
-        <SafeAreaView style={styles.modalSafe} edges={['top', 'bottom']}>
+        <SafeAreaView className="flex-1 bg-black" edges={['top', 'bottom']}>
           {/* Close button */}
           <TouchableOpacity
-            style={styles.closeButton}
+            className="absolute top-4 right-4 z-10 w-10 h-10 rounded-full bg-white/15 items-center justify-center"
+            style={Platform.OS === 'android' ? { marginTop: 24 } : {}}
             onPress={closeZoom}
             accessibilityRole="button"
             accessibilityLabel="Close fullscreen view"
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
           >
-            <Text style={styles.closeButtonText}>✕</Text>
+            <Text className="text-white text-lg font-bold">✕</Text>
           </TouchableOpacity>
 
           {/* Pinch-to-zoom via ScrollView */}
           <ScrollView
-            style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
+            className="flex-1"
+            contentContainerStyle={{
+              flex: 1,
+              alignItems: 'center',
+              justifyContent: 'center',
+              minHeight: SCREEN_H,
+              minWidth: SCREEN_W,
+            }}
             maximumZoomScale={4}
             minimumZoomScale={1}
             showsHorizontalScrollIndicator={false}
@@ -136,7 +147,7 @@ export function ZoomableImage({
             {bestZoomSource && (
               <ExpoImage
                 source={bestZoomSource}
-                style={styles.fullscreenImage}
+                style={{ width: SCREEN_W, height: SCREEN_H }}
                 contentFit="contain"
                 transition={200}
                 accessibilityLabel={accessibilityLabel}
@@ -145,87 +156,11 @@ export function ZoomableImage({
           </ScrollView>
 
           {/* Pinch hint */}
-          <View style={styles.pinchHint} pointerEvents="none">
-            <Text style={styles.pinchHintText}>Pinch to zoom</Text>
+          <View className="absolute bottom-8 left-0 right-0 items-center" pointerEvents="none">
+            <Text className="text-white/35 text-xs tracking-widest">Pinch to zoom</Text>
           </View>
         </SafeAreaView>
       </Modal>
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  thumbnailWrapper: {
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  thumbnailImage: {
-    width: '100%',
-    height: '100%',
-  },
-  zoomHint: {
-    position: 'absolute',
-    bottom: 12,
-    right: 12,
-    backgroundColor: 'rgba(0,0,0,0.55)',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 99,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.15)',
-  },
-  zoomHintText: {
-    color: 'rgba(255,255,255,0.85)',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-  },
-  // Modal
-  modalSafe: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  closeButton: {
-    position: 'absolute',
-    top: Platform.OS === 'android' ? 40 : 16,
-    right: 16,
-    zIndex: 10,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  closeButtonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: SCREEN_H,
-    minWidth: SCREEN_W,
-  },
-  fullscreenImage: {
-    width: SCREEN_W,
-    height: SCREEN_H,
-  },
-  pinchHint: {
-    position: 'absolute',
-    bottom: 32,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  pinchHintText: {
-    color: 'rgba(255,255,255,0.35)',
-    fontSize: 12,
-    letterSpacing: 1,
-  },
-});

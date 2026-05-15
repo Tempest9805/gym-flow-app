@@ -14,7 +14,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  StyleSheet,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -59,9 +58,9 @@ export default function ImportRoutineScreen() {
   // ── Camera scan view ──
   if (scanning) {
     return (
-      <View style={StyleSheet.absoluteFill}>
+      <View className="flex-1">
         <CameraView
-          style={StyleSheet.absoluteFill}
+          className="flex-1"
           onBarcodeScanned={({ data }) => {
             setScanning(false);
             setCode(data.toUpperCase().slice(0, 6));
@@ -70,18 +69,19 @@ export default function ImportRoutineScreen() {
           barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
         />
         {/* Scan overlay */}
-        <View style={styles.scanOverlay}>
-          <View style={[styles.scanFrame, { borderColor: t.primaryContainer }]} />
-          <Text style={[styles.scanText, { color: '#fff' }]}>
+        <View className="absolute inset-0 items-center justify-center gap-6">
+          <View className="w-64 h-64 border-[3px] rounded-2xl" style={{ borderColor: t.primaryContainer }} />
+          <Text className="text-base font-semibold tracking-widest text-white shadow-2xl">
             Point camera at QR code
           </Text>
         </View>
-        <View style={styles.scanCancelArea}>
+        <View className="absolute bottom-[60px] left-6 right-6">
           <TouchableOpacity
-            style={[styles.scanCancelBtn, { backgroundColor: 'rgba(0,0,0,0.8)', borderColor: 'rgba(255,255,255,0.2)' }]}
+            className="h-14 rounded-lg border items-center justify-center"
+            style={{ backgroundColor: 'rgba(0,0,0,0.8)', borderColor: 'rgba(255,255,255,0.2)' }}
             onPress={() => setScanning(false)}
           >
-            <Text style={[styles.scanCancelText, { color: '#fff' }]}>CANCEL</Text>
+            <Text className="text-sm font-bold tracking-[3px] text-white">CANCEL</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -89,63 +89,64 @@ export default function ImportRoutineScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: t.background }} edges={['top']}>
       <AppTopBar />
       <ScrollView
-        style={[styles.scroll, { backgroundColor: t.background }]}
-        contentContainerStyle={styles.content}
+        className="flex-1"
+        style={{ backgroundColor: t.background }}
+        contentContainerStyle={{
+          paddingTop: 24,
+          paddingHorizontal: 24,
+          paddingBottom: 120,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* ── Hero ── */}
-        <View style={styles.hero}>
+        <View className="gap-3 mb-8">
           <View
-            style={[
-              styles.heroBadge,
-              {
-                backgroundColor: `${t.primaryContainer}22`,
-                borderColor: `${t.primaryContainer}44`,
-              },
-            ]}
+            className="flex-row items-center gap-2 border rounded-full px-3 py-1 self-start"
+            style={{
+              backgroundColor: `${t.primaryContainer}22`,
+              borderColor: `${t.primaryContainer}44`,
+            }}
           >
-            <Text style={[styles.heroBadgeText, { color: t.primaryContainer }]}>
+            <Text className="text-[11px] font-bold tracking-[1.5px] uppercase" style={{ color: t.primaryContainer }}>
               ⬇  RECEIVE HUB
             </Text>
           </View>
-          <Text style={[styles.heroTitle, { color: t.onSurface }]}>
+          <Text className="text-[48px] font-extrabold leading-[52px] tracking-tighter uppercase" style={{ color: t.onSurface }}>
             RECEIVE{'\n'}PROTOCOL
           </Text>
-          <Text style={[styles.heroSubtitle, { color: t.onSurfaceVariant }]}>
+          <Text className="text-lg leading-7" style={{ color: t.onSurfaceVariant }}>
             Import a shared routine via code or QR
           </Text>
         </View>
 
         {/* ── Code Input Card ── */}
         <View
-          style={[
-            styles.codeCard,
-            {
-              backgroundColor: t.surfaceContainer,
-              borderColor: t.surfaceContainerHighest,
-            },
-          ]}
+          className="rounded-2xl border p-8 gap-6 items-center"
+          style={{
+            backgroundColor: t.surfaceContainer,
+            borderColor: t.surfaceContainerHighest,
+          }}
         >
-          <Text style={[styles.codeCardTitle, { color: t.onSurface }]}>
+          <Text className="text-[22px] font-bold uppercase tracking-widest text-center" style={{ color: t.onSurface }}>
             ENTER SHARE CODE
           </Text>
-          <Text style={[styles.codeCardSubtitle, { color: t.onSurfaceVariant }]}>
+          <Text className="text-base leading-[22px] text-center" style={{ color: t.onSurfaceVariant }}>
             6-character code from the sender
           </Text>
           <TextInput
-            style={[
-              styles.codeInput,
-              {
-                backgroundColor: t.surfaceContainerHigh,
-                borderColor: code.length === 6 ? t.primaryContainer : t.surfaceContainerHighest,
-                color: t.onSurface,
-                // Glow when complete
-                shadowColor: code.length === 6 ? t.primaryContainer : 'transparent',
-              },
-            ]}
+            className="w-full h-[88px] rounded-xl border-[1.5px] text-[40px] font-extrabold tracking-[12px] uppercase shadow-2xl elevation-sm"
+            style={{
+              backgroundColor: t.surfaceContainerHigh,
+              borderColor: code.length === 6 ? t.primaryContainer : t.surfaceContainerHighest,
+              color: t.onSurface,
+              shadowColor: code.length === 6 ? t.primaryContainer : 'transparent',
+              shadowOpacity: 0.25,
+              shadowOffset: { width: 0, height: 0 },
+              shadowRadius: 12,
+            }}
             placeholder="• • • • • •"
             placeholderTextColor={t.outlineVariant}
             value={code}
@@ -156,13 +157,14 @@ export default function ImportRoutineScreen() {
           />
           {/* Import CTA */}
           <TouchableOpacity
-            style={[
-              styles.importButton,
-              {
-                backgroundColor: code.length === 6 ? t.primaryContainer : t.surfaceContainerHighest,
-                shadowColor: code.length === 6 ? t.primaryContainer : 'transparent',
-              },
-            ]}
+            className="w-full h-16 rounded-lg items-center justify-center shadow-2xl elevation-md"
+            style={{
+              backgroundColor: code.length === 6 ? t.primaryContainer : t.surfaceContainerHighest,
+              shadowColor: code.length === 6 ? t.primaryContainer : 'transparent',
+              shadowOpacity: 0.3,
+              shadowOffset: { width: 0, height: 0 },
+              shadowRadius: 16,
+            }}
             activeOpacity={0.85}
             onPress={() => handleImport(code)}
             disabled={code.length < 6 || isPending}
@@ -171,10 +173,8 @@ export default function ImportRoutineScreen() {
               <ActivityIndicator color={t.onPrimaryContainer} />
             ) : (
               <Text
-                style={[
-                  styles.importButtonText,
-                  { color: code.length === 6 ? t.onPrimaryContainer : t.outlineVariant },
-                ]}
+                className="text-base font-bold tracking-[3px] uppercase"
+                style={{ color: code.length === 6 ? t.onPrimaryContainer : t.outlineVariant }}
               >
                 IMPORT ROUTINE
               </Text>
@@ -183,38 +183,32 @@ export default function ImportRoutineScreen() {
         </View>
 
         {/* ── OR Divider ── */}
-        <View style={styles.dividerRow}>
-          <View style={[styles.dividerLine, { backgroundColor: t.surfaceContainerHighest }]} />
-          <Text style={[styles.dividerLabel, { color: t.outlineVariant }]}>OR</Text>
-          <View style={[styles.dividerLine, { backgroundColor: t.surfaceContainerHighest }]} />
+        <View className="flex-row items-center gap-4">
+          <View className="flex-1 h-[1px]" style={{ backgroundColor: t.surfaceContainerHighest }} />
+          <Text className="text-sm font-bold tracking-[3px] uppercase" style={{ color: t.outlineVariant }}>OR</Text>
+          <View className="flex-1 h-[1px]" style={{ backgroundColor: t.surfaceContainerHighest }} />
         </View>
 
         {/* ── Scan QR Card ── */}
         <View
-          style={[
-            styles.qrCard,
-            {
-              backgroundColor: t.surfaceContainer,
-              borderColor: t.surfaceContainerHighest,
-            },
-          ]}
+          className="rounded-2xl border p-8 gap-4 items-center"
+          style={{
+            backgroundColor: t.surfaceContainer,
+            borderColor: t.surfaceContainerHighest,
+          }}
         >
-          <Text style={[styles.qrCardTitle, { color: t.onSurface }]}>SCAN QR CODE</Text>
-          <Text style={[styles.qrCardSubtitle, { color: t.onSurfaceVariant }]}>
+          <Text className="text-[22px] font-bold uppercase tracking-widest text-center" style={{ color: t.onSurface }}>SCAN QR CODE</Text>
+          <Text className="text-base leading-[22px] text-center" style={{ color: t.onSurfaceVariant }}>
             Point your camera at the sender's QR code to import instantly
           </Text>
           <TouchableOpacity
-            style={[
-              styles.scanButton,
-              {
-                borderColor: t.surfaceContainerHighest,
-              },
-            ]}
+            className="flex-row gap-3 h-16 w-full rounded-lg border border-dashed items-center justify-center"
+            style={{ borderColor: t.surfaceContainerHighest }}
             activeOpacity={0.7}
             onPress={startScanning}
           >
-            <Text style={[styles.scanButtonIcon, { color: t.onSurfaceVariant }]}>◎</Text>
-            <Text style={[styles.scanButtonText, { color: t.onSurfaceVariant }]}>
+            <Text className="text-[22px]" style={{ color: t.onSurfaceVariant }}>◎</Text>
+            <Text className="text-base font-semibold tracking-widest uppercase" style={{ color: t.onSurfaceVariant }}>
               OPEN CAMERA
             </Text>
           </TouchableOpacity>
@@ -223,185 +217,3 @@ export default function ImportRoutineScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  scroll: { flex: 1 },
-  content: {
-    paddingTop: 24,
-    paddingHorizontal: 24,
-    paddingBottom: 120,
-    gap: 32,
-  },
-  // Hero
-  hero: { gap: 12 },
-  heroBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderRadius: 99,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    alignSelf: 'flex-start',
-  },
-  heroBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-  heroTitle: {
-    fontSize: 48,
-    fontWeight: '800',
-    lineHeight: 52,
-    letterSpacing: -1,
-    textTransform: 'uppercase',
-  },
-  heroSubtitle: {
-    fontSize: 18,
-    lineHeight: 28,
-  },
-  // Code card
-  codeCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 32,
-    gap: 24,
-    alignItems: 'center',
-  },
-  codeCardTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    textAlign: 'center',
-  },
-  codeCardSubtitle: {
-    fontSize: 16,
-    lineHeight: 22,
-    textAlign: 'center',
-  },
-  codeInput: {
-    width: '100%',
-    height: 88,
-    borderRadius: 12,
-    borderWidth: 1.5,
-    fontSize: 40,
-    fontWeight: '800',
-    letterSpacing: 12,
-    textTransform: 'uppercase',
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 12,
-    elevation: 4,
-  },
-  importButton: {
-    width: '100%',
-    height: 64,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 0 },
-    shadowRadius: 16,
-    elevation: 6,
-  },
-  importButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-  },
-  // Divider
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  dividerLine: { flex: 1, height: 1 },
-  dividerLabel: {
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-  },
-  // QR card
-  qrCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 32,
-    gap: 16,
-    alignItems: 'center',
-  },
-  qrCardTitle: {
-    fontSize: 22,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    textAlign: 'center',
-  },
-  qrCardSubtitle: {
-    fontSize: 16,
-    lineHeight: 22,
-    textAlign: 'center',
-  },
-  scanButton: {
-    flexDirection: 'row',
-    gap: 12,
-    height: 64,
-    width: '100%',
-    borderRadius: 8,
-    borderWidth: 1,
-    borderStyle: 'dashed',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scanButtonIcon: { fontSize: 22 },
-  scanButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  // Camera scan overlay
-  scanOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 24,
-  },
-  scanFrame: {
-    width: 256,
-    height: 256,
-    borderWidth: 3,
-    borderRadius: 16,
-  },
-  scanText: {
-    fontSize: 16,
-    fontWeight: '600',
-    letterSpacing: 1,
-    textShadowColor: 'rgba(0,0,0,0.8)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 4,
-  },
-  scanCancelArea: {
-    position: 'absolute',
-    bottom: 60,
-    left: 24,
-    right: 24,
-  },
-  scanCancelBtn: {
-    height: 56,
-    borderRadius: 8,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scanCancelText: {
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: 3,
-    textTransform: 'uppercase',
-  },
-});

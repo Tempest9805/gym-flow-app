@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase';
-import type { RoutineShare, RoutineWithExercises, Profile } from '@/types';
+import { RoutineShareSchema, RoutineWithExercisesSchema } from './schemas';
+import type { RoutineShare, RoutineWithExercises, Profile } from './schemas';
 import { routinesApi } from './routines';
 
 // Generate a random 6 character alphanumeric code
@@ -17,10 +18,10 @@ export const sharesApi = {
       .eq('routine_id', routineId)
       .eq('sender_user_id', senderId)
       .eq('status', 'pending')
-      .single();
+      .maybeSingle();
 
     if (existing) {
-      return existing as RoutineShare;
+      return RoutineShareSchema.parse(existing);
     }
 
     const shareData = {
@@ -38,21 +39,24 @@ export const sharesApi = {
       .single();
 
     if (error) throw error;
-    return data as RoutineShare;
+    return RoutineShareSchema.parse(data);
   },
 
   /** Get a share by code along with the routine */
   getByCode: async (code: string): Promise<{ share: RoutineShare, routine: RoutineWithExercises }> => {
-    const { data: share, error } = await supabase
+    const { data: shareData, error: shareError } = await supabase
       .from('routine_shares')
       .select('*')
       .eq('share_code', code.toUpperCase())
       .eq('status', 'pending')
       .single();
 
-    if (error || !share) throw new Error('Invalid or expired share code');
+    if (shareError || !shareData) throw new Error('Invalid or expired share code');
+    const share = RoutineShareSchema.parse(shareData);
 
     // Fetch the routine via raw query because of RLS logic
+    // Note: If strict RLS is applied, this might fail unless the user is the owner 
+    // or a specialized sharing RLS is in place.
     const { data: routineData, error: routineError } = await supabase
       .from('routines')
       .select(`
@@ -67,7 +71,10 @@ export const sharesApi = {
 
     if (routineError || !routineData) throw new Error('Could not fetch the shared routine');
 
-    return { share: share as RoutineShare, routine: routineData as RoutineWithExercises };
+    return { 
+      share, 
+      routine: RoutineWithExercisesSchema.parse(routineData) 
+    };
   },
 
   /** Import a shared routine */
@@ -116,14 +123,8 @@ export const sharesApi = {
       if (exercisesError) throw exercisesError;
     }
 
-    // 3. Mark the share as accepted (if it's a 1-to-1 share) 
-    // We can just keep the share pending so multiple people can import it, 
-    // or we can update it if we want single-use codes. 
-    // For MVP, letting it be reused is simpler, or we just leave status='pending' 
-    // Wait, let's just insert a record of acceptance or leave it. The schema says receiver_user_id.
-    // If we want multiple imports, we shouldn't update the share, or we change it to 'accepted'.
-    // Let's just leave it 'pending' so it acts like a permanent link, unless the user revokes it.
-
-    return routinesApi.getById(newRoutine.id) as Promise<RoutineWithExercises>;
+    const result = await routinesApi.getById(newRoutine.id);
+    if (!result) throw new Error('Failed to retrieve imported routine');
+    return result;
   }
 };

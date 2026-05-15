@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppTopBar } from '@/components/ui/AppTopBar';
 import { useTheme } from '@/lib/hooks/useTheme';
@@ -32,45 +32,93 @@ export default function TimerSetupScreen() {
     });
   };
 
-  const ControlRow = ({ label, min, sec, setMin, setSec }: any) => (
-    <View style={[styles.controlRow, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-      <Text style={[styles.controlLabel, { color: t.onSurfaceVariant }]}>{label}</Text>
-      <View style={styles.timeControls}>
-        <View style={styles.timeCol}>
-          <TouchableOpacity onPress={() => setMin(Math.max(0, min - 1))} style={styles.btn}><Text style={[styles.btnText, { color: t.primaryContainer }]}>-</Text></TouchableOpacity>
-          <Text style={[styles.timeVal, { color: t.onSurface }]}>{String(min).padStart(2, '0')}<Text style={styles.unit}>m</Text></Text>
-          <TouchableOpacity onPress={() => setMin(min + 1)} style={styles.btn}><Text style={[styles.btnText, { color: t.primaryContainer }]}>+</Text></TouchableOpacity>
+  const ControlRow = ({ label, min, sec, setMin, setSec }: { label: string, min: number, sec: number, setMin: (v: number) => void, setSec: (v: number) => void }) => (
+    <View 
+      className="p-5 rounded-2xl border gap-4" 
+      style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
+    >
+      <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: t.onSurfaceVariant }}>{label}</Text>
+      <View className="flex-row items-center justify-center gap-4">
+        <View className="items-center gap-2">
+          <TouchableOpacity 
+            onPress={() => setMin(Math.max(0, min - 1))} 
+            className="w-12 h-12 rounded-full items-center justify-center"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+          >
+            <Text className="text-2xl" style={{ color: t.primaryContainer }}>-</Text>
+          </TouchableOpacity>
+          <Text className="text-[40px] font-extrabold" style={{ color: t.onSurface }}>
+            {String(min).padStart(2, '0')}
+            <Text className="text-base font-semibold" style={{ color: '#888' }}>m</Text>
+          </Text>
+          <TouchableOpacity 
+            onPress={() => setMin(min + 1)} 
+            className="w-12 h-12 rounded-full items-center justify-center"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+          >
+            <Text className="text-2xl" style={{ color: t.primaryContainer }}>+</Text>
+          </TouchableOpacity>
         </View>
-        <Text style={[styles.colon, { color: t.outlineVariant }]}>:</Text>
-        <View style={styles.timeCol}>
-          <TouchableOpacity onPress={() => setSec(sec - 5 < 0 ? 55 : sec - 5)} style={styles.btn}><Text style={[styles.btnText, { color: t.primaryContainer }]}>-</Text></TouchableOpacity>
-          <Text style={[styles.timeVal, { color: t.onSurface }]}>{String(sec).padStart(2, '0')}<Text style={styles.unit}>s</Text></Text>
-          <TouchableOpacity onPress={() => setSec(sec + 5 > 59 ? 0 : sec + 5)} style={styles.btn}><Text style={[styles.btnText, { color: t.primaryContainer }]}>+</Text></TouchableOpacity>
+        <Text className="text-[32px] font-extrabold pb-4" style={{ color: t.outlineVariant }}>:</Text>
+        <View className="items-center gap-2">
+          <TouchableOpacity 
+            onPress={() => setSec(sec - 5 < 0 ? 55 : sec - 5)} 
+            className="w-12 h-12 rounded-full items-center justify-center"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+          >
+            <Text className="text-2xl" style={{ color: t.primaryContainer }}>-</Text>
+          </TouchableOpacity>
+          <Text className="text-[40px] font-extrabold" style={{ color: t.onSurface }}>
+            {String(sec).padStart(2, '0')}
+            <Text className="text-base font-semibold" style={{ color: '#888' }}>s</Text>
+          </Text>
+          <TouchableOpacity 
+            onPress={() => setSec(sec + 5 > 59 ? 0 : sec + 5)} 
+            className="w-12 h-12 rounded-full items-center justify-center"
+            style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+          >
+            <Text className="text-2xl" style={{ color: t.primaryContainer }}>+</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
   );
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: t.background }]} edges={['top']}>
+    <SafeAreaView className="flex-1" style={{ backgroundColor: t.background }} edges={['top']}>
       <AppTopBar />
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scroll}>
-          <View style={styles.header}>
+      <View className="flex-1 relative">
+        <ScrollView contentContainerStyle={{ padding: 20, gap: 16 }}>
+          <View className="gap-2 mb-4">
             <TouchableOpacity onPress={() => router.back()}>
-              <Text style={[styles.backText, { color: t.outlineVariant }]}>← Back</Text>
+              <Text className="text-base font-semibold" style={{ color: t.outlineVariant }}>← Back</Text>
             </TouchableOpacity>
-            <Text style={[styles.title, { color: t.onSurface }]}>TIMER SETUP</Text>
+            <Text className="text-[32px] font-extrabold tracking-tighter" style={{ color: t.onSurface }}>TIMER SETUP</Text>
           </View>
 
           <ControlRow label="DURATION" min={workMinutes} sec={workSeconds} setMin={setWorkMinutes} setSec={setWorkSeconds} />
           
-          <View style={[styles.controlRow, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-            <Text style={[styles.controlLabel, { color: t.onSurfaceVariant }]}>ROUNDS</Text>
-            <View style={styles.timeControls}>
-              <TouchableOpacity onPress={() => setRounds(Math.max(1, rounds - 1))} style={styles.btn}><Text style={[styles.btnText, { color: t.primaryContainer }]}>-</Text></TouchableOpacity>
-              <Text style={[styles.timeVal, { color: t.onSurface, minWidth: 60, textAlign: 'center' }]}>{rounds}</Text>
-              <TouchableOpacity onPress={() => setRounds(rounds + 1)} style={styles.btn}><Text style={[styles.btnText, { color: t.primaryContainer }]}>+</Text></TouchableOpacity>
+          <View 
+            className="p-5 rounded-2xl border gap-4" 
+            style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
+          >
+            <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: t.onSurfaceVariant }}>ROUNDS</Text>
+            <View className="flex-row items-center justify-center gap-4">
+              <TouchableOpacity 
+                onPress={() => setRounds(Math.max(1, rounds - 1))} 
+                className="w-12 h-12 rounded-full items-center justify-center"
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+              >
+                <Text className="text-2xl" style={{ color: t.primaryContainer }}>-</Text>
+              </TouchableOpacity>
+              <Text className="text-[40px] font-extrabold min-w-[60px] text-center" style={{ color: t.onSurface }}>{rounds}</Text>
+              <TouchableOpacity 
+                onPress={() => setRounds(rounds + 1)} 
+                className="w-12 h-12 rounded-full items-center justify-center"
+                style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
+              >
+                <Text className="text-2xl" style={{ color: t.primaryContainer }}>+</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -78,8 +126,11 @@ export default function TimerSetupScreen() {
             <ControlRow label="REST BETWEEN ROUNDS" min={restMinutes} sec={restSeconds} setMin={setRestMinutes} setSec={setRestSeconds} />
           )}
 
-          <View style={[styles.switchRow, { backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }]}>
-            <Text style={[styles.controlLabel, { color: t.onSurfaceVariant }]}>SOUND & VIBRATION</Text>
+          <View 
+            className="flex-row items-center justify-between p-5 rounded-2xl border" 
+            style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
+          >
+            <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: t.onSurfaceVariant }}>SOUND & VIBRATION</Text>
             <Switch
               value={soundEnabled}
               onValueChange={setSoundEnabled}
@@ -91,92 +142,20 @@ export default function TimerSetupScreen() {
           <View style={{ height: 100 }} />
         </ScrollView>
 
-        <View style={[styles.footer, { backgroundColor: t.background, borderTopColor: t.surfaceContainerHighest }]}>
+        <View 
+          className="absolute bottom-0 left-0 right-0 p-5 border-t" 
+          style={{ backgroundColor: t.background, borderTopColor: t.surfaceContainerHighest }}
+        >
           <TouchableOpacity
-            style={[styles.cta, { backgroundColor: t.primaryContainer, shadowColor: t.primaryContainer }]}
+            className="h-16 rounded-xl items-center justify-center shadow-2xl"
+            style={{ backgroundColor: t.primaryContainer, shadowColor: t.primaryContainer }}
             activeOpacity={0.8}
             onPress={startTimer}
           >
-            <Text style={[styles.ctaText, { color: t.onPrimaryContainer }]}>START TIMER  ▶</Text>
+            <Text className="text-lg font-extrabold tracking-[2px]" style={{ color: t.onPrimaryContainer }}>START TIMER  ▶</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
-  container: { flex: 1, position: 'relative' },
-  scroll: { padding: 20, gap: 16 },
-  header: { gap: 8, marginBottom: 16 },
-  backText: { fontSize: 16, fontWeight: '600' },
-  title: { fontSize: 32, fontWeight: '800', letterSpacing: -0.5 },
-  
-  controlRow: {
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-    gap: 16,
-  },
-  controlLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 2,
-    textTransform: 'uppercase',
-  },
-  timeControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-  },
-  timeCol: {
-    alignItems: 'center',
-    gap: 8,
-  },
-  btn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  btnText: { fontSize: 24, fontWeight: '400' },
-  timeVal: { fontSize: 40, fontWeight: '800', fontVariant: ['tabular-nums'] },
-  unit: { fontSize: 16, fontWeight: '600', color: '#888' },
-  colon: { fontSize: 32, fontWeight: '800', paddingBottom: 16 },
-
-  switchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderRadius: 16,
-    borderWidth: 1,
-  },
-
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 20,
-    borderTopWidth: 1,
-  },
-  cta: {
-    height: 64,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  ctaText: {
-    fontSize: 18,
-    fontWeight: '800',
-    letterSpacing: 2,
-  },
-});
