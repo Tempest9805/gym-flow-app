@@ -13,14 +13,16 @@ import { useRouter } from 'expo-router';
 import type { Router } from 'expo-router';
 import { AppTopBar } from '@/components/ui/AppTopBar';
 import { useTheme } from '@/lib/hooks/useTheme';
-import { useExercises, useExerciseFilters } from '@/lib/hooks';
+import { useExercises, useExerciseFilters, useTranslation } from '@/lib/hooks';
 import { Image as ExpoImage } from 'expo-image';
 import { cn } from '@/lib/utils/cn';
 import type { Exercise, ThemeTokens } from '@/types';
+import { THUMB_MAP } from '@/lib/utils/mediaMap';
 
 export default function ExerciseLibraryScreen() {
   const router = useRouter();
   const t = useTheme();
+  const { t: translate } = useTranslation();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
@@ -35,12 +37,14 @@ export default function ExerciseLibraryScreen() {
   const filteredExercises = useMemo(() => {
     if (!exercises) return [];
     return exercises.filter((e) => {
-      const name = (e.name_en || '').toLowerCase();
+      const nameEn = (e.name_en || '').toLowerCase();
+      const nameEs = (e.name_es || '').toLowerCase();
       const muscleGroup = (e.muscle_group || '').toLowerCase();
       const searchTerm = search.toLowerCase();
 
       const matchesSearch =
-        name.includes(searchTerm) ||
+        nameEn.includes(searchTerm) ||
+        nameEs.includes(searchTerm) ||
         muscleGroup.includes(searchTerm);
         
       const matchesCategory =
@@ -75,7 +79,7 @@ export default function ExerciseLibraryScreen() {
               className="text-5xl font-extrabold tracking-tighter leading-tight"
               style={{ color: t.onBackground }}
             >
-              Library
+              {translate('exercises.library')}
             </Text>
 
             <View 
@@ -86,7 +90,7 @@ export default function ExerciseLibraryScreen() {
               <TextInput
                 className="flex-1 text-lg leading-6"
                 style={{ color: t.onSurface }}
-                placeholder="Search exercises..."
+                placeholder={translate('exercises.searchPlaceholder')}
                 placeholderTextColor={t.onSurfaceVariant}
                 value={search}
                 onChangeText={setSearch}
@@ -142,7 +146,7 @@ export default function ExerciseLibraryScreen() {
           !isLoading ? (
             <View className="py-16 items-center">
               <Text className="text-lg leading-6" style={{ color: t.onSurfaceVariant }}>
-                No exercises found
+                {translate('exercises.noResults')}
               </Text>
             </View>
           ) : null
@@ -153,7 +157,31 @@ export default function ExerciseLibraryScreen() {
 }
 
 function ExerciseListItem({ item, t, router }: { item: Exercise; t: ThemeTokens; router: Router }) {
-  const imageUrl = item.thumbnail_url || item.demonstration_url;
+  const { language } = useTranslation();
+  
+  const normalizedSlug = item.slug
+    ?.toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+
+  // Resolve image source through THUMB_MAP first, fallback to remote CDN URLs
+  const localImage = normalizedSlug ? THUMB_MAP[normalizedSlug] : null;
+  const imageSource = localImage 
+    ? localImage 
+    : (item.thumbnail_url || item.demonstration_url ? { uri: item.thumbnail_url || item.demonstration_url } : null);
+
+  // Localization: name_es / name_en
+  const displayName = language === 'es' && item.name_es ? item.name_es : item.name_en;
+
+  // Color-coded difficulty badges matching the Stitch aesthetic
+  const diffColor = useMemo(() => {
+    switch (item.difficulty?.toLowerCase()) {
+      case 'beginner':     return '#4ade80'; // vibrant green
+      case 'intermediate': return '#facc15'; // vibrant amber
+      case 'advanced':     return '#f87171'; // vibrant red
+      default:             return t.primaryContainer;
+    }
+  }, [item.difficulty, t.primaryContainer]);
 
   return (
     <TouchableOpacity
@@ -163,20 +191,17 @@ function ExerciseListItem({ item, t, router }: { item: Exercise; t: ThemeTokens;
       style={{ backgroundColor: t.surface, borderColor: t.surfaceVariant }}
     >
       <View className="h-56 relative" style={{ backgroundColor: t.surfaceContainerHighest }}>
-        {imageUrl ? (
-          <ExpoImage
-            source={{ uri: imageUrl }}
-            className="w-full h-full opacity-80"
-            contentFit="cover"
-            transition={200}
-            placeholder="L35O?*0000_300~qIVD%00-;~q%M"
-          />
-        ) : (
-          <View className="flex-1 items-center justify-center" style={{ backgroundColor: t.surfaceContainerHigh }}>
-            <Text className="text-5xl" style={{ color: t.outlineVariant }}>◆</Text>
-          </View>
-        )}
+        <ExpoImage
+          source={imageSource ?? undefined}
+          style={{ width: '100%', height: '100%', opacity: 0.8 }}
+          contentFit="cover"
+          transition={200}
+          placeholder="L35O?*0000_300~qIVD%00-;~q%M"
+          onError={() => {}}
+        />
         <View className="absolute bottom-0 left-0 right-0 h-20 bg-black/50" />
+        
+        {/* Category Badge pill - Top Left */}
         <View
           className="absolute top-4 left-4 px-3 py-1 rounded-full border"
           style={{
@@ -185,18 +210,33 @@ function ExerciseListItem({ item, t, router }: { item: Exercise; t: ThemeTokens;
           }}
         >
           <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: t.primaryContainer }}>
-            {item.type?.toUpperCase() ?? 'STRENGTH'}
+            {(item.category || 'EXERCISE').toUpperCase()}
           </Text>
         </View>
+
+        {/* Difficulty Badge pill - Top Right */}
+        {item.difficulty && (
+          <View
+            className="absolute top-4 right-4 px-3 py-1 rounded-full border"
+            style={{
+              backgroundColor: `${diffColor}22`,
+              borderColor: `${diffColor}44`,
+            }}
+          >
+            <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: diffColor }}>
+              {item.difficulty.toUpperCase()}
+            </Text>
+          </View>
+        )}
       </View>
 
       <View className="flex-row justify-between items-end p-5 -mt-8 pt-8" style={{ backgroundColor: t.background }}>
-        <View className="flex-1 gap-0.5">
+        <View className="flex-1 gap-1">
           <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: t.onSurfaceVariant }}>
-            {(item.category || 'EXERCISE').toUpperCase()} • {(item.equipment || 'BODYWEIGHT').toUpperCase()}
+            {item.type?.toUpperCase() ?? 'STRENGTH'} • {(item.equipment || 'BODYWEIGHT').toUpperCase()}
           </Text>
-          <Text className="text-2xl font-semibold" style={{ color: t.onSurface }}>
-            {item.name_en || 'Untitled Exercise'}
+          <Text className="text-2xl font-bold tracking-tight" style={{ color: t.onSurface }}>
+            {displayName}
           </Text>
         </View>
         <TouchableOpacity
@@ -210,7 +250,7 @@ function ExerciseListItem({ item, t, router }: { item: Exercise; t: ThemeTokens;
           }}
           activeOpacity={0.8}
           onPress={() => router.push(`/exercise/${item.id}`)}
-          accessibilityLabel={`View ${item.name_en}`}
+          accessibilityLabel={`View ${displayName}`}
         >
           <Text className="text-2xl font-bold" style={{ color: t.onPrimaryContainer }}>+</Text>
         </TouchableOpacity>

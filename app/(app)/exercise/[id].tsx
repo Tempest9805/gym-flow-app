@@ -24,7 +24,8 @@ import { AppTopBar } from '@/components/ui/AppTopBar';
 import { LoadingScreen } from '@/components/ui';
 import { ZoomableImage } from '@/components/ui/ZoomableImage';
 import { useTheme } from '@/lib/hooks/useTheme';
-import { useExercise } from '@/lib/hooks';
+import { useExercise, useTranslation } from '@/lib/hooks';
+import { HIRES_MAP, NORMALIZED_MAP } from '@/lib/utils/mediaMap';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
@@ -46,25 +47,26 @@ function difficultyColor(difficulty: string | null, primary: string) {
  * Returns a non-empty array or falls back to generic cues.
  */
 function parseInstructions(raw: string | null): string[] {
-  if (!raw || raw.trim() === '') {
-    return [
-      'Position yourself correctly and engage your core.',
-      'Control the movement — avoid jerking or using momentum.',
-      'Exhale on the exertion phase of the movement.',
-      'Return to the starting position under control.',
-    ];
-  }
+  if (!raw) return []
 
-  // Numbered list format: "1. …\n2. …"
-  const numbered = raw.split(/\n?\d+\.\s+/).filter(Boolean).map((s) => s.trim());
-  if (numbered.length > 1) return numbered.slice(0, 8);
+  // Intenta separar por números con punto: "1. ", "2. " etc
+  const byNumber = raw
+    .split(/\d+\.\s+/)
+    .map(s => s.trim())
+    .filter(Boolean)
 
-  // Newline-separated paragraphs
-  const lines = raw.split(/\n+/).filter((l) => l.trim().length > 0);
-  if (lines.length > 1) return lines.slice(0, 8);
+  if (byNumber.length > 1) return byNumber
 
-  // Single block → wrap in array
-  return [raw.trim()];
+  // Fallback: separar por punto seguido de mayúscula
+  const bySentence = raw
+    .split(/(?<=\.)\s+(?=[A-Z])/)
+    .map(s => s.trim())
+    .filter(Boolean)
+
+  if (bySentence.length > 1) return bySentence
+
+  // Fallback final: retornar como un solo paso
+  return [raw]
 }
 
 const STEP_LABELS = ['SETUP', 'POSITION', 'DRIVE', 'LOCKOUT', 'CONTROL', 'BREATHE', 'RESET', 'REPEAT'];
@@ -75,6 +77,7 @@ export default function ExerciseDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const t = useTheme();
+  const { t: translate, language } = useTranslation();
   const { data: exercise, isLoading } = useExercise(id);
 
   const steps = useMemo(
@@ -93,9 +96,30 @@ export default function ExerciseDetailScreen() {
     [exercise?.difficulty, t.primaryContainer],
   );
 
-  // Resolve best available image source from CDN
-  const detailUrl = exercise?.demonstration_url;
-  const zoomUrl = exercise?.hires_url || exercise?.demonstration_url;
+  // Resolve best available local WebP or Supabase CDN URL
+  const normalizedSlug = exercise?.slug
+    ?.toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '');
+
+  const localHires = normalizedSlug ? HIRES_MAP[normalizedSlug] : null;
+  const localNormalized = normalizedSlug ? NORMALIZED_MAP[normalizedSlug] : null;
+  const remoteDemo = exercise?.demonstration_url;
+
+  const imageSource = localHires 
+    ? localHires 
+    : (localNormalized 
+        ? localNormalized 
+        : (remoteDemo ? { uri: remoteDemo } : null));
+
+  // Fullscreen zoom source matches local high-res or falls back to remote high-res
+  const zoomSource = localHires
+    ? localHires
+    : (exercise?.hires_url 
+        ? { uri: exercise.hires_url } 
+        : (remoteDemo ? { uri: remoteDemo } : null));
+
+  const displayName = language === 'es' && exercise?.name_es ? exercise.name_es : (exercise?.name_en ?? 'Untitled Exercise');
 
   // ── Loading / not-found ──────────────────────────────────────────────────
 
@@ -112,7 +136,7 @@ export default function ExerciseDetailScreen() {
         <View className="flex-1 items-center justify-center p-6 gap-4">
           <Text className="text-6xl">🏋️</Text>
           <Text className="text-lg" style={{ color: t.onSurfaceVariant }}>
-            Exercise not found
+            {translate('exercises.noExercise')}
           </Text>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -121,15 +145,14 @@ export default function ExerciseDetailScreen() {
             accessibilityRole="button"
             accessibilityLabel="Go back to previous screen"
           >
-            <Text className="text-base font-semibold" style={{ color: t.primaryContainer }}>← Go Back</Text>
+            <Text className="text-base font-semibold" style={{ color: t.primaryContainer }}>{translate('exercises.goBack')}</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
   }
 
-  const hasMedia = !!detailUrl;
-  const displayName = exercise.name_en ?? 'Untitled Exercise';
+  const hasMedia = !!imageSource;
 
   // ── Render ───────────────────────────────────────────────────────────────
 
@@ -149,29 +172,14 @@ export default function ExerciseDetailScreen() {
 
           {/* ── 1. Hero Media ── */}
           <View className="w-full aspect-[4/3] relative overflow-hidden">
-            {detailUrl ? (
-              <ZoomableImage
-                source={{ uri: detailUrl }}
-                zoomSource={zoomUrl ? { uri: zoomUrl } : undefined}
-                className="w-full h-full opacity-[0.85]"
-                contentFit="cover"
-                accessibilityLabel={`Demonstration of ${displayName}`}
-                showZoomHint
-              />
-            ) : (
-              <View 
-                className="flex-1 items-center justify-center gap-3" 
-                style={{ backgroundColor: t.surfaceContainerHighest }}
-              >
-                <Text className="text-[72px]">🏋️</Text>
-                <Text 
-                  className="text-sm font-semibold tracking-widest" 
-                  style={{ color: t.onSurfaceVariant }}
-                >
-                  No demo available
-                </Text>
-              </View>
-            )}
+            <ZoomableImage
+              source={imageSource ?? undefined}
+              zoomSource={zoomSource ?? undefined}
+              className="w-full h-full opacity-[0.85]"
+              contentFit="cover"
+              accessibilityLabel={`Demonstration of ${displayName}`}
+              showZoomHint={!!imageSource}
+            />
 
             {/* Bottom fade */}
             <View 
@@ -186,7 +194,7 @@ export default function ExerciseDetailScreen() {
                 style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderColor: t.outlineVariant }}
               >
                 <Text className="text-[12px]" style={{ color: t.primaryContainer }}>▶</Text>
-                <Text className="text-[11px] font-bold tracking-[1.5px]" style={{ color: t.onSurface }}>DEMO</Text>
+                <Text className="text-[11px] font-bold tracking-[1.5px]" style={{ color: t.onSurface }}>{translate('exercises.demo')}</Text>
               </View>
             )}
           </View>
@@ -200,7 +208,7 @@ export default function ExerciseDetailScreen() {
             {exercise.type && (
               <View
                 className="px-3 py-1 rounded-full border"
-                style={{ backgroundColor: `${t.primaryContainer}20`, borderColor: `${t.primaryContainer}40` }}
+                style={{ backgroundColor: `${t.primaryContainer}20`, borderColor: `${t.primaryContainer}44` }}
               >
                 <Text className="text-[11px] font-bold tracking-[1.5px]" style={{ color: t.primaryContainer }}>
                   {exercise.type.toUpperCase()}
@@ -248,124 +256,86 @@ export default function ExerciseDetailScreen() {
             </Text>
 
             {/* Muscle group tags */}
-            <View className="flex-row flex-wrap gap-2">
-              {muscleTags.map((tag, i) => (
-                <View
-                  key={i}
-                  className="px-3.5 py-1.5 rounded-full border"
-                  style={{ backgroundColor: `${t.secondary}20`, borderColor: `${t.secondary}33` }}
-                >
-                  <Text className="text-[12px] font-bold tracking-widest" style={{ color: t.secondary }}>
-                    {tag.toUpperCase()}
-                  </Text>
-                </View>
-              ))}
+            <View className="flex-row flex-wrap gap-2 mb-6">
+              {/* Muscle group */}
+              <View className="px-3 py-1.5 rounded-full border border-zinc-700 bg-zinc-900">
+                <Text className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                  {exercise.muscle_group}
+                </Text>
+              </View>
 
-              {/* Compound indicator */}
-              {exercise.is_compound === true && (
-                <View
-                  className="px-3.5 py-1.5 rounded-full border"
-                  style={{ backgroundColor: `${t.secondary}20`, borderColor: `${t.secondary}33` }}
-                >
-                  <Text className="text-[12px] font-bold tracking-widest" style={{ color: t.secondary }}>
-                    COMPOUND
-                  </Text>
-                </View>
-              )}
+              {/* Category */}
+              <View className="px-3 py-1.5 rounded-full border border-[#BC13FE]/30 bg-[#BC13FE]/10">
+                <Text className="text-xs font-bold text-[#BC13FE] uppercase tracking-wider">
+                  {exercise.category}
+                </Text>
+              </View>
+
+              {/* Compound / Isolation */}
+              <View className="px-3 py-1.5 rounded-full border border-zinc-700 bg-zinc-900">
+                <Text className="text-xs font-bold text-zinc-300 uppercase tracking-wider">
+                  {exercise.is_compound
+                    ? translate('exercises.compound')
+                    : translate('exercises.isolation')}
+                </Text>
+              </View>
             </View>
           </View>
 
-          {/* ── 4. Description (short summary) ── */}
-          {!!exercise.description && (
-            <View
-              className="mx-5 mt-6 p-5 rounded-xl border gap-2.5"
-              style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
-            >
-              <Text className="text-[11px] font-bold tracking-[2px]" style={{ color: t.primaryContainer }}>OVERVIEW</Text>
-              <Text className="text-base leading-6" style={{ color: t.onSurface }}>
-                {exercise.description}
-              </Text>
-            </View>
-          )}
+          <View className="px-5">
+            {/* Descripción */}
+            {exercise.description && (
+              <View className="mb-6">
+                <Text className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-2">
+                  {translate('exercises.about')}
+                </Text>
+                <Text className="text-sm text-zinc-300 leading-relaxed">
+                  {exercise.description}
+                </Text>
+              </View>
+            )}
 
-          {/* ── 5. Instructions — numbered steps ── */}
-          <View className="px-5 pt-8 gap-7">
-            <View className="flex-row items-center gap-3">
-              <Text className="text-xl" style={{ color: t.primaryContainer }}>◉</Text>
-              <Text className="text-[22px] font-bold tracking-widest" style={{ color: t.onSurface }}>
-                EXECUTION
-              </Text>
-            </View>
+            {/* Movement Pattern */}
+            {exercise.movement_pattern && (
+              <View className="bg-zinc-900 rounded-xl p-4 mb-6 border border-zinc-800">
+                <Text className="text-xs text-zinc-500 mb-1">
+                  {translate('exercises.movement')}
+                </Text>
+                <Text className="text-base text-white font-medium capitalize">
+                  {exercise.movement_pattern.replace(/_/g, ' ')}
+                </Text>
+              </View>
+            )}
 
-            <View className="relative gap-8 pl-12">
-              {/* Vertical connector line */}
-              <View
-                className="absolute left-4 top-2 bottom-2 w-0.5"
-                style={{ backgroundColor: t.surfaceContainerHighest }}
-              />
-
-              {steps.map((step, index) => (
-                <View key={index} className="flex-row gap-4">
-                  {/* Numbered circle */}
-                  <View
-                    className="absolute -left-12 w-8 h-8 rounded-full border items-center justify-center"
-                    style={{
-                      backgroundColor: t.surfaceContainer,
-                      borderColor: t.primaryContainer,
-                      shadowColor: t.primaryContainer,
-                      shadowOpacity: 0.3,
-                      shadowOffset: { width: 0, height: 0 },
-                      shadowRadius: 8,
-                      elevation: 4,
-                    }}
-                  >
-                    <Text className="text-sm font-bold leading-4" style={{ color: t.primaryContainer }}>
-                      {index + 1}
-                    </Text>
-                  </View>
-
-                  {/* Step content */}
-                  <View className="flex-1 gap-1.5">
-                    <Text className="text-[13px] font-bold tracking-widest" style={{ color: t.onSurface }}>
-                      {STEP_LABELS[index] ?? `STEP ${index + 1}`}
-                    </Text>
-                    <Text className="text-base leading-6" style={{ color: t.onSurfaceVariant }}>
-                      {step.trim()}
-                    </Text>
-                  </View>
+            {/* Sección de instrucciones */}
+            {exercise.instructions && (
+              <View className="mb-6">
+                {/* Header de sección */}
+                <View className="flex-row items-center gap-2 mb-4">
+                  <View className="w-3 h-3 rounded-full bg-[#BC13FE] border-2 border-[#BC13FE]/40" />
+                  <Text className="text-sm font-bold text-white uppercase tracking-widest">
+                    {translate('exercises.howTo')}
+                  </Text>
                 </View>
-              ))}
-            </View>
+
+                {/* Pasos numerados */}
+                {steps.map((step, index) => (
+                  <View key={index} className="flex-row gap-3 mb-4">
+                    {/* Número del paso */}
+                    <View className="w-7 h-7 rounded-full border border-[#BC13FE]/50 items-center justify-center shrink-0 mt-0.5">
+                      <Text className="text-xs font-bold text-[#BC13FE]">
+                        {index + 1}
+                      </Text>
+                    </View>
+                    {/* Texto del paso */}
+                    <Text className="text-sm text-zinc-300 leading-relaxed flex-1">
+                      {step}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
           </View>
-
-          {/* ── 6. Optional extras: movement_pattern · notes ── */}
-          {(!!exercise.movement_pattern || !!exercise.notes) && (
-            <View
-              className="mx-5 mt-7 p-5 rounded-xl border gap-3.5"
-              style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceContainerHighest }}
-            >
-              {!!exercise.movement_pattern && (
-                <View className="gap-1">
-                  <Text className="text-[11px] font-bold tracking-widest" style={{ color: t.onSurfaceVariant }}>
-                    Pattern
-                  </Text>
-                  <Text className="text-[15px] leading-6 capitalize" style={{ color: t.onSurface }}>
-                    {exercise.movement_pattern.replace(/_/g, ' ')}
-                  </Text>
-                </View>
-              )}
-              {!!exercise.notes && (
-                <View className="gap-1">
-                  <Text className="text-[11px] font-bold tracking-widest" style={{ color: t.onSurfaceVariant }}>
-                    Notes
-                  </Text>
-                  <Text className="text-[15px] leading-6" style={{ color: t.onSurface }}>
-                    {exercise.notes}
-                  </Text>
-                </View>
-              )}
-            </View>
-          )}
 
           {/* Spacer for sticky CTA */}
           <View className="h-[120px]" />
@@ -390,7 +360,9 @@ export default function ExerciseDetailScreen() {
             accessibilityRole="button"
             accessibilityLabel={`Add ${displayName} to your routine`}
           >
-            <Text className="text-lg font-bold tracking-widest" style={{ color: '#000' }}>+ ADD TO ROUTINE</Text>
+            <Text className="text-lg font-bold tracking-widest" style={{ color: '#000' }}>
+              {translate('exercises.addToRoutine').toUpperCase()}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

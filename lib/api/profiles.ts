@@ -41,7 +41,8 @@ export const profilesApi = {
 
   /** Get current authenticated user's profile */
   getCurrent: async (): Promise<Profile | null> => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user ?? null;
     if (!user) return null;
     
     // Try to get existing profile

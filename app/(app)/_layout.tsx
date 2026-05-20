@@ -133,6 +133,7 @@ export default function AppLayout() {
       <Tabs.Screen name="timer-active" options={{ href: null }} />
       <Tabs.Screen name="tabata" options={{ href: null }} />
       <Tabs.Screen name="tabata-active" options={{ href: null }} />
+      <Tabs.Screen name="tabata-summary" options={{ href: null }} />
     </Tabs>
   );
 }

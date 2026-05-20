@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profilesApi } from '@/lib/api';
+import { useAuthStore } from '@/lib/store/authStore';
 import type { Profile } from '@/types';
 
 export const useProfile = (userId?: string) => {
@@ -11,9 +12,11 @@ export const useProfile = (userId?: string) => {
 };
 
 export const useCurrentProfile = () => {
+  const { isAuthenticated } = useAuthStore();
   return useQuery({
     queryKey: ['profile', 'current'],
     queryFn: () => profilesApi.getCurrent(),
+    enabled: isAuthenticated,
   });
 };
 

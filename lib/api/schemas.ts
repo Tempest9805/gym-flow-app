@@ -14,7 +14,7 @@ export type Status = z.infer<typeof StatusSchema>;
 
 const BaseEntityFields = {
   id: z.string().uuid(),
-  created_at: z.string().datetime(),
+  created_at: z.string(),
 };
 
 // --- Schemas ---
@@ -69,7 +69,7 @@ export const RoutineExerciseSchema = z.object({
   rest_seconds: z.number().int().nullable(),
   duration_seconds: z.number().int().nullable(),
   notes: z.string().nullable(),
-  created_at: z.string().datetime().optional(),
+  created_at: z.string().optional(),
   exercise: ExerciseSchema.optional(),
 });
 
@@ -88,7 +88,7 @@ export const WorkoutScheduleSchema = z.object({
   day_of_week: z.number().int().min(0).max(6),
   routine_id: z.string().uuid(),
   is_active: z.boolean().optional(),
-  created_at: z.string().datetime(),
+  created_at: z.string(),
 });
 
 export const WorkoutScheduleWithRoutineSchema = WorkoutScheduleSchema.extend({
@@ -103,7 +103,7 @@ export const RoutineShareSchema = z.object({
   share_code: z.string(),
   share_type: ShareTypeSchema,
   status: ShareStatusSchema,
-  accepted_at: z.string().datetime().nullable(),
+  accepted_at: z.string().nullable(),
 });
 
 // --- Inferred Types ---

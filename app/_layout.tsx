@@ -7,12 +7,12 @@
 import '../global.css';
 
 import React, { useEffect } from 'react';
-import { Slot, useRouter, useSegments } from 'expo-router';
+import { Slot, useRouter, useSegments, Redirect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryProvider } from '@/lib/utils/queryProvider';
-import { ErrorBoundary } from '@/components/ui';
+import { ErrorBoundary, LoadingScreen } from '@/components/ui';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useThemeStore } from '@/lib/store/themeStore';
 
@@ -22,35 +22,36 @@ import { useThemeStore } from '@/lib/store/themeStore';
 function AuthGuard({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
   const segments = useSegments();
-  const router = useRouter();
 
-  useEffect(() => {
-    if (isLoading) return;
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
-    const inAuthGroup = segments[0] === '(auth)';
+  const inAuthGroup = segments[0] === '(auth)';
 
-    if (!isAuthenticated && !inAuthGroup) {
-      router.replace('/(auth)/login');
-      return;
-    }
+  if (!isAuthenticated && !inAuthGroup) {
+    return <Redirect href="/(auth)/login" />;
+  }
 
-    if (isAuthenticated && inAuthGroup) {
-      router.replace('/(app)');
-      return;
-    }
-  }, [isAuthenticated, isLoading, segments, router]);
+  if (isAuthenticated && inAuthGroup) {
+    return <Redirect href="/(app)" />;
+  }
 
   return <>{children}</>;
 }
 
+import { useLanguageStore } from '@/lib/store/languageStore';
+
 export default function RootLayout() {
   const { initialize } = useAuthStore();
   const { loadTheme } = useThemeStore();
+  const { loadLanguage } = useLanguageStore();
 
   useEffect(() => {
-    // Boot auth and theme in parallel on startup
+    // Boot auth, theme, and language in parallel on startup
     initialize();
     loadTheme();
+    loadLanguage();
   }, []);
 
   return (
