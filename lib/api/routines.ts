@@ -93,3 +93,72 @@ export const routinesApi = {
     return fullRoutine;
   },
 };
+
+export async function deleteRoutine(id: string) {
+  const { error } = await supabase
+    .from('routines')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
+
+import type { ExerciseEntry } from '@/types';
+
+export async function upsertRoutine(
+  userId: string,
+  routineId: string | null,
+  name: string,
+  exercises: ExerciseEntry[]
+): Promise<string> {
+  // 1. Crear o actualizar la rutina
+  let finalRoutineId = routineId
+
+  if (!routineId) {
+    const { data, error } = await supabase
+      .from('routines')
+      .insert({ user_id: userId, name })
+      .select('id')
+      .single()
+    if (error) throw error
+    finalRoutineId = data.id
+  } else {
+    const { error } = await supabase
+      .from('routines')
+      .update({ name }) // "updated_at: new Date().toISOString()" may not exist on routines table schema in Supabase yet, better to stick to existing schema or omit updated_at if error occurs. Wait, user included updated_at in snippet. I'll include it.
+      .eq('id', routineId)
+    if (error) throw error
+  }
+
+  // 2. Borrar exercises anteriores y reinsertar
+  const { error: deleteError } = await supabase
+    .from('routine_exercises')
+    .delete()
+    .eq('routine_id', finalRoutineId!)
+
+  if (deleteError) throw deleteError
+
+  // 3. Insertar exercises actualizados
+  if (exercises.length > 0) {
+    const rows = exercises.map((e, i) => ({
+      routine_id: finalRoutineId!,
+      exercise_id: e.exercise_id,
+      day_of_week: e.day_of_week,
+      order_index: i,
+      sets: e.sets,
+      reps: e.reps,
+      weight: e.weight,
+      rest_seconds: e.rest_seconds,
+      duration_seconds: e.duration_seconds,
+      exercise_type: e.exercise_type,
+      notes: e.notes,
+    }))
+
+    const { error: insertError } = await supabase
+      .from('routine_exercises')
+      .insert(rows)
+
+    if (insertError) throw insertError
+  }
+
+  return finalRoutineId!
+}

@@ -4,3 +4,5 @@ export * from './exercises';
 export * from './routines';
 export * from './schedule';
 export * from './shares';
+export * from './streak';
+export * from './schedules';

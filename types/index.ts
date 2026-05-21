@@ -23,3 +23,26 @@ export interface BaseEntity {
   id: string;
   created_at: string;
 }
+
+export type ExerciseEntry = {
+  id: string                          // UUID temporal o real
+  exercise_id: string
+  exercise_name_en: string
+  exercise_name_es: string
+  exercise_type: 'reps' | 'time' | 'cardio'
+  day_of_week: number
+  order_index: number
+  sets: number
+  reps: number | null                 // null si es tipo 'time'
+  duration_seconds: number | null     // null si es tipo 'reps'
+  weight: number | null               // SIEMPRE opcional
+  rest_seconds: number
+  notes: string | null
+}
+
+export type BuilderState = {
+  routineId: string | null            // null = nueva rutina
+  name: string
+  exercises: ExerciseEntry[]
+  activeDay: number                   // día de la semana activo
+}

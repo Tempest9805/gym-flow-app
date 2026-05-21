@@ -62,14 +62,15 @@ export const RoutineExerciseSchema = z.object({
   routine_id: z.string().uuid(),
   exercise_id: z.string().uuid(),
   day_of_week: z.number().int().min(0).max(6).nullable(),
-  order_index: z.number().int().nullable(),
-  sets: z.number().int().nullable(),
-  reps: z.number().int().nullable(),
-  weight: z.number().nullable(),
-  rest_seconds: z.number().int().nullable(),
-  duration_seconds: z.number().int().nullable(),
+  order_index: z.number().int(),
+  sets: z.number().int().min(1).default(3),
+  reps: z.number().int().min(1).nullable().default(10),
+  weight: z.number().nullable().default(null),
+  rest_seconds: z.number().int().nullable().default(60),
+  duration_seconds: z.number().int().nullable().default(null),
+  exercise_type: z.enum(['reps', 'time', 'cardio']).default('reps'),
   notes: z.string().nullable(),
-  created_at: z.string().optional(),
+  created_at: z.string().datetime().optional(),
   exercise: ExerciseSchema.optional(),
 });
 
@@ -106,6 +107,16 @@ export const RoutineShareSchema = z.object({
   accepted_at: z.string().nullable(),
 });
 
+export const UserStreakSchema = z.object({
+  id: z.string().uuid(),
+  user_id: z.string().uuid(),
+  current_streak: z.number().int().min(0),
+  longest_streak: z.number().int().min(0),
+  last_active_week: z.string().nullable(),
+  completed_days_this_week: z.array(z.number()).default([]),
+  updated_at: z.string().datetime().optional(),
+});
+
 // --- Inferred Types ---
 
 export type Profile = z.infer<typeof ProfileSchema>;
@@ -116,3 +127,4 @@ export type RoutineWithExercises = z.infer<typeof RoutineWithExercisesSchema>;
 export type WorkoutSchedule = z.infer<typeof WorkoutScheduleSchema>;
 export type WorkoutScheduleWithRoutine = z.infer<typeof WorkoutScheduleWithRoutineSchema>;
 export type RoutineShare = z.infer<typeof RoutineShareSchema>;
+export type UserStreak = z.infer<typeof UserStreakSchema>;
