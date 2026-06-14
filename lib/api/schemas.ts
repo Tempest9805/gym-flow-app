@@ -7,6 +7,16 @@ export const ExerciseCategorySchema = z.enum(['arms', 'back', 'chest', 'legs', '
 export const DifficultySchema = z.enum(['beginner', 'intermediate', 'advanced']);
 export const ShareTypeSchema = z.enum(['code', 'qr']);
 export const ShareStatusSchema = z.enum(['pending', 'accepted', 'revoked', 'expired']);
+export const SkillPathSchema = z.enum(['push', 'pull', 'core', 'legs', 'skill']);
+export const NodeStatusSchema = z.enum(['locked', 'available', 'in_progress', 'mastered']);
+export const ChallengeTierSchema = z.union([
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+]);
+export const ChallengeKindSchema = z.enum(['skill', 'volume_reps', 'hold_time', 'reps_in_time']);
+export const ChallengeStatusSchema = z.enum(['locked', 'ready', 'attempted', 'achieved']);
 
 export type Status = z.infer<typeof StatusSchema>;
 
@@ -24,6 +34,8 @@ export const ProfileSchema = z.object({
   email: z.string().email(),
   full_name: z.string().nullable(),
   avatar_url: z.string().nullable(),
+  goal: z.string().nullable().optional(),
+  available_equipment: z.array(z.string()).default([]),
 });
 
 export const ExerciseSchema = z.object({
@@ -117,6 +129,61 @@ export const UserStreakSchema = z.object({
   updated_at: z.string().datetime().optional(),
 });
 
+export const ExerciseProgressionSchema = z.object({
+  ...BaseEntityFields,
+  path: SkillPathSchema,
+  exercise_id: z.string().uuid(),
+  level: z.number().int().min(1),
+  tier: DifficultySchema,
+  unlock_reps: z.number().int().nullable(),
+  unlock_hold_seconds: z.number().int().nullable(),
+  prerequisite_exercise_id: z.string().uuid().nullable(),
+  equipment: z.string().nullable(),
+});
+
+export const WorkoutLogSchema = z.object({
+  ...BaseEntityFields,
+  user_id: z.string().uuid(),
+  exercise_id: z.string().uuid(),
+  reps: z.number().int().nullable(),
+  seconds: z.number().int().nullable(),
+  performed_at: z.string(),
+});
+
+export const ChallengeSchema = z.object({
+  ...BaseEntityFields,
+  name_en: z.string(),
+  name_es: z.string(),
+  challenge_tier: ChallengeTierSchema,
+  kind: ChallengeKindSchema,
+  exercise_id: z.string().uuid(),
+  target_reps: z.number().int().nullable(),
+  target_seconds: z.number().int().nullable(),
+  time_window_seconds: z.number().int().nullable(),
+  equipment: z.string().nullable(),
+  readiness_rule: z.record(z.string(), z.any()).nullable(),
+  is_premium: z.boolean(),
+});
+
+export const UserSkillProgressSchema = z.object({
+  ...BaseEntityFields,
+  user_id: z.string().uuid(),
+  exercise_id: z.string().uuid(),
+  status: NodeStatusSchema,
+  best_reps: z.number().int().nullable(),
+  best_hold_seconds: z.number().int().nullable(),
+  mastered_at: z.string().nullable(),
+});
+
+export const UserChallengeProgressSchema = z.object({
+  ...BaseEntityFields,
+  user_id: z.string().uuid(),
+  challenge_id: z.string().uuid(),
+  status: ChallengeStatusSchema,
+  readiness: z.number().min(0).max(100),
+  achieved_at: z.string().nullable(),
+});
+
 // --- Inferred Types ---
 
 export type Profile = z.infer<typeof ProfileSchema>;
@@ -128,3 +195,10 @@ export type WorkoutSchedule = z.infer<typeof WorkoutScheduleSchema>;
 export type WorkoutScheduleWithRoutine = z.infer<typeof WorkoutScheduleWithRoutineSchema>;
 export type RoutineShare = z.infer<typeof RoutineShareSchema>;
 export type UserStreak = z.infer<typeof UserStreakSchema>;
+export type SkillPath = z.infer<typeof SkillPathSchema>;
+export type NodeStatus = z.infer<typeof NodeStatusSchema>;
+export type ExerciseProgression = z.infer<typeof ExerciseProgressionSchema>;
+export type WorkoutLog = z.infer<typeof WorkoutLogSchema>;
+export type Challenge = z.infer<typeof ChallengeSchema>;
+export type UserSkillProgress = z.infer<typeof UserSkillProgressSchema>;
+export type UserChallengeProgress = z.infer<typeof UserChallengeProgressSchema>;
