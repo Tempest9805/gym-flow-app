@@ -12,15 +12,16 @@ const SHEETS = {
   mujer: 'avatar_mujer_pixelArt.png',
 };
 
-// 3x2 grid of portraits on the right of the 1343x800 sheet.
+// 3x2 grid of face portraits on the right of the 1343x800 sheet.
+// Calibrated visually against avatar_hombre_pixelArt.png (faces, not labels).
 // Editable: tweak these 6 numbers if the crop is off.
 const GRID = {
-  startX: 470,   // left edge of column 1
-  startY: 70,    // top edge of row 1
-  cellW: 285,    // horizontal stride between columns
-  rowStride: 175, // vertical stride between rows (portrait + label gap)
-  cropW: 250,    // portrait crop width
-  cropH: 150,    // portrait crop height
+  startX: 665,   // left edge of column 1 (cols at 665 / 880 / 1095)
+  startY: 110,   // top edge of row 1 (rows at 110 / 430)
+  cellW: 215,    // horizontal stride between columns
+  rowStride: 320, // vertical stride between rows
+  cropW: 175,    // portrait crop width
+  cropH: 205,    // portrait crop height
 };
 
 function boxes() {
