@@ -58,6 +58,14 @@ describe('deriveSkillProgressRows', () => {
     expect(rows[0].best_reps).toBe(25);
   });
 
+  it('does not mark a node in_progress for an all-null log', () => {
+    const nodes = [node({ exercise_id: 'pushup', unlock_reps: 20, level: 1 })];
+    const rows = deriveSkillProgressRows(nodes, [
+      { exercise_id: 'pushup', reps: null, seconds: null },
+    ]);
+    expect(rows[0].status).toBe('available');
+  });
+
   it('leaves a locked node locked even if it has logs', () => {
     const nodes = [
       node({ exercise_id: 'pushup', unlock_reps: 20, level: 1 }),

@@ -38,13 +38,14 @@ export function deriveSkillProgressRows(
 ): SkillProgressRow[] {
   const bests = bestByExerciseFromLogs(logs);
   const statuses = computeStatuses(nodes, bests);
-  const withLogs = new Set(logs.map((l) => l.exercise_id));
 
   return nodes.map((n) => {
     const base = statuses[n.exercise_id];
-    const status: NodeStatus =
-      base === 'available' && withLogs.has(n.exercise_id) ? 'in_progress' : base;
     const best = bests[n.exercise_id] ?? { reps: null, seconds: null };
+    // in_progress = an available node that has at least one measurable log.
+    const hasMeasurableLog = best.reps != null || best.seconds != null;
+    const status: NodeStatus =
+      base === 'available' && hasMeasurableLog ? 'in_progress' : base;
     return {
       exercise_id: n.exercise_id,
       status,
