@@ -1,6 +1,8 @@
 import {
   bestByExerciseFromLogs,
   deriveSkillProgressRows,
+  readinessRuleToRequirements,
+  deriveChallengeProgressRows,
 } from '@/lib/skills/derive';
 import type { ProgressionNode } from '@/lib/skills/types';
 
@@ -75,5 +77,72 @@ describe('deriveSkillProgressRows', () => {
       { exercise_id: 'diamond', reps: 1, seconds: null },
     ]);
     expect(rows.find((r) => r.exercise_id === 'diamond')!.status).toBe('locked');
+  });
+});
+
+describe('readinessRuleToRequirements', () => {
+  it('returns [] for a null rule', () => {
+    expect(readinessRuleToRequirements(null)).toEqual([]);
+  });
+
+  it('returns [] when there is no requirements array', () => {
+    expect(readinessRuleToRequirements({ foo: 'bar' })).toEqual([]);
+  });
+
+  it('reads the requirements array', () => {
+    const reqs = readinessRuleToRequirements({
+      requirements: [
+        { exercise_id: 'pullup', target_reps: 8 },
+        { exercise_id: 'dip', target_reps: 10 },
+      ],
+    });
+    expect(reqs).toHaveLength(2);
+    expect(reqs[0]).toEqual({
+      exercise_id: 'pullup',
+      target_reps: 8,
+      target_seconds: null,
+    });
+  });
+});
+
+describe('deriveChallengeProgressRows', () => {
+  it('uses the challenge own target when there is no readiness_rule', () => {
+    const rows = deriveChallengeProgressRows(
+      [
+        {
+          id: 'c1',
+          exercise_id: 'pushup',
+          target_reps: 100,
+          target_seconds: null,
+          readiness_rule: null,
+        },
+      ],
+      [{ exercise_id: 'pushup', reps: 50, seconds: null }],
+    );
+    expect(rows[0]).toEqual({ challenge_id: 'c1', readiness: 50, status: 'locked' });
+  });
+
+  it('marks ready at 100% and uses the readiness_rule when present', () => {
+    const rows = deriveChallengeProgressRows(
+      [
+        {
+          id: 'c2',
+          exercise_id: 'muscleup',
+          target_reps: 1,
+          target_seconds: null,
+          readiness_rule: {
+            requirements: [
+              { exercise_id: 'pullup', target_reps: 8 },
+              { exercise_id: 'dip', target_reps: 10 },
+            ],
+          },
+        },
+      ],
+      [
+        { exercise_id: 'pullup', reps: 8, seconds: null },
+        { exercise_id: 'dip', reps: 10, seconds: null },
+      ],
+    );
+    expect(rows[0]).toEqual({ challenge_id: 'c2', readiness: 100, status: 'ready' });
   });
 });

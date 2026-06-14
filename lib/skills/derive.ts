@@ -1,5 +1,6 @@
 import { computeStatuses } from './unlock';
-import type { Best, NodeStatus, ProgressionNode } from './types';
+import { computeReadiness } from './readiness';
+import type { Best, NodeStatus, ProgressionNode, ReadinessRequirement } from './types';
 
 export interface LogInput {
   exercise_id: string;
@@ -51,6 +52,61 @@ export function deriveSkillProgressRows(
       status,
       best_reps: best.reps,
       best_hold_seconds: best.seconds,
+    };
+  });
+}
+
+export interface ChallengeReadinessInput {
+  id: string;
+  exercise_id: string;
+  target_reps: number | null;
+  target_seconds: number | null;
+  readiness_rule: Record<string, unknown> | null;
+}
+
+export interface ChallengeProgressRow {
+  challenge_id: string;
+  readiness: number;
+  status: 'locked' | 'ready';
+}
+
+export function readinessRuleToRequirements(
+  rule: Record<string, unknown> | null,
+): ReadinessRequirement[] {
+  if (!rule || !Array.isArray((rule as { requirements?: unknown }).requirements)) {
+    return [];
+  }
+  const requirements = (rule as { requirements: Array<Record<string, unknown>> })
+    .requirements;
+  return requirements.map((r) => ({
+    exercise_id: String(r.exercise_id),
+    target_reps: (r.target_reps as number | undefined) ?? null,
+    target_seconds: (r.target_seconds as number | undefined) ?? null,
+  }));
+}
+
+export function deriveChallengeProgressRows(
+  challenges: ChallengeReadinessInput[],
+  logs: LogInput[],
+): ChallengeProgressRow[] {
+  const bests = bestByExerciseFromLogs(logs);
+  return challenges.map((c) => {
+    const ruleReqs = readinessRuleToRequirements(c.readiness_rule);
+    const reqs: ReadinessRequirement[] =
+      ruleReqs.length > 0
+        ? ruleReqs
+        : [
+            {
+              exercise_id: c.exercise_id,
+              target_reps: c.target_reps,
+              target_seconds: c.target_seconds,
+            },
+          ];
+    const readiness = computeReadiness(reqs, bests);
+    return {
+      challenge_id: c.id,
+      readiness,
+      status: readiness >= 100 ? 'ready' : 'locked',
     };
   });
 }
