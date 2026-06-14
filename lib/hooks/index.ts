@@ -5,3 +5,6 @@ export * from './useSchedule';
 export * from './useShares';
 export * from './useTheme';
 export * from './useTranslation';
+export * from './useWorkoutLogs';
+export * from './useSkillTree';
+export * from './useChallenges';
