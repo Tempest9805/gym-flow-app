@@ -7,3 +7,5 @@ export * from './shares';
 export * from './streak';
 export * from './schedules';
 export * from './workoutLogs';
+export * from './skillTree';
+export * from './challenges';
