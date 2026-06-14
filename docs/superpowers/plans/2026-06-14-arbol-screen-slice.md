@@ -2,6 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **⏳ Progreso (2026-06-14, sesión 2):** ejecución subagent-driven en curso sobre `feat/calistenia-foundation`.
+> **Hechas:** T1 `96983db` · T2 `ac2dc83` · T3 `410befc` · T4 `e2d8fae` · T5 `cdece08`+`25352a7` (frames recalibrados visualmente).
+> **Siguiente:** T6 (AvatarHud + BranchLevelStrip). Faltan T6–T12.
+> Nota: la deuda menor de `markChallengeStatus` (`achieved_at: null` en `attempted`) sigue pendiente de endurecer. T11 (seed) necesita credenciales Supabase.
+
 **Goal:** Replace the Árbol placeholder with a working, demoable screen — a serpentine 5-branch skill map fed by real seeded content, a live avatar HUD, per-branch level strip, node logging (log set → derive → unlock → level up), and challenges with readiness + self-reported completion.
 
 **Architecture:** Pure view-logic (`lib/skills/treeView.ts`) groups the existing progression/progress data into branch sections + level counts; the data layer already provides reads (`useProgressions`/`useSkillProgress`/`useChallenges`/`useChallengeProgress`/`useWorkoutLogs`) and the `useLogSet` write+sync mutation. We add `markChallengeStatus`, a `useStreak` hook, an avatar-variant preference, an offline sprite-slicing script, focused RN components, and assemble `tree.tsx`. Content is seeded by a Node script that resolves `exercise_id` from the existing catalog by slug/name.
