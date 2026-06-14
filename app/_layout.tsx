@@ -15,22 +15,29 @@ import { QueryProvider } from '@/lib/utils/queryProvider';
 import { ErrorBoundary, LoadingScreen } from '@/components/ui';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useThemeStore } from '@/lib/store/themeStore';
+import { useCurrentProfile } from '@/lib/hooks/useProfiles';
 
 /**
  * Navigation guard: redirects based on auth state.
  */
 function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
   const segments = useSegments();
+  const { data: profile, isLoading: isProfileLoading } = useCurrentProfile();
 
-  if (isLoading) {
+  if (isAuthLoading || (isAuthenticated && isProfileLoading)) {
     return <LoadingScreen />;
   }
 
   const inAuthGroup = segments[0] === '(auth)';
+  const inOnboardingGroup = segments[0] === 'onboarding';
 
   if (!isAuthenticated && !inAuthGroup) {
     return <Redirect href="/(auth)/login" />;
+  }
+
+  if (isAuthenticated && profile && !profile.goal && !inOnboardingGroup) {
+    return <Redirect href="/onboarding/goal" />;
   }
 
   if (isAuthenticated && inAuthGroup) {

@@ -18,13 +18,35 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { AppTopBar } from '@/components/ui/AppTopBar';
 import { LoadingScreen } from '@/components/ui';
 import { useTheme } from '@/lib/hooks/useTheme';
-import { useRoutine } from '@/lib/hooks';
+import { useRoutine, useTranslation } from '@/lib/hooks';
 import type { RoutineWithExercises } from '@/types';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
+import { HIRES_MAP, NORMALIZED_MAP } from '@/lib/utils/mediaMap';
+
+function parseInstructions(raw: string | null): string[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed.map(s => String(s).trim()).filter(Boolean);
+    }
+  } catch (e) {}
+
+  const byNumber = raw.split(/\d+\.\s+/).map(s => s.trim()).filter(Boolean);
+  if (byNumber.length > 1) return byNumber;
+
+  const bySentence = raw.split(/(?<=\.)\s+(?=[A-Z])/).map(s => s.trim()).filter(Boolean);
+  if (bySentence.length > 1) return bySentence;
+
+  return [raw];
+}
 
 export default function WorkoutDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const t = useTheme();
+  const { language } = useTranslation();
   const { data: routine, isLoading } = useRoutine(id);
 
   if (isLoading) return <LoadingScreen />;
@@ -88,37 +110,121 @@ export default function WorkoutDetailScreen() {
           </View>
 
           {/* ── 2. Exercise List ── */}
-          <View className="px-5 mt-6 gap-4">
-            <Text className="text-[12px] font-bold tracking-[3px] uppercase" style={{ color: t.onSurfaceVariant }}>EXERCISE PROTOCOL</Text>
+          <View className="px-5 mt-6">
+            <Text className="text-[12px] font-bold tracking-[3px] uppercase mb-3" style={{ color: t.onSurfaceVariant }}>EXERCISE PROTOCOL</Text>
             <View className="gap-3">
-              {typedRoutine.exercises?.map((item, index) => (
-                <TouchableOpacity
-                  key={item.id}
-                  className="flex-row items-center p-4 rounded-2xl border gap-4"
-                  style={{
-                    backgroundColor: t.surfaceContainer,
-                    borderColor: t.surfaceContainerHighest,
-                  }}
-                  activeOpacity={0.7}
-                  onPress={() => router.push(`/exercise/${item.exercise_id}`)}
-                >
-                  <View 
-                    className="w-10 h-10 rounded-full items-center justify-center" 
-                    style={{ backgroundColor: t.surfaceContainerHigh }}
-                  >
-                    <Text className="text-lg font-extrabold" style={{ color: t.primaryContainer }}>{index + 1}</Text>
-                  </View>
-                  <View className="flex-1 gap-1">
-                    <Text className="text-lg font-bold" style={{ color: t.onSurface }}>
-                      {item.exercise?.name_en?.toUpperCase()}
-                    </Text>
-                    <Text className="text-[13px] font-semibold" style={{ color: t.onSurfaceVariant }}>
-                      {item.sets} SETS • {item.reps ? `${item.reps} REPS` : `${item.duration_seconds}s`}
-                    </Text>
-                  </View>
-                  <Text className="text-xl font-light" style={{ color: t.outlineVariant }}>→</Text>
-                </TouchableOpacity>
-              ))}
+              {typedRoutine.exercises
+                ?.sort((a: any, b: any) => a.order_index - b.order_index)
+                .map((item, index) => {
+                  const exName = language === 'es' && item.exercise.name_es ? item.exercise.name_es : item.exercise.name_en;
+                  const normalizedSlug = item.exercise.slug
+                    ?.toLowerCase()
+                    .replace(/\s+/g, '-')
+                    .replace(/[^a-z0-9-]/g, '');
+                  const localHires = normalizedSlug ? HIRES_MAP[normalizedSlug] : null;
+                  const localNormalized = normalizedSlug ? NORMALIZED_MAP[normalizedSlug] : null;
+                  const imageSource = localHires || localNormalized || (item.exercise.demonstration_url ? { uri: item.exercise.demonstration_url } : null);
+                  const steps = parseInstructions(item.exercise.instructions);
+                  const isTimeBased = item.exercise_type === 'time' ||
+                    (item.notes?.toLowerCase().includes('seg') || item.notes?.toLowerCase().includes('min'));
+
+                  return (
+                    <View
+                      key={item.id}
+                      className="bg-[#1E1428] rounded-2xl border border-zinc-800 p-4 relative overflow-hidden"
+                    >
+                      <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => router.push(`/exercise/${item.exercise_id}`)}
+                        className="flex-row items-start gap-4"
+                      >
+                        {/* Exercise Image */}
+                        {imageSource ? (
+                          <Image
+                            source={imageSource}
+                            className="w-16 h-16 rounded-xl bg-zinc-950"
+                            contentFit="cover"
+                          />
+                        ) : (
+                          <View className="w-16 h-16 rounded-xl bg-zinc-950 items-center justify-center">
+                            <MaterialCommunityIcons name="dumbbell" size={24} color="#504254" />
+                          </View>
+                        )}
+
+                        {/* Content Area */}
+                        <View className="flex-1 pr-6">
+                          <View className="flex-row items-center justify-between">
+                            <Text className="text-base font-black text-white leading-tight uppercase flex-1 mr-2">
+                              {exName}
+                            </Text>
+                            <MaterialCommunityIcons name="chevron-right" size={16} color="#504254" />
+                          </View>
+                          
+                          <Text className="text-xs font-bold text-[#BC13FE] mt-0.5 uppercase tracking-wide">
+                            {item.exercise_type === 'reps'
+                              ? `${item.sets}×${item.reps ?? 10} reps`
+                              : item.duration_seconds
+                                ? item.exercise_type === 'cardio'
+                                  ? `${item.sets} sets · ${Math.round(item.duration_seconds / 60)} min`
+                                  : `${item.sets} sets · ${item.duration_seconds}s`
+                                : `${item.sets} sets`}
+                          </Text>
+
+                          {item.exercise.muscle_group && (
+                            <View className="bg-zinc-900 border border-zinc-800 rounded px-2 py-0.5 self-start mt-2">
+                              <Text className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                                {item.exercise.muscle_group}
+                              </Text>
+                            </View>
+                          )}
+                        </View>
+                      </TouchableOpacity>
+
+                      {/* Inline Timer Button for Time-based exercises */}
+                      {isTimeBased && (
+                        <TouchableOpacity
+                          onPress={() => router.push({
+                            pathname: '/timer-active',
+                            params: {
+                              work: item.duration_seconds || 60,
+                              rest: item.rest_seconds || 30,
+                              rounds: item.sets || 3,
+                              sound: '1'
+                            }
+                          })}
+                          className="absolute right-4 bottom-4 flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#BC13FE]/10 border border-[#BC13FE]/30"
+                        >
+                          <MaterialCommunityIcons name="play" size={12} color="#BC13FE" />
+                          <Text className="text-[10px] font-bold text-[#BC13FE] uppercase tracking-widest">
+                            {language === 'es' ? 'Iniciar' : 'Start'}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+
+                      {/* Description & Cues */}
+                      {(item.exercise.description || steps.length > 0) && (
+                        <View className="mt-4 pt-3 border-t border-zinc-800">
+                          {item.exercise.description && (
+                            <Text className="text-[12px] text-zinc-400 leading-relaxed italic mb-2">
+                              {item.exercise.description}
+                            </Text>
+                          )}
+                          
+                          {steps.slice(0, 2).map((step, idx) => (
+                            <View key={idx} className="flex-row gap-2 mt-1 items-start">
+                              <View className="w-4 h-4 rounded-full border border-[#BC13FE]/30 items-center justify-center shrink-0 mt-0.5">
+                                <Text className="text-[9px] font-bold text-[#BC13FE]">{idx + 1}</Text>
+                              </View>
+                              <Text className="text-[11px] text-zinc-500 leading-4 flex-1" numberOfLines={2}>
+                                {step}
+                              </Text>
+                            </View>
+                          ))}
+                        </View>
+                      )}
+                    </View>
+                  );
+                })}
             </View>
           </View>
 

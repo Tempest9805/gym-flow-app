@@ -64,3 +64,51 @@ export async function getAllRoutines(userId: string) {
   if (error) throw error
   return data ?? []
 }
+
+export async function getAssignedDays(
+  routineId: string,
+  userId: string
+): Promise<number[]> {
+  const { data, error } = await supabase
+    .from('workout_schedules')
+    .select('day_of_week')
+    .eq('routine_id', routineId)
+    .eq('user_id', userId)
+    .eq('is_active', true)
+  if (error) throw error
+  return (data ?? []).map(d => d.day_of_week)
+}
+
+export async function toggleDayAssignment(
+  routineId: string,
+  userId: string,
+  dayOfWeek: number,
+  currentlyAssigned: boolean
+): Promise<void> {
+  if (currentlyAssigned) {
+    const { error } = await supabase
+      .from('workout_schedules')
+      .delete()
+      .eq('routine_id', routineId)
+      .eq('user_id', userId)
+      .eq('day_of_week', dayOfWeek)
+    if (error) throw error
+  } else {
+    // Ensure we delete any existing schedule for this day before inserting
+    await supabase
+      .from('workout_schedules')
+      .delete()
+      .eq('user_id', userId)
+      .eq('day_of_week', dayOfWeek)
+
+    const { error } = await supabase
+      .from('workout_schedules')
+      .insert({
+        user_id: userId,
+        routine_id: routineId,
+        day_of_week: dayOfWeek,
+        is_active: true,
+      })
+    if (error) throw error
+  }
+}

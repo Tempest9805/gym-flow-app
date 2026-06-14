@@ -20,13 +20,14 @@ const t = PURPLE_THEME.tokens;
 
 export default function SignUpScreen() {
   const router = useRouter();
+  const [shortName, setShortName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSignUp = async () => {
-    if (!email || !password || !confirmPassword) {
+    if (!shortName || !email || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -42,7 +43,15 @@ export default function SignUpScreen() {
 
     setLoading(true);
     try {
-      const { data, error } = await authApi.signUp({ email, password });
+      const { data, error } = await authApi.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: shortName,
+          },
+        },
+      });
       if (error) {
         if (error.message?.includes('rate limit') || error.message?.includes('Too many requests')) {
           Alert.alert('Please Wait', 'A confirmation email was already sent. Check your inbox.');
@@ -133,6 +142,32 @@ export default function SignUpScreen() {
 
             {/* ── Form ── */}
             <View className="gap-6">
+              {/* Short Name */}
+              <View className="gap-2">
+                <Text 
+                  className="text-[12px] font-bold tracking-[2px] uppercase pl-1"
+                  style={{ color: t.onSurfaceVariant }}
+                >
+                  Short Name
+                </Text>
+                <View
+                  className="h-16 flex-row items-center rounded-lg border px-4 gap-3"
+                  style={{ backgroundColor: t.surfaceContainer, borderColor: t.surfaceVariant }}
+                >
+                  <Text className="text-lg" style={{ color: t.outlineVariant }}>★</Text>
+                  <TextInput
+                    className="flex-1 text-lg leading-6"
+                    style={{ color: t.onSurface }}
+                    placeholder="E.G. DANIEL"
+                    placeholderTextColor={`${t.outlineVariant}88`}
+                    autoCapitalize="words"
+                    value={shortName}
+                    onChangeText={setShortName}
+                    editable={!loading}
+                  />
+                </View>
+              </View>
+
               {/* Email */}
               <View className="gap-2">
                 <Text 

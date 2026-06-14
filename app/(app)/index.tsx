@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useAuthStore } from '@/lib/store/authStore'
 import { useTheme } from '@/lib/hooks/useTheme'
 import { useTranslation } from '@/lib/hooks/useTranslation'
+import { useCurrentProfile } from '@/lib/hooks/useProfiles'
 import { getTodaySchedule, getWeekSchedule, getAllRoutines } from '@/lib/api/schedules'
 import { getOrCreateStreak, markDayCompleted } from '@/lib/api/streak'
 import type { Routine, RoutineExercise } from '@/types'
@@ -325,7 +326,7 @@ function EmptyRoutineCard() {
         No routine scheduled for today
       </Text>
       <TouchableOpacity
-        onPress={() => router.push('/routines/create')}
+        onPress={() => router.push('/routine-start')}
         className="w-full h-14 bg-[#BC13FE] rounded-xl items-center justify-center"
         style={{ boxShadow: '0 0 16px rgba(188,19,254,0.3)' }}>
         <Text className="text-white font-bold uppercase tracking-wider">
@@ -355,7 +356,7 @@ function SavedRoutinesSection({
         {routines.map(routine => (
           <TouchableOpacity
             key={routine.id}
-            onPress={() => router.push(`/routine/${routine.id}`)}
+            onPress={() => router.push({ pathname: '/routine-detail', params: { id: routine.id } })}
             style={{
               width: 160, backgroundColor: '#1E1428', borderRadius: 16,
               borderWidth: 1, borderColor: '#2a1f2d', padding: 16,
@@ -398,6 +399,7 @@ function QuickActionsBar() {
 export default function HomeScreen() {
   const { user } = useAuthStore()
   const { language } = useTranslation()
+  const { data: profile } = useCurrentProfile()
   const insets = useSafeAreaInsets()
   const queryClient = useQueryClient()
   const today = new Date().getDay()
@@ -464,7 +466,7 @@ export default function HomeScreen() {
       }}
       showsVerticalScrollIndicator={false}>
 
-      <GreetingBlock userName={user?.user_metadata?.full_name} />
+      <GreetingBlock userName={profile?.full_name} />
 
       <StreakCard
         streak={streak?.current_streak ?? 0}

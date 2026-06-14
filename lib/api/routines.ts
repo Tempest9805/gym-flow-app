@@ -4,15 +4,21 @@ import type { Routine, RoutineWithExercises, Profile, RoutineExercise } from './
 
 export const routinesApi = {
   /** List user routines */
-  list: async (profile: Profile): Promise<Routine[]> => {
+  list: async (profile: Profile): Promise<RoutineWithExercises[]> => {
     const { data, error } = await supabase
       .from('routines')
-      .select('*')
+      .select(`
+        *,
+        exercises:routine_exercises(
+          *,
+          exercise:exercises(*)
+        )
+      `)
       .order('created_at', { ascending: false })
       .eq('user_id', profile.id);
 
     if (error) throw error;
-    return RoutineSchema.array().parse(data || []);
+    return RoutineWithExercisesSchema.array().parse(data || []);
   },
 
   /** Get full routine with all exercises and exercise details */

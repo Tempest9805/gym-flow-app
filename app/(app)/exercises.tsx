@@ -13,145 +13,156 @@ import { useRouter } from 'expo-router';
 import type { Router } from 'expo-router';
 import { AppTopBar } from '@/components/ui/AppTopBar';
 import { useTheme } from '@/lib/hooks/useTheme';
-import { useExercises, useExerciseFilters, useTranslation } from '@/lib/hooks';
+import { useExercises, useTranslation } from '@/lib/hooks';
 import { Image as ExpoImage } from 'expo-image';
 import { cn } from '@/lib/utils/cn';
 import type { Exercise, ThemeTokens } from '@/types';
 import { THUMB_MAP } from '@/lib/utils/mediaMap';
+
+const MAIN_CATEGORIES = [
+  { id: 'CALISTHENICS', image: require('../../assets/exercises/Categories/CALISTHENICS.webp') },
+  { id: 'FUNCTIONAL', image: require('../../assets/exercises/Categories/FUNCTIONAL.webp') },
+  { id: 'GYM', image: require('../../assets/exercises/Categories/GYM.webp') },
+  { id: 'HOME', image: require('../../assets/exercises/Categories/HOME.webp') },
+];
 
 export default function ExerciseLibraryScreen() {
   const router = useRouter();
   const t = useTheme();
   const { t: translate } = useTranslation();
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const { data: exercises, isLoading: isExercisesLoading } = useExercises();
-  const { data: filters, isLoading: isFiltersLoading } = useExerciseFilters();
-
-  const categories = useMemo(() => {
-    if (!filters?.categories) return ['ALL'];
-    return ['ALL', ...filters.categories.map((c) => String(c || '').toUpperCase())];
-  }, [filters]);
+  const { data: exercises, isLoading } = useExercises();
 
   const filteredExercises = useMemo(() => {
     if (!exercises) return [];
+    
     return exercises.filter((e) => {
-      const nameEn = (e.name_en || '').toLowerCase();
-      const nameEs = (e.name_es || '').toLowerCase();
-      const muscleGroup = (e.muscle_group || '').toLowerCase();
-      const searchTerm = search.toLowerCase();
+      // 1. Search overrides everything
+      if (search.trim()) {
+        const term = search.toLowerCase();
+        return (
+          e.name_en?.toLowerCase().includes(term) ||
+          e.name_es?.toLowerCase().includes(term) ||
+          e.muscle_group?.toLowerCase().includes(term)
+        );
+      }
 
-      const matchesSearch =
-        nameEn.includes(searchTerm) ||
-        nameEs.includes(searchTerm) ||
-        muscleGroup.includes(searchTerm);
+      // 2. Category filtering based on strict mappings
+      if (activeCategory) {
+        const eq = (e.equipment || '').toLowerCase();
+        const cat = (e.category || '').toLowerCase();
         
-      const matchesCategory =
-        selectedCategory && selectedCategory !== 'ALL'
-          ? (e.category || '').toUpperCase() === selectedCategory
-          : true;
-          
-      return matchesSearch && matchesCategory;
+        switch (activeCategory) {
+          case 'CALISTHENICS':
+            return eq === 'bodyweight' && cat !== 'functional';
+          case 'FUNCTIONAL':
+            return cat === 'functional' || e.type?.toLowerCase() === 'functional';
+          case 'GYM':
+            return ['barbell', 'machine', 'cable', 'smith machine', 'ez curl bar'].includes(eq) || 
+                   (!['bodyweight', 'dumbbell', 'kettlebell', 'band'].includes(eq) && cat !== 'functional');
+          case 'HOME':
+            return ['dumbbell', 'kettlebell', 'band', 'bodyweight'].includes(eq);
+          default:
+            return true;
+        }
+      }
+      
+      return true;
     });
-  }, [exercises, search, selectedCategory]);
+  }, [exercises, search, activeCategory]);
 
-  const isLoading = isExercisesLoading || isFiltersLoading;
+  const showCategoriesView = !activeCategory && !search.trim();
 
   return (
-    <SafeAreaView 
-      className="flex-1" 
-      style={{ backgroundColor: t.background }} 
-      edges={['top']}
-    >
+    <SafeAreaView className="flex-1" style={{ backgroundColor: t.background }} edges={['top']}>
       <AppTopBar />
-      <FlatList
-        className="flex-1"
-        style={{ backgroundColor: t.background }}
-        contentContainerStyle={{ paddingBottom: 120 }}
-        data={filteredExercises}
-        keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false}
-        numColumns={1}
-        ListHeaderComponent={
-          <View className="pt-4 px-5 pb-2 gap-4">
-            <Text 
-              className="text-5xl font-extrabold tracking-tighter leading-tight"
-              style={{ color: t.onBackground }}
-            >
-              {translate('exercises.library')}
-            </Text>
+      
+      <View className="px-5 pt-4 pb-2 gap-4">
+        <Text className="text-5xl font-extrabold tracking-tighter leading-tight" style={{ color: t.onBackground }}>
+          {translate('exercises.library') || 'LIBRARY'}
+        </Text>
 
-            <View 
-              className="flex-row items-center h-16 rounded-xl border px-4 gap-3"
-              style={{ backgroundColor: t.surface, borderColor: t.surfaceVariant }}
-            >
-              <Text className="text-lg" style={{ color: t.onSurfaceVariant }}>⌕</Text>
-              <TextInput
-                className="flex-1 text-lg leading-6"
-                style={{ color: t.onSurface }}
-                placeholder={translate('exercises.searchPlaceholder')}
-                placeholderTextColor={t.onSurfaceVariant}
-                value={search}
-                onChangeText={setSearch}
-              />
-            </View>
+        <View className="flex-row items-center h-16 rounded-xl border px-4 gap-3" style={{ backgroundColor: t.surface, borderColor: t.surfaceVariant }}>
+          <Text className="text-lg" style={{ color: t.onSurfaceVariant }}>⌕</Text>
+          <TextInput
+            className="flex-1 text-lg leading-6"
+            style={{ color: t.onSurface }}
+            placeholder={translate('exercises.searchPlaceholder') || "Search exercises..."}
+            placeholderTextColor={t.onSurfaceVariant}
+            value={search}
+            onChangeText={setSearch}
+          />
+          {search.length > 0 && (
+            <TouchableOpacity onPress={() => setSearch('')} className="p-2">
+              <Text className="text-lg font-bold" style={{ color: t.onSurfaceVariant }}>✕</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              className="grow-0"
-              contentContainerStyle={{ gap: 12, paddingRight: 20 }}
-            >
-              {categories.map((cat) => {
-                const isActive = cat === (selectedCategory ?? 'ALL');
-                return (
-                  <TouchableOpacity
-                    key={cat}
-                    onPress={() => setSelectedCategory(cat === 'ALL' ? null : cat)}
-                    className={cn(
-                      "h-10 px-5 rounded-full border items-center justify-center elevation shadow-md",
-                    )}
-                    style={[
-                      isActive
-                        ? {
-                            backgroundColor: t.primaryContainer,
-                            borderColor: t.primaryContainer,
-                            shadowColor: t.primaryContainer,
-                            shadowOpacity: 0.3,
-                            shadowRadius: 8,
-                            shadowOffset: { width: 0, height: 0 },
-                          }
-                        : { backgroundColor: t.surfaceContainer, borderColor: t.surfaceVariant },
-                    ]}
-                  >
-                    <Text
-                      className="text-xs font-bold tracking-widest uppercase"
-                      style={{ color: isActive ? t.onPrimaryContainer : t.onSurface }}
-                    >
-                      {cat}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-
-            {isLoading && (
-              <ActivityIndicator color={t.primaryContainer} className="mt-6" />
-            )}
-          </View>
-        }
-        renderItem={({ item }) => <ExerciseListItem item={item} t={t} router={router} />}
-        ListEmptyComponent={
-          !isLoading ? (
-            <View className="py-16 items-center">
-              <Text className="text-lg leading-6" style={{ color: t.onSurfaceVariant }}>
-                {translate('exercises.noResults')}
+        {activeCategory && !search.trim() && (
+          <View className="flex-row items-center justify-between mt-2">
+            <View className="flex-row items-center gap-2">
+              <TouchableOpacity onPress={() => setActiveCategory(null)} className="w-8 h-8 rounded-full items-center justify-center border" style={{ borderColor: t.surfaceVariant, backgroundColor: t.surface }}>
+                <Text style={{ color: t.onSurface }}>←</Text>
+              </TouchableOpacity>
+              <Text className="text-xl font-extrabold tracking-widest uppercase" style={{ color: t.primaryContainer }}>
+                {activeCategory}
               </Text>
             </View>
-          ) : null
-        }
-      />
+            <Text className="text-sm font-bold tracking-widest" style={{ color: t.onSurfaceVariant }}>
+              {filteredExercises.length} EXERCISES
+            </Text>
+          </View>
+        )}
+      </View>
+
+      {isLoading ? (
+        <ActivityIndicator color={t.primaryContainer} className="mt-6" size="large" />
+      ) : showCategoriesView ? (
+        <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 120, gap: 16 }} showsVerticalScrollIndicator={false}>
+          {MAIN_CATEGORIES.map((cat) => (
+            <TouchableOpacity
+              key={cat.id}
+              activeOpacity={0.85}
+              onPress={() => setActiveCategory(cat.id)}
+              className="w-full h-40 rounded-2xl overflow-hidden border relative"
+              style={{ borderColor: t.surfaceVariant, backgroundColor: t.surface }}
+            >
+              <ExpoImage
+                source={cat.image}
+                style={{ width: '100%', height: '100%', opacity: 0.6 }}
+                contentFit="cover"
+                transition={300}
+              />
+              <View className="absolute inset-0 bg-black/40" />
+              <View className="absolute bottom-4 left-4">
+                <Text className="text-3xl font-extrabold tracking-widest uppercase" style={{ color: '#fff' }}>
+                  {cat.id}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      ) : (
+        <FlatList
+          className="flex-1"
+          style={{ backgroundColor: t.background }}
+          contentContainerStyle={{ paddingBottom: 120, paddingTop: 16 }}
+          data={filteredExercises}
+          keyExtractor={(item) => item.id}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => <ExerciseListItem item={item} t={t} router={router} />}
+          ListEmptyComponent={
+            <View className="py-16 items-center">
+              <Text className="text-lg leading-6" style={{ color: t.onSurfaceVariant }}>
+                {translate('exercises.noResults') || "No exercises found."}
+              </Text>
+            </View>
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -164,21 +175,18 @@ function ExerciseListItem({ item, t, router }: { item: Exercise; t: ThemeTokens;
     .replace(/\s+/g, '-')
     .replace(/[^a-z0-9-]/g, '');
 
-  // Resolve image source through THUMB_MAP first, fallback to remote CDN URLs
   const localImage = normalizedSlug ? THUMB_MAP[normalizedSlug] : null;
   const imageSource = localImage 
     ? localImage 
     : (item.thumbnail_url || item.demonstration_url ? { uri: item.thumbnail_url || item.demonstration_url } : null);
 
-  // Localization: name_es / name_en
   const displayName = language === 'es' && item.name_es ? item.name_es : item.name_en;
 
-  // Color-coded difficulty badges matching the Stitch aesthetic
-  const diffColor = useMemo(() => {
+  const diffColor = React.useMemo(() => {
     switch (item.difficulty?.toLowerCase()) {
-      case 'beginner':     return '#4ade80'; // vibrant green
-      case 'intermediate': return '#facc15'; // vibrant amber
-      case 'advanced':     return '#f87171'; // vibrant red
+      case 'beginner':     return '#4ade80';
+      case 'intermediate': return '#facc15';
+      case 'advanced':     return '#f87171';
       default:             return t.primaryContainer;
     }
   }, [item.difficulty, t.primaryContainer]);
@@ -191,37 +199,34 @@ function ExerciseListItem({ item, t, router }: { item: Exercise; t: ThemeTokens;
       style={{ backgroundColor: t.surface, borderColor: t.surfaceVariant }}
     >
       <View className="h-56 relative" style={{ backgroundColor: t.surfaceContainerHighest }}>
-        <ExpoImage
-          source={imageSource ?? undefined}
-          style={{ width: '100%', height: '100%', opacity: 0.8 }}
-          contentFit="cover"
-          transition={200}
-          placeholder="L35O?*0000_300~qIVD%00-;~q%M"
-          onError={() => {}}
-        />
+        {imageSource ? (
+          <ExpoImage
+            source={imageSource}
+            style={{ width: '100%', height: '100%', opacity: 0.8 }}
+            contentFit="cover"
+            transition={200}
+            placeholder="L35O?*0000_300~qIVD%00-;~q%M"
+          />
+        ) : (
+          <View className="w-full h-full items-center justify-center opacity-30">
+             <Text className="text-6xl">🏋️</Text>
+          </View>
+        )}
         <View className="absolute bottom-0 left-0 right-0 h-20 bg-black/50" />
         
-        {/* Category Badge pill - Top Left */}
         <View
           className="absolute top-4 left-4 px-3 py-1 rounded-full border"
-          style={{
-            backgroundColor: `${t.primaryContainer}22`,
-            borderColor: `${t.primaryContainer}44`,
-          }}
+          style={{ backgroundColor: `${t.primaryContainer}22`, borderColor: `${t.primaryContainer}44` }}
         >
           <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: t.primaryContainer }}>
             {(item.category || 'EXERCISE').toUpperCase()}
           </Text>
         </View>
 
-        {/* Difficulty Badge pill - Top Right */}
         {item.difficulty && (
           <View
             className="absolute top-4 right-4 px-3 py-1 rounded-full border"
-            style={{
-              backgroundColor: `${diffColor}22`,
-              borderColor: `${diffColor}44`,
-            }}
+            style={{ backgroundColor: `${diffColor}22`, borderColor: `${diffColor}44` }}
           >
             <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: diffColor }}>
               {item.difficulty.toUpperCase()}
@@ -231,7 +236,7 @@ function ExerciseListItem({ item, t, router }: { item: Exercise; t: ThemeTokens;
       </View>
 
       <View className="flex-row justify-between items-end p-5 -mt-8 pt-8" style={{ backgroundColor: t.background }}>
-        <View className="flex-1 gap-1">
+        <View className="flex-1 gap-1 pr-4">
           <Text className="text-[11px] font-bold tracking-widest uppercase" style={{ color: t.onSurfaceVariant }}>
             {item.type?.toUpperCase() ?? 'STRENGTH'} • {(item.equipment || 'BODYWEIGHT').toUpperCase()}
           </Text>

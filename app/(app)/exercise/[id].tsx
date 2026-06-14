@@ -47,26 +47,36 @@ function difficultyColor(difficulty: string | null, primary: string) {
  * Returns a non-empty array or falls back to generic cues.
  */
 function parseInstructions(raw: string | null): string[] {
-  if (!raw) return []
+  if (!raw) return [];
+
+  // Intenta parsear como JSON (para los datos guardados como arreglos en DB)
+  try {
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      return parsed.map(s => String(s).trim()).filter(Boolean);
+    }
+  } catch (e) {
+    // Si falla el parseo JSON, continuamos con la separación por texto
+  }
 
   // Intenta separar por números con punto: "1. ", "2. " etc
   const byNumber = raw
     .split(/\d+\.\s+/)
     .map(s => s.trim())
-    .filter(Boolean)
+    .filter(Boolean);
 
-  if (byNumber.length > 1) return byNumber
+  if (byNumber.length > 1) return byNumber;
 
   // Fallback: separar por punto seguido de mayúscula
   const bySentence = raw
     .split(/(?<=\.)\s+(?=[A-Z])/)
     .map(s => s.trim())
-    .filter(Boolean)
+    .filter(Boolean);
 
-  if (bySentence.length > 1) return bySentence
+  if (bySentence.length > 1) return bySentence;
 
   // Fallback final: retornar como un solo paso
-  return [raw]
+  return [raw];
 }
 
 const STEP_LABELS = ['SETUP', 'POSITION', 'DRIVE', 'LOCKOUT', 'CONTROL', 'BREATHE', 'RESET', 'REPEAT'];
@@ -175,7 +185,7 @@ export default function ExerciseDetailScreen() {
             <ZoomableImage
               source={imageSource ?? undefined}
               zoomSource={zoomSource ?? undefined}
-              className="w-full h-full opacity-[0.85]"
+              className="w-full h-full"
               contentFit="cover"
               accessibilityLabel={`Demonstration of ${displayName}`}
               showZoomHint={!!imageSource}

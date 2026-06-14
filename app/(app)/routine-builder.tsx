@@ -1,240 +1,194 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Modal, Alert, Platform, KeyboardAvoidingView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { AppTopBar } from '@/components/ui/AppTopBar';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useExercises, useRoutine } from '@/lib/hooks';
 import { upsertRoutine } from '@/lib/api/routines';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-import type { BuilderState, ExerciseEntry, Exercise } from '@/types';
+import type { Exercise } from '@/types';
 
-function StepperInput({
-  value,
-  min,
-  max,
-  step = 1,
-  onChange,
-}: {
-  value: number
-  min: number
-  max: number
-  step?: number
-  onChange: (v: number) => void
-}) {
-  const decrement = () => onChange(Math.max(min, value - step))
-  const increment = () => onChange(Math.min(max, value + step))
+type ExerciseEntry = {
+  tempId: string
+  exercise_id: string
+  name_en: string
+  name_es: string
+  auto_type: 'reps' | 'time' | 'cardio'
+  sets: number
+  reps: number
+  duration_seconds: number | null
+  weight: number | null
+  rest_seconds: number
+  showWeight: boolean
+  showOptions: boolean
+}
 
+function MiniStepper({ value, min, max, step = 1, onChange }: { value: number, min: number, max: number, step?: number, onChange: (v: number) => void }) {
   return (
-    <View className="flex-row items-center gap-2">
+    <View style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: '#251C28',
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: '#2a1f2d',
+      overflow: 'hidden',
+    }}>
       <TouchableOpacity
-        onPress={decrement}
-        className="w-8 h-8 rounded-full bg-zinc-800 items-center justify-center"
-        hitSlop={8}>
-        <MaterialCommunityIcons name="minus" size={16} color="#9d8ba0" />
+        onPress={() => onChange(Math.max(min, value - step))}
+        style={{ width: 32, height: 36, alignItems: 'center', justifyContent: 'center' }}
+        hitSlop={6}>
+        <MaterialCommunityIcons name="minus" size={14} color="#9d8ba0" />
       </TouchableOpacity>
-      <Text className="text-base font-bold text-white w-10 text-center"
-        style={{ fontVariant: ['tabular-nums'] }}>
+      <Text style={{
+        width: 36, textAlign: 'center',
+        fontSize: 14, fontWeight: '700', color: '#fff',
+        fontVariant: ['tabular-nums'],
+      }}>
         {Number.isInteger(value) ? value : value.toFixed(1)}
       </Text>
       <TouchableOpacity
-        onPress={increment}
-        className="w-8 h-8 rounded-full bg-zinc-800 items-center justify-center"
-        hitSlop={8}>
-        <MaterialCommunityIcons name="plus" size={16} color="#9d8ba0" />
+        onPress={() => onChange(Math.min(max, value + step))}
+        style={{ width: 32, height: 36, alignItems: 'center', justifyContent: 'center' }}
+        hitSlop={6}>
+        <MaterialCommunityIcons name="plus" size={14} color="#9d8ba0" />
       </TouchableOpacity>
     </View>
   )
 }
 
-const DAY_LABELS = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA']
-function DaySelector({
-  activeDay,
-  onSelect,
-}: {
-  activeDay: number
-  onSelect: (day: number) => void
-}) {
-  return (
-    <View className="flex-row justify-between px-5 py-3 border-b border-zinc-800">
-      {DAY_LABELS.map((label, index) => (
-        <TouchableOpacity
-          key={index}
-          onPress={() => onSelect(index)}
-          style={{
-            width: 40,
-            height: 40,
-            borderRadius: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: activeDay === index ? '#BC13FE' : '#1E1428',
-            borderWidth: 1,
-            borderColor: activeDay === index ? '#BC13FE' : '#2a1f2d',
-          }}>
-          <Text style={{
-            fontSize: 11,
-            fontWeight: '700',
-            color: activeDay === index ? '#fff' : '#9d8ba0',
-          }}>
-            {label}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </View>
-  )
-}
-
-function ExerciseRow({
-  entry,
-  index,
-  total,
-  language,
-  onUpdate,
-  onDelete,
-  onMoveUp,
-  onMoveDown,
-}: {
-  entry: ExerciseEntry
-  index: number
-  total: number
-  language: string
-  onUpdate: (id: string, updates: Partial<ExerciseEntry>) => void
-  onDelete: (id: string) => void
-  onMoveUp: (id: string) => void
-  onMoveDown: (id: string) => void
-}) {
-  const name = language === 'es' ? entry.exercise_name_es : entry.exercise_name_en
+function ExerciseCard({ entry, index, total, language, onUpdate, onDelete, onMoveUp, onMoveDown }: any) {
+  const name = language === 'es' ? entry.name_es : entry.name_en
 
   return (
-    <View className="mx-5 mb-3 bg-[#1E1428] rounded-2xl border border-zinc-800 p-4">
-      <View className="flex-row items-center justify-between mb-3">
-        <Text className="text-base font-bold text-white flex-1 mr-2" numberOfLines={1}>
+    <View className="mx-5 mt-3 bg-[#1E1428] rounded-2xl border border-zinc-800 overflow-hidden">
+      {/* Nombre + controles */}
+      <View className="flex-row items-center px-4 pt-4 pb-2 gap-2">
+        <Text className="flex-1 text-sm font-bold text-white" numberOfLines={1}>
           {name.toUpperCase()}
         </Text>
-        <View className="flex-row gap-2">
+        <View className="flex-row gap-1">
           {index > 0 && (
-            <TouchableOpacity onPress={() => onMoveUp(entry.id)} hitSlop={8}>
-              <MaterialCommunityIcons name="arrow-up" size={18} color="#9d8ba0" />
+            <TouchableOpacity onPress={onMoveUp} hitSlop={8} className="p-1">
+              <MaterialCommunityIcons name="arrow-up" size={18} color="#504254" />
             </TouchableOpacity>
           )}
           {index < total - 1 && (
-            <TouchableOpacity onPress={() => onMoveDown(entry.id)} hitSlop={8}>
-              <MaterialCommunityIcons name="arrow-down" size={18} color="#9d8ba0" />
+            <TouchableOpacity onPress={onMoveDown} hitSlop={8} className="p-1">
+              <MaterialCommunityIcons name="arrow-down" size={18} color="#504254" />
             </TouchableOpacity>
           )}
-          <TouchableOpacity onPress={() => onDelete(entry.id)} hitSlop={8}>
+          <TouchableOpacity onPress={() => onDelete(entry.tempId)} hitSlop={8} className="p-1">
             <MaterialCommunityIcons name="trash-can-outline" size={18} color="#ef4444" />
           </TouchableOpacity>
         </View>
       </View>
 
-      <View className="flex-row gap-2 mb-3">
-        {(['reps', 'time', 'cardio'] as const).map(type => (
-          <TouchableOpacity
-            key={type}
-            onPress={() => onUpdate(entry.id, {
-              exercise_type: type,
-              reps: type === 'reps' ? (entry.reps ?? 10) : null,
-              duration_seconds: type !== 'reps' ? (entry.duration_seconds ?? 30) : null,
-            })}
-            style={{
-              paddingHorizontal: 12,
-              paddingVertical: 5,
-              borderRadius: 999,
-              borderWidth: 1,
-              borderColor: entry.exercise_type === type ? '#BC13FE' : '#504254',
-              backgroundColor: entry.exercise_type === type ? '#BC13FE20' : 'transparent',
-            }}>
-            <Text style={{
-              fontSize: 11,
-              fontWeight: '700',
-              color: entry.exercise_type === type ? '#BC13FE' : '#9d8ba0',
-              textTransform: 'uppercase',
-              letterSpacing: 0.5,
-            }}>
-              {type === 'reps' ? 'Reps' : type === 'time' ? 'Time' : 'Cardio'}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <View className="gap-2">
-        <View className="flex-row items-center gap-3">
-          <Text className="text-xs text-zinc-500 w-16 uppercase tracking-wider">Sets</Text>
-          <StepperInput
+      {/* Fila principal: Sets × Reps (o Duración) */}
+      <View className="flex-row items-center px-4 pb-3 gap-3">
+        {/* Sets — siempre visible */}
+        <View className="items-center gap-1">
+          <Text className="text-xs text-zinc-600">Sets</Text>
+          <MiniStepper
             value={entry.sets}
-            min={1}
-            max={20}
-            onChange={v => onUpdate(entry.id, { sets: v })}
+            min={1} max={20}
+            onChange={v => onUpdate(entry.tempId, { sets: v })}
           />
         </View>
 
-        {entry.exercise_type === 'reps' && (
-          <View className="flex-row items-center gap-3">
-            <Text className="text-xs text-zinc-500 w-16 uppercase tracking-wider">Reps</Text>
-            <StepperInput
-              value={entry.reps ?? 10}
-              min={1}
-              max={100}
-              onChange={v => onUpdate(entry.id, { reps: v })}
+        <Text className="text-zinc-600 text-lg pb-1">×</Text>
+
+        {/* Reps o Duración */}
+        {entry.auto_type === 'reps' ? (
+          <View className="items-center gap-1 flex-1">
+            <Text className="text-xs text-zinc-600">Reps</Text>
+            <MiniStepper
+              value={entry.reps}
+              min={1} max={100}
+              onChange={v => onUpdate(entry.tempId, { reps: v })}
             />
           </View>
-        )}
-
-        {(entry.exercise_type === 'time' || entry.exercise_type === 'cardio') && (
-          <View className="flex-row items-center gap-3">
-            <Text className="text-xs text-zinc-500 w-16 uppercase tracking-wider">
-              {entry.exercise_type === 'cardio' ? 'Minutes' : 'Seconds'}
+        ) : (
+          <View className="items-center gap-1 flex-1">
+            <Text className="text-xs text-zinc-600">
+              {entry.auto_type === 'cardio' ? 'Minutos' : 'Segundos'}
             </Text>
-            <StepperInput
-              value={entry.exercise_type === 'cardio'
+            <MiniStepper
+              value={entry.auto_type === 'cardio'
                 ? Math.round((entry.duration_seconds ?? 600) / 60)
                 : (entry.duration_seconds ?? 30)}
-              min={entry.exercise_type === 'cardio' ? 1 : 5}
-              max={entry.exercise_type === 'cardio' ? 60 : 300}
-              step={entry.exercise_type === 'cardio' ? 1 : 5}
-              onChange={v => onUpdate(entry.id, {
-                duration_seconds: entry.exercise_type === 'cardio' ? v * 60 : v
+              min={entry.auto_type === 'cardio' ? 1 : 5}
+              max={entry.auto_type === 'cardio' ? 120 : 300}
+              step={entry.auto_type === 'cardio' ? 1 : 5}
+              onChange={v => onUpdate(entry.tempId, {
+                duration_seconds: entry.auto_type === 'cardio' ? v * 60 : v
               })}
             />
           </View>
         )}
 
-        <View className="flex-row items-center gap-3">
-          <Text className="text-xs text-zinc-500 w-16 uppercase tracking-wider">Weight</Text>
-          <View className="flex-row items-center gap-2">
-            <StepperInput
+        {/* Peso — solo si showWeight */}
+        {entry.showWeight && (
+          <View className="items-center gap-1">
+            <Text className="text-xs text-zinc-600">Lbs</Text>
+            <MiniStepper
               value={entry.weight ?? 0}
-              min={0}
-              max={500}
-              step={2.5}
-              onChange={v => onUpdate(entry.id, { weight: v === 0 ? null : v })}
+              min={0} max={500} step={2.5}
+              onChange={v => onUpdate(entry.tempId, {
+                weight: v === 0 ? null : v
+              })}
             />
-            <Text className="text-xs text-zinc-600">lbs (optional)</Text>
           </View>
-        </View>
+        )}
+      </View>
 
-        <View className="flex-row items-center gap-3">
-          <Text className="text-xs text-zinc-500 w-16 uppercase tracking-wider">Rest</Text>
+      {/* Peso opcional — oculto por defecto */}
+      {!entry.showWeight && (
+        <TouchableOpacity
+          onPress={() => onUpdate(entry.tempId, { showWeight: true })}
+          className="flex-row items-center justify-center py-2 border-t border-zinc-800 gap-1">
+          <MaterialCommunityIcons name="weight" size={12} color="#504254" />
+          <Text className="text-xs text-zinc-600">
+            {language === 'es' ? '+ Añadir peso (opcional)' : '+ Add weight (optional)'}
+          </Text>
+        </TouchableOpacity>
+      )}
+
+      {/* Opciones expandibles */}
+      <TouchableOpacity
+        onPress={() => onUpdate(entry.tempId, { showOptions: !entry.showOptions })}
+        className="flex-row items-center justify-center py-2 border-t border-zinc-800 gap-1">
+        <MaterialCommunityIcons name={entry.showOptions ? 'chevron-up' : 'chevron-down'} size={13} color="#504254" />
+        <Text className="text-xs text-zinc-600">
+          {entry.showOptions 
+            ? (language === 'es' ? 'Menos' : 'Less') 
+            : (language === 'es' ? 'Descanso y notas' : 'Rest and notes')}
+        </Text>
+      </TouchableOpacity>
+
+      {entry.showOptions && (
+        <View className="px-4 pb-4 pt-2 border-t border-zinc-800">
+          <Text className="text-xs text-zinc-600 mb-2">
+            {language === 'es' ? 'Descanso entre series' : 'Rest between sets'}
+          </Text>
           <View className="flex-row gap-2 flex-wrap">
             {[30, 45, 60, 90, 120].map(secs => (
               <TouchableOpacity
                 key={secs}
-                onPress={() => onUpdate(entry.id, { rest_seconds: secs })}
+                onPress={() => onUpdate(entry.tempId, { rest_seconds: secs })}
                 style={{
-                  paddingHorizontal: 8,
-                  paddingVertical: 4,
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
                   borderRadius: 8,
                   borderWidth: 1,
                   borderColor: entry.rest_seconds === secs ? '#BC13FE' : '#504254',
                   backgroundColor: entry.rest_seconds === secs ? '#BC13FE20' : 'transparent',
                 }}>
                 <Text style={{
-                  fontSize: 11,
+                  fontSize: 11, fontWeight: '600',
                   color: entry.rest_seconds === secs ? '#BC13FE' : '#9d8ba0',
-                  fontWeight: '600',
                 }}>
                   {secs}s
                 </Text>
@@ -242,7 +196,7 @@ function ExerciseRow({
             ))}
           </View>
         </View>
-      </View>
+      )}
     </View>
   )
 }
@@ -253,119 +207,116 @@ export default function RoutineBuilderScreen() {
   const { language } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const today = new Date().getDay();
 
-  const [state, setState] = useState<BuilderState>({
-    routineId: null,
-    name: '',
-    exercises: [],
-    activeDay: today,
-  });
-
-  const { data: existingRoutine, isLoading: isLoadingRoutine } = useRoutine(id);
-  const { data: allExercises } = useExercises();
-
+  const [routineId, setRoutineId] = useState<string | null>(null);
+  const [name, setName] = useState('');
+  const [exercises, setExercises] = useState<ExerciseEntry[]>([]);
   const [isExerciseModalVisible, setIsExerciseModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const { data: existingRoutine } = useRoutine(id);
+  const { data: allExercises } = useExercises();
+
   useEffect(() => {
     if (existingRoutine && id) {
-      setState({
-        routineId: existingRoutine.id,
-        name: existingRoutine.name || '',
-        activeDay: existingRoutine.exercises?.[0]?.day_of_week ?? today,
-        exercises: existingRoutine.exercises?.map((e: any, index: number) => ({
-          id: e.id || Math.random().toString(),
+      setRoutineId(existingRoutine.id);
+      setName(existingRoutine.name || '');
+      setExercises(
+        existingRoutine.exercises?.map((e: any) => ({
+          tempId: Math.random().toString(),
           exercise_id: e.exercise_id,
-          exercise_name_en: e.exercise?.name_en || 'Unknown',
-          exercise_name_es: e.exercise?.name_es || 'Desconocido',
-          exercise_type: e.exercise_type || 'reps',
-          day_of_week: e.day_of_week ?? today,
-          order_index: e.order_index ?? index,
+          name_en: e.exercise?.name_en || 'Unknown',
+          name_es: e.exercise?.name_es || e.exercise?.name_en || 'Unknown',
+          auto_type: e.exercise_type || 'reps',
           sets: e.sets || 3,
-          reps: e.reps || null,
+          reps: e.reps || 10,
           duration_seconds: e.duration_seconds || null,
           weight: e.weight || null,
           rest_seconds: e.rest_seconds || 60,
-          notes: e.notes || null,
-        })) || [],
-      });
+          showWeight: e.weight != null,
+          showOptions: false,
+        })) || []
+      );
     }
   }, [existingRoutine, id]);
 
   const saveMutation = useMutation({
     mutationFn: () => {
-      if (!state.name.trim()) {
-        Alert.alert('Incomplete', 'Please add a routine name.');
-        return Promise.reject(new Error('No name'));
-      }
-      return upsertRoutine(
-        user!.id,
-        state.routineId,
-        state.name,
-        state.exercises
-      );
+      // Map back to the API format
+      const apiExercises = exercises.map((e, index) => ({
+        id: e.tempId,
+        exercise_id: e.exercise_id,
+        exercise_name_en: e.name_en,
+        exercise_name_es: e.name_es,
+        exercise_type: e.auto_type,
+        day_of_week: 0, // Not assigned here anymore
+        order_index: index,
+        sets: e.sets,
+        reps: e.auto_type === 'reps' ? e.reps : null,
+        duration_seconds: e.auto_type !== 'reps' ? e.duration_seconds : null,
+        weight: e.showWeight ? e.weight : null,
+        rest_seconds: e.rest_seconds,
+        notes: null,
+      }));
+
+      return upsertRoutine(user!.id, routineId, name, apiExercises as any);
     },
-    onSuccess: (routineId) => {
+    onSuccess: (newRoutineId) => {
       queryClient.invalidateQueries({ queryKey: ['routines'] });
       queryClient.invalidateQueries({ queryKey: ['all-routines'] });
-      queryClient.invalidateQueries({ queryKey: ['today-schedule'] });
-      queryClient.invalidateQueries({ queryKey: ['week-schedule'] });
-      router.back();
+      queryClient.invalidateQueries({ queryKey: ['routine', newRoutineId] });
+      router.replace(`/routine-detail?id=${newRoutineId}`);
     },
     onError: (error: any) => {
-      if (error.message !== 'No name') {
-        Alert.alert('Error', 'Could not save routine. Please try again.');
-        console.error(error);
-      }
+      Alert.alert('Error', 'Could not save routine.');
+      console.error(error);
     },
   });
 
-  const handleUpdateExercise = (exId: string, updates: Partial<ExerciseEntry>) => {
-    setState(prev => ({
+  const handleUpdate = (tempId: string, updates: Partial<ExerciseEntry>) => {
+    setExercises(prev => prev.map(ex => ex.tempId === tempId ? { ...ex, ...updates } : ex));
+  };
+
+  const handleDelete = (tempId: string) => {
+    setExercises(prev => prev.filter(ex => ex.tempId !== tempId));
+  };
+
+  const moveExercise = (index: number, direction: 'up' | 'down') => {
+    setExercises(prev => {
+      const next = [...prev];
+      if (direction === 'up' && index > 0) {
+        [next[index - 1], next[index]] = [next[index], next[index - 1]];
+      } else if (direction === 'down' && index < next.length - 1) {
+        [next[index + 1], next[index]] = [next[index], next[index + 1]];
+      }
+      return next;
+    });
+  };
+
+  const handleAddExercise = (exercise: Exercise) => {
+    const isCardio = exercise.category === 'cardio';
+    const isTime = exercise.type === 'time';
+    const type = isCardio ? 'cardio' : (isTime ? 'time' : 'reps');
+
+    setExercises(prev => [
       ...prev,
-      exercises: prev.exercises.map(ex => ex.id === exId ? { ...ex, ...updates } : ex)
-    }));
-  };
-
-  const handleDeleteExercise = (exId: string) => {
-    Alert.alert(
-      'Remove Exercise',
-      'Are you sure?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () => {
-            setState(prev => ({
-              ...prev,
-              exercises: prev.exercises.filter(ex => ex.id !== exId)
-            }));
-          }
-        }
-      ]
-    );
-  };
-
-  const handleMoveUp = (exId: string) => {
-    setState(prev => {
-      const idx = prev.exercises.findIndex(e => e.id === exId);
-      if (idx <= 0) return prev;
-      const next = [...prev.exercises];
-      [next[idx - 1], next[idx]] = [next[idx], next[idx - 1]];
-      return { ...prev, exercises: next };
-    });
-  };
-
-  const handleMoveDown = (exId: string) => {
-    setState(prev => {
-      const idx = prev.exercises.findIndex(e => e.id === exId);
-      if (idx === -1 || idx >= prev.exercises.length - 1) return prev;
-      const next = [...prev.exercises];
-      [next[idx + 1], next[idx]] = [next[idx], next[idx + 1]];
-      return { ...prev, exercises: next };
-    });
+      {
+        tempId: Math.random().toString(),
+        exercise_id: exercise.id,
+        name_en: exercise.name_en,
+        name_es: exercise.name_es || exercise.name_en,
+        auto_type: type,
+        sets: 3,
+        reps: type === 'reps' ? 10 : 1,
+        duration_seconds: type !== 'reps' ? (type === 'cardio' ? 600 : 30) : null,
+        weight: null,
+        rest_seconds: 60,
+        showWeight: false,
+        showOptions: false,
+      }
+    ]);
+    setIsExerciseModalVisible(false);
+    setSearchQuery('');
   };
 
   const filteredExercises = useMemo(() => {
@@ -374,108 +325,68 @@ export default function RoutineBuilderScreen() {
     const q = searchQuery.toLowerCase();
     return allExercises.filter((e) =>
       (e.name_en || '').toLowerCase().includes(q) ||
+      (e.name_es || '').toLowerCase().includes(q) ||
       (e.muscle_group || '').toLowerCase().includes(q)
     );
   }, [allExercises, searchQuery]);
 
-  const handleAddExercise = (exercise: Exercise) => {
-    const isCardio = exercise.category === 'cardio';
-    const isTime = exercise.type === 'time';
-    const type = isCardio ? 'cardio' : (isTime ? 'time' : 'reps');
-
-    setState(prev => ({
-      ...prev,
-      exercises: [
-        ...prev.exercises,
-        {
-          id: Math.random().toString(),
-          exercise_id: exercise.id,
-          exercise_name_en: exercise.name_en,
-          exercise_name_es: exercise.name_es || exercise.name_en,
-          exercise_type: type,
-          day_of_week: prev.activeDay,
-          order_index: prev.exercises.length,
-          sets: 3,
-          reps: type === 'reps' ? 10 : null,
-          duration_seconds: type !== 'reps' ? (type === 'cardio' ? 600 : 30) : null,
-          weight: null,
-          rest_seconds: 60,
-          notes: null,
-        }
-      ]
-    }));
-    setIsExerciseModalVisible(false);
-    setSearchQuery('');
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-[#19101C]" edges={['top']}>
-      <AppTopBar />
-      <ScrollView
-        className="flex-1"
-        contentContainerStyle={{ paddingBottom: 120 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="flex-row items-center px-5 py-4 gap-4">
-          <TouchableOpacity onPress={() => router.back()} hitSlop={10}>
-            <MaterialCommunityIcons name="arrow-left" size={24} color="#fff" />
+      <KeyboardAvoidingView className="flex-1 bg-[#19101C]" behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        {/* Header: nombre + guardar */}
+        <View className="flex-row items-center px-5 pt-4 pb-3 border-b border-zinc-800 gap-3">
+          <TouchableOpacity onPress={() => router.back()} hitSlop={8}>
+            <MaterialCommunityIcons name="chevron-left" size={28} color="#9d8ba0" />
           </TouchableOpacity>
           <TextInput
-            className="flex-1 text-xl font-black text-white p-0"
-            placeholder="ROUTINE NAME"
+            value={name}
+            onChangeText={setName}
+            placeholder={language === 'es' ? 'Nombre de la rutina' : 'Routine Name'}
             placeholderTextColor="#504254"
-            value={state.name}
-            onChangeText={v => setState(s => ({ ...s, name: v }))}
-            autoCapitalize="characters"
+            style={{ flex: 1, fontSize: 18, fontWeight: '900', color: '#fff' }}
+            autoFocus={!routineId}
           />
           <TouchableOpacity
             onPress={() => saveMutation.mutate()}
-            disabled={saveMutation.isPending}
-            className="px-4 py-2 rounded-xl bg-[#BC13FE]"
-          >
-            <Text className="text-white font-bold text-xs uppercase tracking-widest">
-              {saveMutation.isPending ? 'Saving...' : 'Save'}
+            disabled={!name.trim() || saveMutation.isPending}
+            style={{
+              backgroundColor: name.trim() ? '#BC13FE' : '#2a1f2d',
+              paddingHorizontal: 16,
+              paddingVertical: 8,
+              borderRadius: 20,
+            }}>
+            <Text style={{ color: name.trim() ? '#fff' : '#504254', fontSize: 13, fontWeight: '700' }}>
+              {saveMutation.isPending ? '...' : (language === 'es' ? 'GUARDAR' : 'SAVE')}
             </Text>
           </TouchableOpacity>
         </View>
 
-        <DaySelector
-          activeDay={state.activeDay}
-          onSelect={d => {
-            setState(prev => {
-              const updatedExercises = prev.exercises.map(ex => ({ ...ex, day_of_week: d }));
-              return { ...prev, activeDay: d, exercises: updatedExercises };
-            });
-          }}
-        />
-
-        <View className="pt-4">
-          {state.exercises.map((entry, index) => (
-            <ExerciseRow
-              key={entry.id}
+        <ScrollView contentContainerStyle={{ paddingBottom: 120 }}>
+          {exercises.map((entry, index) => (
+            <ExerciseCard
+              key={entry.tempId}
               entry={entry}
               index={index}
-              total={state.exercises.length}
+              total={exercises.length}
               language={language}
-              onUpdate={handleUpdateExercise}
-              onDelete={handleDeleteExercise}
-              onMoveUp={handleMoveUp}
-              onMoveDown={handleMoveDown}
+              onUpdate={handleUpdate}
+              onDelete={handleDelete}
+              onMoveUp={() => moveExercise(index, 'up')}
+              onMoveDown={() => moveExercise(index, 'down')}
             />
           ))}
 
+          {/* Añadir ejercicio */}
           <TouchableOpacity
-            className="mx-5 mt-2 mb-8 h-16 rounded-xl border-2 border-dashed flex-row items-center justify-center gap-3 border-[#504254]"
-            activeOpacity={0.7}
             onPress={() => setIsExerciseModalVisible(true)}
-          >
-            <MaterialCommunityIcons name="plus" size={20} color="#9d8ba0" />
-            <Text className="text-sm font-bold uppercase tracking-widest text-[#9d8ba0]">
-              ADD EXERCISE
+            className="mx-5 mt-4 h-14 rounded-2xl border-2 border-dashed border-zinc-700 flex-row items-center justify-center gap-2">
+            <MaterialCommunityIcons name="plus-circle-outline" size={20} color="#9d8ba0" />
+            <Text className="text-sm font-bold text-zinc-500 uppercase tracking-wider">
+              {language === 'es' ? 'AÑADIR EJERCICIO' : 'ADD EXERCISE'}
             </Text>
           </TouchableOpacity>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
 
       <Modal
         visible={isExerciseModalVisible}
@@ -485,14 +396,16 @@ export default function RoutineBuilderScreen() {
       >
         <SafeAreaView className="flex-1 p-6 gap-4 bg-[#1E1428]">
           <View className="flex-row justify-between items-center mt-4 mb-2">
-            <Text className="text-2xl font-bold text-white">Select Exercise</Text>
+            <Text className="text-2xl font-bold text-white">
+              {language === 'es' ? 'Seleccionar Ejercicio' : 'Select Exercise'}
+            </Text>
             <TouchableOpacity onPress={() => setIsExerciseModalVisible(false)}>
-              <Text className="text-base font-semibold text-[#BC13FE]">Close</Text>
+              <Text className="text-base font-semibold text-[#BC13FE]">{language === 'es' ? 'Cerrar' : 'Close'}</Text>
             </TouchableOpacity>
           </View>
           <TextInput
             className="h-14 rounded-xl px-4 text-lg border border-[#2a1f2d] bg-[#19101C] text-white"
-            placeholder="Search exercises..."
+            placeholder={language === 'es' ? 'Buscar ejercicios...' : 'Search exercises...'}
             placeholderTextColor="#504254"
             value={searchQuery}
             onChangeText={setSearchQuery}

@@ -74,7 +74,7 @@ export function ZoomableImage({
   const closeZoom = useCallback(() => setModalVisible(false), []);
 
   if (!source) {
-    return <View style={style}>{placeholder ?? null}</View>;
+    return <View className={cn("overflow-hidden relative", className)} style={style}>{placeholder ?? null}</View>;
   }
 
   return (
