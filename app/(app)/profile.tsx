@@ -24,6 +24,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppTopBar } from '@/components/ui/AppTopBar';
 import { useTheme, useThemeStore } from '@/lib/hooks/useTheme';
 import { useCurrentProfile, useTranslation } from '@/lib/hooks';
+import { useSettingsStore } from '@/lib/store/settingsStore';
+import type { StartTab } from '@/lib/utils/startTab';
 import { useAuthStore } from '@/lib/store/authStore';
 import type { ThemeId } from '@/lib/store/themeStore';
 import { THEMES } from '@/lib/store/themeStore';
@@ -35,7 +37,9 @@ export default function ProfileScreen() {
   const { signOut } = useAuthStore();
   const [themeModalVisible, setThemeModalVisible] = useState(false);
   const [languageModalVisible, setLanguageModalVisible] = useState(false);
-  const { language, setLanguage } = useTranslation();
+  const [startTabModalVisible, setStartTabModalVisible] = useState(false);
+  const { t: tr, language, setLanguage } = useTranslation();
+  const { startTab, setStartTab } = useSettingsStore();
 
   const athleteName = profile?.full_name || profile?.email?.split('@')[0] || 'Athlete';
 
@@ -189,6 +193,26 @@ export default function ProfileScreen() {
                   <Text className="text-lg font-medium text-white">Language</Text>
                   <Text className="text-sm leading-5" style={{ color: t.onSurfaceVariant }}>
                     {language === 'es' ? 'Español (ES)' : 'English (US)'}
+                  </Text>
+                </View>
+              </View>
+              <Text className="text-2xl" style={{ color: t.onSurfaceVariant }}>›</Text>
+            </TouchableOpacity>
+
+            <View className="h-[1px]" style={{ backgroundColor: 'rgba(255,255,255,0.05)' }} />
+
+            {/* Start Screen */}
+            <TouchableOpacity
+              className="flex-row items-center justify-between p-6 min-h-[72px]"
+              activeOpacity={0.7}
+              onPress={() => setStartTabModalVisible(true)}
+            >
+              <View className="flex-row items-center gap-4">
+                <Text className="text-xl" style={{ color: t.onSurfaceVariant }}>🚀</Text>
+                <View className="gap-0.5">
+                  <Text className="text-lg font-medium text-white">Start Screen</Text>
+                  <Text className="text-sm leading-5" style={{ color: t.onSurfaceVariant }}>
+                    {startTab === 'tree' ? tr('tabs.tree') : tr('tabs.train')}
                   </Text>
                 </View>
               </View>
@@ -372,6 +396,76 @@ export default function ProfileScreen() {
               className="h-12 border rounded-lg items-center justify-center mt-2"
               style={{ borderColor: 'rgba(255,255,255,0.1)' }}
               onPress={() => setLanguageModalVisible(false)}
+            >
+              <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                CANCEL
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+
+      {/* ── Start Screen Selector Modal ── */}
+      <Modal
+        visible={startTabModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setStartTabModalVisible(false)}
+      >
+        <TouchableOpacity
+          className="flex-1 justify-end"
+          style={{ backgroundColor: 'rgba(0,0,0,0.72)' }}
+          activeOpacity={1}
+          onPress={() => setStartTabModalVisible(false)}
+        >
+          <View
+            className="rounded-t-[20px] border-t p-6 pb-12 gap-3"
+            style={{ backgroundColor: t.surfaceContainerLow, borderColor: t.surfaceVariant }}
+            onStartShouldSetResponder={() => true}
+          >
+            <Text className="text-[22px] font-bold mb-1 text-white">Start Screen</Text>
+            <Text className="text-sm mb-2" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Which tab the app opens on
+            </Text>
+
+            {([
+              { id: 'index' as StartTab, label: tr('tabs.train') },
+              { id: 'tree' as StartTab, label: tr('tabs.tree') },
+            ]).map((opt) => {
+              const isActive = startTab === opt.id;
+              return (
+                <TouchableOpacity
+                  key={opt.id}
+                  className="flex-row items-center rounded-xl border p-4 gap-4 min-h-[64px]"
+                  style={{
+                    backgroundColor: isActive ? `${t.primaryContainer}18` : 'rgba(255,255,255,0.04)',
+                    borderColor: isActive ? t.primaryContainer : 'rgba(255,255,255,0.1)',
+                  }}
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    setStartTab(opt.id);
+                    setStartTabModalVisible(false);
+                  }}
+                >
+                  <View className="flex-1">
+                    <Text className="text-lg font-semibold text-white">{opt.label}</Text>
+                    {isActive && (
+                      <Text className="text-[12px] font-bold tracking-widest uppercase" style={{ color: t.primaryContainer }}>
+                        Active
+                      </Text>
+                    )}
+                  </View>
+                  {isActive && (
+                    <Text className="text-xl font-bold" style={{ color: t.primaryContainer }}>✓</Text>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+
+            <TouchableOpacity
+              className="h-12 border rounded-lg items-center justify-center mt-2"
+              style={{ borderColor: 'rgba(255,255,255,0.1)' }}
+              onPress={() => setStartTabModalVisible(false)}
             >
               <Text className="text-[12px] font-bold tracking-[2px] uppercase" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 CANCEL
