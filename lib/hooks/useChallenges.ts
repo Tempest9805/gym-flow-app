@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { challengesApi } from '@/lib/api';
 
 export const useChallenges = () => {
@@ -13,5 +13,18 @@ export const useChallengeProgress = (userId?: string) => {
     queryKey: ['challengeProgress', userId],
     queryFn: () => (userId ? challengesApi.listChallengeProgress(userId) : []),
     enabled: !!userId,
+  });
+};
+
+export const useMarkChallengeStatus = (userId?: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ challengeId, status }: { challengeId: string; status: 'attempted' | 'achieved' }) => {
+      if (!userId) throw new Error('No user');
+      return challengesApi.markChallengeStatus(userId, challengeId, status);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['challengeProgress', userId] });
+    },
   });
 };

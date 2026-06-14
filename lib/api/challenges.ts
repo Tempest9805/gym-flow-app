@@ -95,4 +95,31 @@ export const challengesApi = {
     if (error) throw error;
     return UserChallengeProgressSchema.array().parse(data ?? []);
   },
+
+  /**
+   * User-driven status transition for a challenge (self-report).
+   * 'attempted' on "Intentar reto"; 'achieved' (sets achieved_at) on "Lo logré".
+   * readiness is omitted: on conflict it is left untouched, on insert it defaults to 0.
+   */
+  markChallengeStatus: async (
+    userId: string,
+    challengeId: string,
+    status: 'attempted' | 'achieved',
+  ): Promise<UserChallengeProgress> => {
+    const { data, error } = await supabase
+      .from('user_challenge_progress')
+      .upsert(
+        {
+          user_id: userId,
+          challenge_id: challengeId,
+          status,
+          achieved_at: status === 'achieved' ? new Date().toISOString() : null,
+        },
+        { onConflict: 'user_id,challenge_id' },
+      )
+      .select()
+      .single();
+    if (error) throw error;
+    return UserChallengeProgressSchema.parse(data);
+  },
 };
