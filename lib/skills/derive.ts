@@ -78,11 +78,18 @@ export function readinessRuleToRequirements(
   }
   const requirements = (rule as { requirements: Array<Record<string, unknown>> })
     .requirements;
-  return requirements.map((r) => ({
-    exercise_id: String(r.exercise_id),
-    target_reps: (r.target_reps as number | undefined) ?? null,
-    target_seconds: (r.target_seconds as number | undefined) ?? null,
-  }));
+  // Drop malformed entries: a requirement without an exercise_id can never be
+  // matched against a best, so it would silently inflate readiness to 100%.
+  return requirements
+    .filter(
+      (r): r is Record<string, unknown> =>
+        r != null && typeof r === 'object' && (r as Record<string, unknown>).exercise_id != null,
+    )
+    .map((r) => ({
+      exercise_id: String(r.exercise_id),
+      target_reps: (r.target_reps as number | undefined) ?? null,
+      target_seconds: (r.target_seconds as number | undefined) ?? null,
+    }));
 }
 
 export function deriveChallengeProgressRows(
@@ -92,16 +99,22 @@ export function deriveChallengeProgressRows(
   const bests = bestByExerciseFromLogs(logs);
   return challenges.map((c) => {
     const ruleReqs = readinessRuleToRequirements(c.readiness_rule);
-    const reqs: ReadinessRequirement[] =
-      ruleReqs.length > 0
-        ? ruleReqs
-        : [
-            {
-              exercise_id: c.exercise_id,
-              target_reps: c.target_reps,
-              target_seconds: c.target_seconds,
-            },
-          ];
+    let reqs: ReadinessRequirement[];
+    if (ruleReqs.length > 0) {
+      reqs = ruleReqs;
+    } else if (c.target_reps != null || c.target_seconds != null) {
+      reqs = [
+        {
+          exercise_id: c.exercise_id,
+          target_reps: c.target_reps,
+          target_seconds: c.target_seconds,
+        },
+      ];
+    } else {
+      // No rule and no measurable target → nothing to be ready for. Never
+      // let computeReadiness's "empty reqs = 100%" make this phantom-ready.
+      return { challenge_id: c.id, readiness: 0, status: 'locked' as const };
+    }
     const readiness = computeReadiness(reqs, bests);
     return {
       challenge_id: c.id,

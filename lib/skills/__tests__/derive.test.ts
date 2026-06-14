@@ -103,6 +103,15 @@ describe('readinessRuleToRequirements', () => {
       target_seconds: null,
     });
   });
+
+  it('drops requirement entries that lack an exercise_id', () => {
+    const reqs = readinessRuleToRequirements({
+      requirements: [{ target_reps: 5 }, { exercise_id: 'dip', target_reps: 10 }],
+    });
+    expect(reqs).toEqual([
+      { exercise_id: 'dip', target_reps: 10, target_seconds: null },
+    ]);
+  });
 });
 
 describe('deriveChallengeProgressRows', () => {
@@ -144,5 +153,21 @@ describe('deriveChallengeProgressRows', () => {
       ],
     );
     expect(rows[0]).toEqual({ challenge_id: 'c2', readiness: 100, status: 'ready' });
+  });
+
+  it('locks a challenge that has no rule and no measurable target', () => {
+    const rows = deriveChallengeProgressRows(
+      [
+        {
+          id: 'c3',
+          exercise_id: 'pushup',
+          target_reps: null,
+          target_seconds: null,
+          readiness_rule: null,
+        },
+      ],
+      [{ exercise_id: 'pushup', reps: 50, seconds: null }],
+    );
+    expect(rows[0]).toEqual({ challenge_id: 'c3', readiness: 0, status: 'locked' });
   });
 });
