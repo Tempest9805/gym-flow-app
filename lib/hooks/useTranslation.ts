@@ -51,6 +51,16 @@ export const TRANSLATIONS = {
     'tabata.totalTime': 'Total Time',
     'tabata.finish': 'Finish',
     'tabata.repeatWorkout': 'Repeat Workout',
+    // Tabs (footer)
+    'tabs.tree': 'Tree',
+    'tabs.train': 'Train',
+    'tabs.exercises': 'Exercises',
+    'tabs.routines': 'Routines',
+    'tabs.profile': 'Profile',
+    // Skill tree (placeholder)
+    'tree.title': 'Skill Tree',
+    'tree.comingSoon': 'Coming soon',
+    'tree.subtitle': 'Unlock the muscle-up, handstand, planche and more — your path, one node at a time.',
   },
   es: {
     'exercises.about': 'Acerca de',
@@ -102,6 +112,16 @@ export const TRANSLATIONS = {
     'tabata.totalTime': 'Tiempo Total',
     'tabata.finish': 'Finalizar',
     'tabata.repeatWorkout': 'Repetir',
+    // Tabs (footer)
+    'tabs.tree': 'Árbol',
+    'tabs.train': 'Entrenar',
+    'tabs.exercises': 'Ejercicios',
+    'tabs.routines': 'Rutinas',
+    'tabs.profile': 'Perfil',
+    // Skill tree (placeholder)
+    'tree.title': 'Árbol de skills',
+    'tree.comingSoon': 'Próximamente',
+    'tree.subtitle': 'Desbloquea el muscle-up, el pino, la plancha y más — tu camino, nodo a nodo.',
   }
 } as const;
 
