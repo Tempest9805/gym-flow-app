@@ -8,3 +8,4 @@ export * from './useTranslation';
 export * from './useWorkoutLogs';
 export * from './useSkillTree';
 export * from './useChallenges';
+export * from './useStreak';
