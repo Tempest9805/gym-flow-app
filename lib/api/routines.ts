@@ -114,15 +114,21 @@ export async function upsertRoutine(
   userId: string,
   routineId: string | null,
   name: string,
-  exercises: ExerciseEntry[]
+  exercises: ExerciseEntry[],
+  options?: { metadata?: Record<string, unknown>; status?: 'active' | 'pending' }
 ): Promise<string> {
+  // Optional fields (gate writes required_levels metadata + locked status).
+  const extra: Record<string, unknown> = {}
+  if (options?.metadata !== undefined) extra.metadata = options.metadata
+  if (options?.status !== undefined) extra.status = options.status
+
   // 1. Crear o actualizar la rutina
   let finalRoutineId = routineId
 
   if (!routineId) {
     const { data, error } = await supabase
       .from('routines')
-      .insert({ user_id: userId, name })
+      .insert({ user_id: userId, name, ...extra })
       .select('id')
       .single()
     if (error) throw error
@@ -130,7 +136,7 @@ export async function upsertRoutine(
   } else {
     const { error } = await supabase
       .from('routines')
-      .update({ name }) // "updated_at: new Date().toISOString()" may not exist on routines table schema in Supabase yet, better to stick to existing schema or omit updated_at if error occurs. Wait, user included updated_at in snippet. I'll include it.
+      .update({ name, ...extra })
       .eq('id', routineId)
     if (error) throw error
   }
