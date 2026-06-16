@@ -38,8 +38,9 @@ Ver también: [[_INDEX]], [[market_research]], spec → `superpowers/specs/2026-
 1. **Plan 1 — Núcleo de lógica y datos** ✅ *completo* (jest, migración SQL, Zod schemas, 5 motores puros)
 2. **Plan 2 — Acceso a datos + hooks** ✅ *completo* (API Supabase `lib/api/{workoutLogs,skillTree,challenges}` + hooks React Query; `derive.ts` puro conecta los motores)
 3. **Plan 3 — Navegación 5 tabs** ✅ *completo* (footer reestructurado, default Entrenar, Agenda oculta, resolver puro `startTab` + `settingsStore`, placeholder Árbol, setting Start Screen en Perfil)
-4. **Plan 4 — Pantalla Árbol (slice vertical fino)** ⏳ *en ejecución* (viz serpenteante + avatar HUD + registro en nodo + retos con readiness + `markChallengeStatus`; seed reducido sin barra)
-5. Plan — Onboarding equipamiento (`available_equipment`) + gate de rutina al crear
+4. **Plan 4 — Pantalla Árbol (slice vertical fino)** ✅ *completo* (viz serpenteante + avatar HUD + registro en nodo + retos con readiness + `markChallengeStatus`; seed corrido: 17 progresiones + 5 retos)
+4.5. **Limpieza de enfoque calistenia** ✅ *completo* (borrados 4 huérfanos: sessionStore, tabataThemeStore, useLocalMedia, skills barrel; librería filtrada a calistenia/casa vía `equipmentFocus` + categoría GYM removida; docs de stores corregidas; 55 tests/11 suites, typecheck exit 0). Spec → `superpowers/specs/2026-06-15-calistenia-cleanup-design.md`, plan → `superpowers/plans/2026-06-15-calistenia-cleanup.md`. ⚠️ Manual `pnpm start` diferido.
+5. Plan — Onboarding equipamiento (`available_equipment`) + gate de rutina al crear ← **SIGUIENTE**
 6. Plan — Paywall RevenueCat + gating free/premium
 7. Plan — Seeding completo de contenido (~50 progresiones, catálogo de retos, calentamientos) — el foso
 
