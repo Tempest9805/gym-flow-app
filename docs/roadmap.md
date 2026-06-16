@@ -41,7 +41,8 @@ Ver también: [[_INDEX]], [[market_research]], spec → `superpowers/specs/2026-
 4. **Plan 4 — Pantalla Árbol (slice vertical fino)** ✅ *completo* (viz serpenteante + avatar HUD + registro en nodo + retos con readiness + `markChallengeStatus`; seed corrido: 17 progresiones + 5 retos)
 4.5. **Limpieza de enfoque calistenia** ✅ *completo* (borrados 4 huérfanos: sessionStore, tabataThemeStore, useLocalMedia, skills barrel; librería filtrada a calistenia/casa vía `equipmentFocus` + categoría GYM removida; docs de stores corregidas; 55 tests/11 suites, typecheck exit 0). Spec → `superpowers/specs/2026-06-15-calistenia-cleanup-design.md`, plan → `superpowers/plans/2026-06-15-calistenia-cleanup.md`. ⚠️ Manual `pnpm start` diferido.
 5a. **Onboarding equipamiento** ✅ *completo* (pantalla `equipment` tras goal, módulo puro `lib/onboarding/equipment`, guard redirect, i18n; sin cambio de esquema). Spec → `superpowers/specs/2026-06-15-equipment-onboarding-design.md`, plan → `superpowers/plans/2026-06-15-equipment-onboarding.md`. ⚠️ Manual `pnpm start` diferido.
-5b. Plan — **Gate de rutina al crear** (required_levels en `Routine.metadata` + prueba de aptitud) ← **SIGUIENTE**
+5b. **Gate de rutina al crear** ✅ *completo* (lógica pura `evaluateRoutineGate`, `upsertRoutine` con metadata+status, `RoutineGateSheet`, badge "Bloqueada"; sin cambio de esquema). Spec → `superpowers/specs/2026-06-15-routine-gate-design.md`, plan → `superpowers/plans/2026-06-15-routine-gate.md`. ⚠️ Manual `pnpm start` diferido.
+6. Plan — Paywall RevenueCat + gating free/premium ← **SIGUIENTE**
 6. Plan — Paywall RevenueCat + gating free/premium
 7. Plan — Seeding completo de contenido (~50 progresiones, catálogo de retos, calentamientos) — el foso
 
