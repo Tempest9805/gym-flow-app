@@ -79,6 +79,17 @@ export const TRANSLATIONS = {
     'branch.core': 'Core',
     'branch.legs': 'Legs',
     'branch.skill': 'Skill',
+    // Onboarding — equipment
+    'onboarding.equipment.title': 'What equipment do you have?',
+    'onboarding.equipment.subtitle': 'We keep a no-gear path always available. You can change this later.',
+    'onboarding.equipment.bodyweight': 'Bodyweight only',
+    'onboarding.equipment.bodyweightDesc': 'Train anywhere with no equipment.',
+    'onboarding.equipment.continue': 'Continue',
+    'equipment.pull_up_bar': 'Pull-up bar',
+    'equipment.bands': 'Resistance bands',
+    'equipment.parallettes': 'Parallettes / dip bars',
+    'equipment.rings': 'Gymnastic rings',
+    'equipment.dumbbells': 'Dumbbells',
   },
   es: {
     'exercises.about': 'Acerca de',
@@ -158,6 +169,17 @@ export const TRANSLATIONS = {
     'branch.core': 'Core',
     'branch.legs': 'Piernas',
     'branch.skill': 'Skill',
+    // Onboarding — equipment
+    'onboarding.equipment.title': '¿Qué equipo tienes?',
+    'onboarding.equipment.subtitle': 'Siempre dejamos una ruta sin equipo. Puedes cambiarlo después.',
+    'onboarding.equipment.bodyweight': 'Solo peso corporal',
+    'onboarding.equipment.bodyweightDesc': 'Entrena donde sea, sin equipo.',
+    'onboarding.equipment.continue': 'Continuar',
+    'equipment.pull_up_bar': 'Barra de dominadas',
+    'equipment.bands': 'Bandas elásticas',
+    'equipment.parallettes': 'Paralelas / parallettes',
+    'equipment.rings': 'Anillas',
+    'equipment.dumbbells': 'Mancuernas',
   }
 } as const;
 
