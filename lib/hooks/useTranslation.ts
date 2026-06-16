@@ -90,6 +90,13 @@ export const TRANSLATIONS = {
     'equipment.parallettes': 'Parallettes / dip bars',
     'equipment.rings': 'Gymnastic rings',
     'equipment.dumbbells': 'Dumbbells',
+    // Routine gate
+    'gate.title': 'This routine is above your tested level',
+    'gate.subtitle': 'These exercises are still locked. Save it locked, or unlock them in the Tree.',
+    'gate.saveLocked': 'Save locked',
+    'gate.viewTree': 'View in Tree',
+    'gate.keepEditing': 'Keep editing',
+    'gate.locked': 'Locked',
   },
   es: {
     'exercises.about': 'Acerca de',
@@ -180,6 +187,13 @@ export const TRANSLATIONS = {
     'equipment.parallettes': 'Paralelas / parallettes',
     'equipment.rings': 'Anillas',
     'equipment.dumbbells': 'Mancuernas',
+    // Routine gate
+    'gate.title': 'Esta rutina supera tu nivel probado',
+    'gate.subtitle': 'Estos ejercicios siguen bloqueados. Guárdala bloqueada o desbloquéalos en el Árbol.',
+    'gate.saveLocked': 'Guardar bloqueada',
+    'gate.viewTree': 'Ver en Árbol',
+    'gate.keepEditing': 'Seguir editando',
+    'gate.locked': 'Bloqueada',
   }
 } as const;
 
