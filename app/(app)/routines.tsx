@@ -29,6 +29,7 @@ function RoutineCard({
   userId: string
   onPress: () => void
 }) {
+  const { t: tr } = useTranslation();
   const { data: assignedDays = [] } = useQuery({
     queryKey: ['assigned-days', routine.id, userId],
     queryFn: () => getAssignedDays(routine.id, userId),
@@ -41,9 +42,18 @@ function RoutineCard({
       className="mx-5 mb-3 bg-[#1E1428] rounded-2xl border border-zinc-800 p-4 active:opacity-70">
       <View className="flex-row items-center justify-between">
         <View className="flex-1 mr-3">
-          <Text className="text-lg font-black text-white">
-            {routine.name}
-          </Text>
+          <View className="flex-row items-center gap-2">
+            <Text className="text-lg font-black text-white">
+              {routine.name}
+            </Text>
+            {routine.status === 'pending' && (
+              <View className="px-2 py-0.5 rounded-full border" style={{ borderColor: '#BC13FE' }}>
+                <Text className="text-[10px] font-bold uppercase tracking-wide" style={{ color: '#BC13FE' }}>
+                  {tr('gate.locked')}
+                </Text>
+              </View>
+            )}
+          </View>
           <Text className="text-sm text-[#BC13FE] mt-0.5 font-bold tracking-wide">
             {routine.exercises?.length ?? 0} exercises
           </Text>
