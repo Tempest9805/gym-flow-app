@@ -1,6 +1,6 @@
 ---
 tags: [roadmap, status, gym-flow-app, calistenia]
-updated: 2026-06-14
+updated: 2026-06-15
 ---
 
 # Roadmap — Pivote a calistenia con árbol de skills
@@ -18,7 +18,7 @@ Ver también: [[_INDEX]], [[market_research]], spec → `superpowers/specs/2026-
 - [x] ✅ **Migración `0001_skill_tree.sql` aplicada en Supabase**
 - [x] **Plan 2 (acceso a datos + hooks) ejecutado y verificado** (9 commits, 40 tests, typecheck limpio, revisión final "ready to merge")
 - [x] **Plan 3 — Navegación 5 tabs ejecutado y verificado** (6 commits `feat(nav):`, footer Árbol·Entrenar·Ejercicios·Rutinas·Perfil con default Entrenar, Agenda oculta, 44 tests, typecheck limpio)
-- [~] **Plan 4 — Pantalla Árbol (slice vertical fino)** EN EJECUCIÓN (subagent-driven): T1–T5 ✅ commiteadas, T6–T12 pendientes
+- [x] **Plan 4 — Pantalla Árbol (slice vertical fino)** ✅ **código completo y verificado** (T1–T12: serpentine + AvatarHud + registro en nodo + retos con readiness; 50 tests / 10 suites, typecheck exit 0). ⚠️ Pendiente paso manual: correr `scripts/seed-skill-tree.mjs` (necesita `SUPABASE_SERVICE_ROLE_KEY`) + checklist manual `pnpm start`.
 - [ ] Planes restantes (onboarding equipamiento + gate · paywall · seeding completo)
 
 > El "Plan UI" original se dividió: **nav 5 tabs** (Plan 3, ✅) y **pantalla Árbol** (Plan 4, en curso).
@@ -54,13 +54,13 @@ Ejecución subagent-driven sobre `feat/calistenia-foundation`. Especificación: 
 - [x] T3 — `useStreak` hook (commit `410befc`)
 - [x] T4 — Preferencia variante avatar: resolver puro + `settingsStore` (commit `e2d8fae`, 2 tests)
 - [x] T5 — Script `scripts/slice-avatars.js` + 12 frames recortados + `lib/utils/avatarFrames.ts` (commits `cdece08`, `25352a7` recalibración visual de crops)
-- [ ] T6 — `AvatarHud` + `BranchLevelStrip` ← SIGUIENTE
-- [ ] T7 — `SkillNode` + `NodeSheet` (registrar serie vía `useLogSet`)
-- [ ] T8 — `ChallengeCard` (readiness + auto-reporte)
-- [ ] T9 — Strings `tree.*` + `branch.*` (en+es)
-- [ ] T10 — Ensamblar `app/(app)/tree.tsx`
-- [ ] T11 — `scripts/seed-skill-tree.mjs` + correrlo (necesita `EXPO_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; resuelve exercise_id por slug/nombre y reporta faltantes)
-- [ ] T12 — Verificación full + review final + finishing-a-development-branch
+- [x] T6 — `AvatarHud` + `BranchLevelStrip` (commit `b498d24`)
+- [x] T7 — `SkillNode` + `NodeSheet` (registrar serie vía `useLogSet`) — commiteado sesión 3
+- [x] T8 — `ChallengeCard` (readiness + auto-reporte) — commiteado sesión 3
+- [x] T9 — Strings `tree.*` + `branch.*` (en+es) — commiteado sesión 3
+- [x] T10 — Ensamblar `app/(app)/tree.tsx` — commiteado sesión 3
+- [x] T11 — `scripts/seed-skill-tree.mjs` **commiteado** — ⚠️ correrlo es paso manual (necesita `EXPO_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; resuelve exercise_id por slug/nombre y reporta faltantes)
+- [x] T12 — Verificación full ✅ (50 tests / 10 suites, typecheck exit 0). Pendiente: checklist manual `pnpm start` + review final + finishing-a-development-branch
 
 > Deuda menor anotada: `markChallengeStatus` escribe `achieved_at: null` al marcar `attempted` — no se dispara en el flujo del slice (un reto logrado no muestra botones), pero conviene endurecerlo (omitir `achieved_at` salvo `achieved`) en una pasada de limpieza.
 
@@ -93,7 +93,7 @@ Ejecución subagent-driven sobre `feat/calistenia-foundation`. Especificación: 
 ## Cómo retomar si se corta la sesión
 
 1. Lee este archivo + el spec del Árbol (`superpowers/specs/2026-06-14-arbol-screen-slice-design.md`) + el Plan 4 (`superpowers/plans/2026-06-14-arbol-screen-slice.md`).
-2. `git log --oneline` para ver qué tareas ya tienen commit. **Última ejecutada: T5 (commit `25352a7`). Siguiente: T6.**
+2. `git log --oneline` para ver qué tareas ya tienen commit. **Plan 4 completo en código (T1–T12). Siguiente: correr seed (manual, requiere service key) → checklist manual `pnpm start` → review final → siguiente plan (onboarding equipamiento + gate).**
 3. Continúa con el skill `superpowers:subagent-driven-development` (un subagente fresco por tarea + review; el dueño debe autorizar el spawn de agentes). Cada tarea del Plan 4 trae su código completo.
 4. Trabajo en rama `feat/calistenia-foundation` (no en `main`). La rama tiene WIP del usuario sin commitear (presets/onboarding/avatares) — usar `git add <path>` dirigido, nunca `git add -A`.
 5. T11 (seed) corre contra Supabase: requiere `EXPO_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` en el entorno; sin eso, dejar el script commiteado y marcar el seed como paso manual.
