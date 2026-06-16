@@ -61,6 +61,24 @@ export const TRANSLATIONS = {
     'tree.title': 'Skill Tree',
     'tree.comingSoon': 'Coming soon',
     'tree.subtitle': 'Unlock the muscle-up, handstand, planche and more — your path, one node at a time.',
+    // Tree screen
+    'tree.streak': 'Streak',
+    'tree.startToday': "Start today's routine",
+    'tree.challenges': 'Challenges',
+    'tree.tryChallenge': 'Try challenge',
+    'tree.iDidIt': 'I did it',
+    'tree.achieved': 'Achieved',
+    'tree.ready': 'ready',
+    'tree.logSet': 'Log a set',
+    'tree.reps': 'Reps',
+    'tree.seconds': 'Seconds',
+    'tree.save': 'Save',
+    // Branches
+    'branch.push': 'Push',
+    'branch.pull': 'Pull',
+    'branch.core': 'Core',
+    'branch.legs': 'Legs',
+    'branch.skill': 'Skill',
   },
   es: {
     'exercises.about': 'Acerca de',
@@ -122,6 +140,24 @@ export const TRANSLATIONS = {
     'tree.title': 'Árbol de skills',
     'tree.comingSoon': 'Próximamente',
     'tree.subtitle': 'Desbloquea el muscle-up, el pino, la plancha y más — tu camino, nodo a nodo.',
+    // Tree screen
+    'tree.streak': 'Racha',
+    'tree.startToday': 'Empezar rutina de hoy',
+    'tree.challenges': 'Retos',
+    'tree.tryChallenge': 'Intentar reto',
+    'tree.iDidIt': 'Lo logré',
+    'tree.achieved': 'Logrado',
+    'tree.ready': 'listo',
+    'tree.logSet': 'Registrar serie',
+    'tree.reps': 'Reps',
+    'tree.seconds': 'Segundos',
+    'tree.save': 'Guardar',
+    // Branches
+    'branch.push': 'Empuje',
+    'branch.pull': 'Tracción',
+    'branch.core': 'Core',
+    'branch.legs': 'Piernas',
+    'branch.skill': 'Skill',
   }
 } as const;
 
