@@ -18,11 +18,11 @@ import { Image as ExpoImage } from 'expo-image';
 import { cn } from '@/lib/utils/cn';
 import type { Exercise, ThemeTokens } from '@/types';
 import { THUMB_MAP } from '@/lib/utils/mediaMap';
+import { isHomeFriendly } from '@/lib/utils/equipmentFocus';
 
 const MAIN_CATEGORIES = [
   { id: 'CALISTHENICS', image: require('../../assets/exercises/Categories/CALISTHENICS.webp') },
   { id: 'FUNCTIONAL', image: require('../../assets/exercises/Categories/FUNCTIONAL.webp') },
-  { id: 'GYM', image: require('../../assets/exercises/Categories/GYM.webp') },
   { id: 'HOME', image: require('../../assets/exercises/Categories/HOME.webp') },
 ];
 
@@ -37,8 +37,9 @@ export default function ExerciseLibraryScreen() {
 
   const filteredExercises = useMemo(() => {
     if (!exercises) return [];
-    
-    return exercises.filter((e) => {
+
+    // Calistenia/casa: hide gym equipment from the whole library.
+    return exercises.filter((e) => isHomeFriendly(e.equipment)).filter((e) => {
       // 1. Search overrides everything
       if (search.trim()) {
         const term = search.toLowerCase();
@@ -59,9 +60,6 @@ export default function ExerciseLibraryScreen() {
             return eq === 'bodyweight' && cat !== 'functional';
           case 'FUNCTIONAL':
             return cat === 'functional' || e.type?.toLowerCase() === 'functional';
-          case 'GYM':
-            return ['barbell', 'machine', 'cable', 'smith machine', 'ez curl bar'].includes(eq) || 
-                   (!['bodyweight', 'dumbbell', 'kettlebell', 'band'].includes(eq) && cat !== 'functional');
           case 'HOME':
             return ['dumbbell', 'kettlebell', 'band', 'bodyweight'].includes(eq);
           default:
