@@ -19,12 +19,12 @@ lib/api/  (Supabase JS — acceso a datos)
 Supabase  (PostgreSQL + Auth + Storage)
 
 Estado global (Zustand — transversal a todas las capas):
-  authStore | themeStore | languageStore | sessionStore | tabataStore
+  authStore | themeStore | languageStore | tabataStore | settingsStore
 ```
 
 ### Principio central
 
-Mobile-first con Supabase como único backend. React Query como capa de caché entre UI y Supabase. Sin offline-first: los datos requieren conexión. El estado de progreso semanal se persiste en AsyncStorage con reset automático por semana.
+Mobile-first con Supabase como único backend. React Query como capa de caché entre UI y Supabase. Sin offline-first: los datos requieren conexión. Preferencias de UI (tema, idioma, tab de inicio, variante de avatar) se persisten en AsyncStorage.
 
 ### Stores (Zustand)
 
@@ -33,7 +33,7 @@ Mobile-first con Supabase como único backend. React Query como capa de caché e
 | `authStore` | Sesión Supabase, isAuthenticated | SecureStore (Supabase) |
 | `themeStore` | Neon Purple / Neon Orange | AsyncStorage |
 | `languageStore` | EN / ES | AsyncStorage |
-| `sessionStore` | Ejercicios/días completados esta semana | AsyncStorage (reset semanal) |
+| `settingsStore` | Tab de inicio + variante de avatar | AsyncStorage |
 | `tabataStore` | Config del timer Tabata | AsyncStorage |
 
 ### Pantallas principales
