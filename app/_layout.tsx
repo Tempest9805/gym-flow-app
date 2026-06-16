@@ -16,6 +16,7 @@ import { ErrorBoundary, LoadingScreen } from '@/components/ui';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useThemeStore } from '@/lib/store/themeStore';
 import { useCurrentProfile } from '@/lib/hooks/useProfiles';
+import { isEquipmentCaptured } from '@/lib/onboarding/equipment';
 
 /**
  * Navigation guard: redirects based on auth state.
@@ -38,6 +39,16 @@ function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (isAuthenticated && profile && !profile.goal && !inOnboardingGroup) {
     return <Redirect href="/onboarding/goal" />;
+  }
+
+  if (
+    isAuthenticated &&
+    profile &&
+    profile.goal &&
+    !isEquipmentCaptured(profile.available_equipment) &&
+    !inOnboardingGroup
+  ) {
+    return <Redirect href="/onboarding/equipment" />;
   }
 
   if (isAuthenticated && inAuthGroup) {

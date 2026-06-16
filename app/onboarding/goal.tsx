@@ -68,7 +68,7 @@ export default function GoalSelectionScreen() {
         id: profile.id,
         updates: { goal: goalId, full_name: name.trim() }
       });
-      router.replace('/(app)');
+      router.replace('/onboarding/equipment');
     } catch (error) {
       console.error('Failed to update goal', error);
       setSelectedId(null);
