@@ -18,7 +18,7 @@ Ver también: [[_INDEX]], [[market_research]], spec → `superpowers/specs/2026-
 - [x] ✅ **Migración `0001_skill_tree.sql` aplicada en Supabase**
 - [x] **Plan 2 (acceso a datos + hooks) ejecutado y verificado** (9 commits, 40 tests, typecheck limpio, revisión final "ready to merge")
 - [x] **Plan 3 — Navegación 5 tabs ejecutado y verificado** (6 commits `feat(nav):`, footer Árbol·Entrenar·Ejercicios·Rutinas·Perfil con default Entrenar, Agenda oculta, 44 tests, typecheck limpio)
-- [x] **Plan 4 — Pantalla Árbol (slice vertical fino)** ✅ **código completo y verificado** (T1–T12: serpentine + AvatarHud + registro en nodo + retos con readiness; 50 tests / 10 suites, typecheck exit 0). ⚠️ Pendiente paso manual: correr `scripts/seed-skill-tree.mjs` (necesita `SUPABASE_SERVICE_ROLE_KEY`) + checklist manual `pnpm start`.
+- [x] **Plan 4 — Pantalla Árbol (slice vertical fino)** ✅ **completo** (T1–T12: serpentine + AvatarHud + registro en nodo + retos con readiness; 50 tests / 10 suites, typecheck exit 0). ✅ **Seed corrido en Supabase** (17 progresiones + 5 retos; se agregó "Squat/Sentadilla" al catálogo como nodo base de legs). ⚠️ Pendiente solo: checklist manual `pnpm start` (RN, no unit-testable).
 - [ ] Planes restantes (onboarding equipamiento + gate · paywall · seeding completo)
 
 > El "Plan UI" original se dividió: **nav 5 tabs** (Plan 3, ✅) y **pantalla Árbol** (Plan 4, en curso).
@@ -59,7 +59,7 @@ Ejecución subagent-driven sobre `feat/calistenia-foundation`. Especificación: 
 - [x] T8 — `ChallengeCard` (readiness + auto-reporte) — commiteado sesión 3
 - [x] T9 — Strings `tree.*` + `branch.*` (en+es) — commiteado sesión 3
 - [x] T10 — Ensamblar `app/(app)/tree.tsx` — commiteado sesión 3
-- [x] T11 — `scripts/seed-skill-tree.mjs` **commiteado** — ⚠️ correrlo es paso manual (necesita `EXPO_PUBLIC_SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`; resuelve exercise_id por slug/nombre y reporta faltantes)
+- [x] T11 — `scripts/seed-skill-tree.mjs` **commiteado + CORRIDO** ✅ (17 progresiones + 5 retos sembrados). El script ahora carga `.env` vía dotenv y acepta `SUPABASE_SERVICE_KEY` (el nombre real en `.env`). Faltaba un "Squat" plano en el catálogo → se agregó "Squat/Sentadilla" (DB + `assets/exercises_final_updated.csv`, mismo id) como nodo L1 de legs.
 - [x] T12 — Verificación full ✅ (50 tests / 10 suites, typecheck exit 0). Pendiente: checklist manual `pnpm start` + review final + finishing-a-development-branch
 
 > Deuda menor anotada: `markChallengeStatus` escribe `achieved_at: null` al marcar `attempted` — no se dispara en el flujo del slice (un reto logrado no muestra botones), pero conviene endurecerlo (omitir `achieved_at` salvo `achieved`) en una pasada de limpieza.
