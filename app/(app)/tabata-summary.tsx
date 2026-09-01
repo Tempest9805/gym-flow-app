@@ -172,7 +172,7 @@ export default function TabataSummaryScreen() {
       <View className="w-full gap-4 mt-auto mb-10">
         {/* Finish — primary */}
         <TouchableOpacity
-          onPress={() => router.replace('/(app)' as any)}
+          onPress={() => router.replace('/')}
           className="w-full h-16 rounded-lg items-center justify-center"
           style={{
             backgroundColor: '#bc13fe',
@@ -191,7 +191,7 @@ export default function TabataSummaryScreen() {
 
         {/* Repeat — secondary */}
         <TouchableOpacity
-          onPress={() => router.replace('/tabata' as any)}
+          onPress={() => router.replace('/tabata')}
           className="w-full h-12 rounded-lg flex-row items-center justify-center gap-2"
           style={{
             borderWidth: 2,

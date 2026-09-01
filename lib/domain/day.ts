@@ -8,6 +8,19 @@
  */
 import type { RoutineDay } from './types';
 
+/**
+ * Today as YYYY-MM-DD in the device's own timezone.
+ *
+ * Deliberately not toISOString(): that is UTC, so anyone training late in
+ * the evening west of Greenwich would see their checks reset a day early.
+ */
+export function todayIso(now: Date = new Date()): string {
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 /** True when this day still carries checks from an earlier date. */
 export function needsReset(day: RoutineDay, todayIso: string): boolean {
   if (day.lastResetOn === null) return false;

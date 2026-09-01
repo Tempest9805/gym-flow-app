@@ -1,4 +1,4 @@
-import { needsReset, resetDay, dayProgress, toggleRow, isDayComplete } from '../day';
+import { needsReset, resetDay, dayProgress, toggleRow, isDayComplete, todayIso } from '../day';
 import type { RoutineDay, RoutineRow } from '../types';
 
 const row = (id: string, done = false): RoutineRow => ({
@@ -95,5 +95,21 @@ describe('isDayComplete', () => {
 
   it('is false for an empty day — nothing was trained', () => {
     expect(isDayComplete(day([]))).toBe(false);
+  });
+});
+
+describe('todayIso', () => {
+  it('formats a local date as YYYY-MM-DD', () => {
+    expect(todayIso(new Date(2026, 8, 1))).toBe('2026-09-01');
+  });
+
+  it('pads single-digit months and days', () => {
+    expect(todayIso(new Date(2026, 0, 5))).toBe('2026-01-05');
+  });
+
+  it('uses the local calendar day, not UTC', () => {
+    // 23:30 local on the 1st is already the 2nd in UTC for negative offsets.
+    const lateEvening = new Date(2026, 8, 1, 23, 30);
+    expect(todayIso(lateEvening)).toBe('2026-09-01');
   });
 });
