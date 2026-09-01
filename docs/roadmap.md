@@ -9,6 +9,16 @@ Estado vivo del rediseño. Dirección estratégica completa en el spec; este arc
 
 Ver también: [[_INDEX]], [[market_research]], spec → `superpowers/specs/2026-06-13-calistenia-skill-tree-design.md`, plan 1 → `superpowers/plans/2026-06-13-logic-core-and-data-schema.md`, plan 2 → `superpowers/plans/2026-06-14-skill-tree-data-layer.md`, plan 3 (nav) → `superpowers/plans/2026-06-14-nav-restructure-5-tabs.md`, spec Árbol → `superpowers/specs/2026-06-14-arbol-screen-slice-design.md`, plan 4 (Árbol slice) → `superpowers/plans/2026-06-14-arbol-screen-slice.md`
 
+## Dónde estamos (2026-06-15, sesión 3)
+
+- [x] **Plan 4 — Pantalla Árbol** cerrado + **seed corrido** (17 progresiones + 5 retos; "Squat/Sentadilla" añadido al catálogo como nodo base de legs).
+- [x] **Limpieza de enfoque calistenia** ✅ (4 huérfanos borrados: sessionStore, tabataThemeStore, useLocalMedia, skills barrel; librería filtrada a calistenia/casa vía `equipmentFocus` + categoría GYM removida; docs de stores corregidas).
+- [x] **Onboarding equipamiento** ✅ (pantalla `equipment` tras goal + guard redirect + módulo puro `lib/onboarding/equipment`).
+- [x] **Gate de rutina al crear** ✅ (`evaluateRoutineGate`, `upsertRoutine` con metadata+status, `RoutineGateSheet`, badge "Bloqueada").
+- [x] **Toolchain → npx/node** (ya no pnpm). Vault Obsidian actualizado (`stores`, `screens`, `_INDEX`).
+- **69 tests / 12 suites · typecheck exit 0.**
+- [ ] **Pendiente: pasada de testing manual** (`npx expo start`) acumulada de 4 features → luego Plan 6 (Paywall RevenueCat).
+
 ## Dónde estamos (2026-06-14, sesión 2)
 
 - [x] Brainstorming completo (decisiones de producto fijadas)
@@ -18,8 +28,8 @@ Ver también: [[_INDEX]], [[market_research]], spec → `superpowers/specs/2026-
 - [x] ✅ **Migración `0001_skill_tree.sql` aplicada en Supabase**
 - [x] **Plan 2 (acceso a datos + hooks) ejecutado y verificado** (9 commits, 40 tests, typecheck limpio, revisión final "ready to merge")
 - [x] **Plan 3 — Navegación 5 tabs ejecutado y verificado** (6 commits `feat(nav):`, footer Árbol·Entrenar·Ejercicios·Rutinas·Perfil con default Entrenar, Agenda oculta, 44 tests, typecheck limpio)
-- [x] **Plan 4 — Pantalla Árbol (slice vertical fino)** ✅ **completo** (T1–T12: serpentine + AvatarHud + registro en nodo + retos con readiness; 50 tests / 10 suites, typecheck exit 0). ✅ **Seed corrido en Supabase** (17 progresiones + 5 retos; se agregó "Squat/Sentadilla" al catálogo como nodo base de legs). ⚠️ Pendiente solo: checklist manual `pnpm start` (RN, no unit-testable).
-- [ ] Planes restantes (onboarding equipamiento + gate · paywall · seeding completo)
+- [x] **Plan 4 — Pantalla Árbol (slice vertical fino)** ✅ **completo** (T1–T12: serpentine + AvatarHud + registro en nodo + retos con readiness; 50 tests / 10 suites, typecheck exit 0). ✅ **Seed corrido en Supabase** (17 progresiones + 5 retos; se agregó "Squat/Sentadilla" al catálogo como nodo base de legs). ⚠️ Pendiente solo: checklist manual `npx expo start` (RN, no unit-testable).
+- [ ] Planes restantes (paywall · seeding completo) — onboarding equipamiento + gate ✅ hechos en sesión 3
 
 > El "Plan UI" original se dividió: **nav 5 tabs** (Plan 3, ✅) y **pantalla Árbol** (Plan 4, en curso).
 

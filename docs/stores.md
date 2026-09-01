@@ -54,21 +54,20 @@ LanguageState {
 
 Los ejercicios tienen `name_en` y `name_es` — el idioma seleccionado determina cuál mostrar.
 
-## sessionStore (`lib/store/sessionStore.ts`)
+## settingsStore (`lib/store/settingsStore.ts`)
 
-Progreso de workout de la semana actual. Persiste en AsyncStorage (`gym-flow-session-storage`). Se resetea automáticamente al cambiar de semana.
+Preferencias de UI del pivote calistenia. Persiste en AsyncStorage.
 
 ```ts
-SessionState {
-  completedExercises: Record<string, boolean>  // key: routine_exercise.id
-  completedDays: Record<number, boolean>       // key: día 0-6
-  weekStartDate: string | null
+SettingsState {
+  startTab: StartTab                  // tab de inicio (Entrenar por defecto)
+  avatarVariant: 'hombre' | 'mujer'   // variante del avatar HUD
+  isLoaded: boolean
 }
 ```
 
-- `toggleExercise(id)` — marca/desmarca ejercicio completado
-- `toggleDay(dayIndex, currentWeekStart)` — marca día; resetea si cambió la semana
-- `checkAndResetWeekly(currentWeekStart)` — llamado en boot para limpiar datos de semana anterior
+- `loadStartTab()` / `setStartTab(tab)` — clave `gymflow_start_tab` (resolver puro en `lib/utils/startTab.ts`)
+- `loadAvatarVariant()` / `setAvatarVariant(v)` — clave `gymflow_avatar_variant` (resolver puro en `lib/utils/avatarVariant.ts`)
 
 ## tabataStore (`lib/store/tabataStore.ts`)
 
@@ -89,16 +88,12 @@ TabataConfig {
 
 - `tabata.tsx` configura → `tabata-active.tsx` consume
 
-## tabataThemeStore (`lib/store/tabataThemeStore.ts`)
-
-> ⚠️ verificar — store separado del themeStore principal. Gestiona colores de las fases Tabata (prepare/work/rest). Los colores base están en `themeStore.tokens.tabataPrepare|Work|Rest`.
-
 ## Resumen de persistencia
 
 | Store | Clave AsyncStorage | Reset |
 |---|---|---|
 | themeStore | `gymflow_theme` | Manual |
 | languageStore | `gymflow_language` | Manual |
-| sessionStore | `gym-flow-session-storage` | Semanal automático |
 | tabataStore | `gymflow_tabata_config` | Manual |
+| settingsStore | `gymflow_start_tab`, `gymflow_avatar_variant` | Manual |
 | authStore | SecureStore (Supabase) | signOut |

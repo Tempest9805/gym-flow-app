@@ -24,19 +24,21 @@ app/
 │
 ├── onboarding/          Onboarding post-registro
 │   ├── _layout.tsx
-│   └── goal.tsx         Selección de objetivo de fitness
+│   ├── goal.tsx         Selección de objetivo de fitness
+│   └── equipment.tsx    Captura de equipamiento disponible (available_equipment)
 │
 └── (app)/               Grupo principal (requiere sesión + profile.goal)
     ├── _layout.tsx      Tabs + StitchTabBar custom
     │
-    │   ── TABS VISIBLES (bottom nav) ──
-    ├── index.tsx         Home — dashboard / resumen semanal
-    ├── exercises.tsx     Exercise library — búsqueda y filtros
-    ├── agenda.tsx        Agenda semanal
-    ├── routines.tsx      Lista de rutinas
+    │   ── TABS VISIBLES (bottom nav, default = Entrenar) ──
+    ├── tree.tsx          Árbol de skills (calistenia) — avatar HUD, ramas, retos
+    ├── index.tsx         Entrenar — dashboard / sesión de hoy
+    ├── exercises.tsx     Exercise library — calistenia/casa (filtra gimnasio)
+    ├── routines.tsx      Lista de rutinas (badge "Bloqueada" si pending)
     ├── profile.tsx       Perfil de usuario
     │
     │   ── PANTALLAS OCULTAS (no en nav) ──
+    ├── agenda.tsx             Agenda semanal (oculta; absorber en Entrenar)
     ├── workout.tsx            Workout (modo no-sesión)
     ├── workout-session.tsx    Sesión activa de workout
     ├── day-detail.tsx         Detalle del día en agenda
@@ -66,12 +68,14 @@ AuthGuard
     │
     ├── Sesión, sin goal ────────────► onboarding/goal
     │
-    └── Sesión + goal ───────────────► (app)/index (Home)
+    ├── Sesión, sin equipamiento ────► onboarding/equipment
+    │
+    └── Sesión + goal + equipo ──────► (app) tabs (default Entrenar)
                                             │
                             ┌───────────────┼────────────────┐
                             ▼               ▼                ▼
-                        exercises        agenda          routines
-                            │                               │
+                         Árbol          exercises         routines
+                            │                                │
                      exercise/[id]              routine-detail / routine-builder
                                                             │
                                                       routine-start
@@ -85,8 +89,10 @@ AuthGuard
 
 | Tab | Ruta | Icono |
 |---|---|---|
-| Home | `index` | ⌂ |
+| Árbol | `tree` | ◬ |
+| Entrenar ⭐ | `index` | ⌂ |
 | Exercises | `exercises` | ◈ |
-| Agenda | `agenda` | ▦ |
 | Routines | `routines` | ≡ |
 | Profile | `profile` | ◯/● |
+
+> Default de fábrica = **Entrenar** (cambiable en Perfil). Agenda ya no es tab (oculta, pendiente de absorber en Entrenar).

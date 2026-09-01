@@ -66,9 +66,13 @@ RootLayout → initialize() + loadTheme() + loadLanguage() (paralelo)
 ### Comandos útiles
 
 ```bash
-pnpm start          # Expo dev server
-pnpm android        # Android
-pnpm ios            # iOS
-pnpm typecheck      # tsc --noEmit
-pnpm media:sync     # Sync exercises to Supabase
+npx expo start                                # Expo dev server
+npx expo start --android                      # Android
+npx expo start --ios                          # iOS
+npx tsc --noEmit                              # typecheck
+npx jest                                      # tests
+node scripts/sync-exercises-to-supabase.mjs   # Sync exercises to Supabase
+node scripts/seed-skill-tree.mjs              # Seed skill tree (needs SUPABASE_SERVICE_KEY)
 ```
+
+> Toolchain: usar **npx/node**, no pnpm.
