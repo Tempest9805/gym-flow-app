@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Tabs, router } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Tabs } from 'expo-router';
 import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useCurrentProfile, useTranslation } from '@/lib/hooks';
@@ -7,15 +7,13 @@ import type { TranslationKey } from '@/lib/hooks/useTranslation';
 import { LoadingScreen } from '@/components/ui';
 import { useAuthStore } from '@/lib/store/authStore';
 import { useThemeStore } from '@/lib/store/themeStore';
-import { useSettingsStore } from '@/lib/store/settingsStore';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { cn } from '@/lib/utils/cn';
 
-// Visible tabs, in footer order. Entrenar (index) is the factory default.
-const TAB_ORDER = ['tree', 'index', 'exercises', 'routines', 'profile'] as const;
+// Visible tabs, in footer order.
+const TAB_ORDER = ['index', 'exercises', 'routines', 'profile'] as const;
 
 const TAB_META: Record<string, { outline: string; fill: string; labelKey: TranslationKey }> = {
-  tree:      { outline: '◬', fill: '◬', labelKey: 'tabs.tree' },
   index:     { outline: '⌂', fill: '⌂', labelKey: 'tabs.train' },
   exercises: { outline: '◈', fill: '◈', labelKey: 'tabs.exercises' },
   routines:  { outline: '≡', fill: '≡', labelKey: 'tabs.routines' },
@@ -102,26 +100,13 @@ export default function AppLayout() {
   const { isAuthenticated } = useAuthStore();
   const { data: profile, isLoading } = useCurrentProfile();
   const { loadTheme, isLoaded } = useThemeStore();
-  const { startTab, isLoaded: startTabLoaded, loadStartTab } = useSettingsStore();
-  const didRedirect = useRef(false);
 
   // Load persisted prefs on mount
   useEffect(() => {
     loadTheme();
-    loadStartTab();
   }, []);
 
-  // Cold-start redirect to the user's chosen start tab (exactly once).
-  useEffect(() => {
-    if (startTabLoaded && !didRedirect.current) {
-      didRedirect.current = true;
-      if (startTab !== 'index') {
-        router.replace(`/${startTab}`);
-      }
-    }
-  }, [startTabLoaded, startTab]);
-
-  if (isLoading || !isAuthenticated || !isLoaded || !startTabLoaded) {
+  if (isLoading || !isAuthenticated || !isLoaded) {
     return <LoadingScreen />;
   }
 
@@ -132,22 +117,16 @@ export default function AppLayout() {
       }}
       tabBar={(props) => <StitchTabBar {...props} />}
     >
-      <Tabs.Screen name="tree" />
       <Tabs.Screen name="index" />
       <Tabs.Screen name="exercises" />
       <Tabs.Screen name="routines" />
       <Tabs.Screen name="profile" />
       {/* Hidden screens — not in bottom nav */}
-      <Tabs.Screen name="agenda" options={{ href: null }} />
       <Tabs.Screen name="workout" options={{ href: null }} />
       <Tabs.Screen name="workout-session" options={{ href: null }} />
-      <Tabs.Screen name="day-detail" options={{ href: null }} />
-      <Tabs.Screen name="routine-start" options={{ href: null }} />
       <Tabs.Screen name="routine-detail" options={{ href: null }} />
       <Tabs.Screen name="routine-builder" options={{ href: null }} />
-      <Tabs.Screen name="import-routine" options={{ href: null }} />
       <Tabs.Screen name="exercise/[id]" options={{ href: null }} />
-      <Tabs.Screen name="share/[id]" options={{ href: null }} />
       <Tabs.Screen name="timer" options={{ href: null }} />
       <Tabs.Screen name="timer-active" options={{ href: null }} />
       <Tabs.Screen name="tabata" options={{ href: null }} />

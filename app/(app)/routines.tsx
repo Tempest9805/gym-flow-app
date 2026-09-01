@@ -165,7 +165,7 @@ export default function RoutinesScreen() {
               className="w-full h-16 rounded-xl items-center justify-center shadow-2xl mt-2 bg-[#BC13FE]"
               style={{ shadowColor: '#BC13FE', shadowOpacity: 0.3, shadowOffset: { width: 0, height: 0 }, shadowRadius: 16 }}
               activeOpacity={0.85}
-              onPress={() => router.push('/routine-start')}
+              onPress={() => router.push('/routine-builder')}
             >
               <Text className="text-lg font-bold tracking-widest uppercase text-white">
                 + CREATE ROUTINE

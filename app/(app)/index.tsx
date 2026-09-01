@@ -326,7 +326,7 @@ function EmptyRoutineCard() {
         No routine scheduled for today
       </Text>
       <TouchableOpacity
-        onPress={() => router.push('/routine-start')}
+        onPress={() => router.push('/routine-builder')}
         className="w-full h-14 bg-[#BC13FE] rounded-xl items-center justify-center"
         style={{ boxShadow: '0 0 16px rgba(188,19,254,0.3)' }}>
         <Text className="text-white font-bold uppercase tracking-wider">

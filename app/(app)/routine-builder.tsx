@@ -5,11 +5,9 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import { useAuthStore } from '@/lib/store/authStore';
-import { useExercises, useRoutine, useProgressions, useSkillProgress } from '@/lib/hooks';
+import { useExercises, useRoutine } from '@/lib/hooks';
 import { upsertRoutine } from '@/lib/api/routines';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-import { evaluateRoutineGate, requiredLevelsForRoutine } from '@/lib/skills/routineGate';
-import { RoutineGateSheet, type LockedExerciseRow } from '@/components/skill/RoutineGateSheet';
 import type { Exercise } from '@/types';
 
 type ExerciseEntry = {
@@ -217,10 +215,6 @@ export default function RoutineBuilderScreen() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data: existingRoutine } = useRoutine(id);
-  const { data: progressions = [] } = useProgressions();
-  const { data: skillProgress = [] } = useSkillProgress(user?.id);
-  const [gateVisible, setGateVisible] = useState(false);
-  const [lockedRows, setLockedRows] = useState<LockedExerciseRow[]>([]);
   const { data: allExercises } = useExercises();
 
   useEffect(() => {
@@ -247,7 +241,7 @@ export default function RoutineBuilderScreen() {
   }, [existingRoutine, id]);
 
   const saveMutation = useMutation({
-    mutationFn: ({ status }: { status: 'active' | 'pending'; navigateTo: 'detail' | 'tree' }) => {
+    mutationFn: () => {
       // Map back to the API format
       const apiExercises = exercises.map((e, index) => ({
         id: e.tempId,
@@ -265,26 +259,15 @@ export default function RoutineBuilderScreen() {
         notes: null,
       }));
 
-      const requiredLevels = requiredLevelsForRoutine(
-        progressions,
-        exercises.map((e) => e.exercise_id),
-      );
-
       return upsertRoutine(user!.id, routineId, name, apiExercises as any, {
-        metadata: { required_levels: requiredLevels },
-        status,
+        status: 'active',
       });
     },
-    onSuccess: (newRoutineId, variables) => {
+    onSuccess: (newRoutineId) => {
       queryClient.invalidateQueries({ queryKey: ['routines'] });
       queryClient.invalidateQueries({ queryKey: ['all-routines'] });
       queryClient.invalidateQueries({ queryKey: ['routine', newRoutineId] });
-      setGateVisible(false);
-      if (variables.navigateTo === 'tree') {
-        router.replace('/tree');
-      } else {
-        router.replace(`/routine-detail?id=${newRoutineId}`);
-      }
+      router.replace(`/routine-detail?id=${newRoutineId}`);
     },
     onError: (error: any) => {
       Alert.alert('Error', 'Could not save routine.');
@@ -293,29 +276,7 @@ export default function RoutineBuilderScreen() {
   });
 
   const handleSave = () => {
-    const ids = exercises.map((e) => e.exercise_id);
-    const gate = evaluateRoutineGate(progressions, skillProgress, ids);
-    if (!gate.locked) {
-      saveMutation.mutate({ status: 'active', navigateTo: 'detail' });
-      return;
-    }
-    const progById = new Map(progressions.map((p) => [p.exercise_id, p]));
-    const nameById = new Map(
-      exercises.map((e) => [e.exercise_id, language === 'es' ? e.name_es : e.name_en]),
-    );
-    setLockedRows(
-      gate.lockedExerciseIds.map((exId) => {
-        const p = progById.get(exId);
-        const threshold =
-          p?.unlock_reps != null
-            ? `${p.unlock_reps} ${tr('tree.reps')}`
-            : p?.unlock_hold_seconds != null
-              ? `${p.unlock_hold_seconds}s`
-              : '';
-        return { id: exId, name: nameById.get(exId) ?? '—', threshold };
-      }),
-    );
-    setGateVisible(true);
+    saveMutation.mutate();
   };
 
   const handleUpdate = (tempId: string, updates: Partial<ExerciseEntry>) => {
@@ -476,15 +437,6 @@ export default function RoutineBuilderScreen() {
           </ScrollView>
         </SafeAreaView>
       </Modal>
-
-      <RoutineGateSheet
-        visible={gateVisible}
-        lockedExercises={lockedRows}
-        isSaving={saveMutation.isPending}
-        onSaveLocked={() => saveMutation.mutate({ status: 'pending', navigateTo: 'detail' })}
-        onViewTree={() => saveMutation.mutate({ status: 'pending', navigateTo: 'tree' })}
-        onClose={() => setGateVisible(false)}
-      />
     </SafeAreaView>
   )
 }
