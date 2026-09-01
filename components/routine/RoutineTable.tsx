@@ -33,6 +33,8 @@ export interface RoutineTableProps {
   editing?: boolean;
   onRemove?: (rowId: string) => void;
   onMove?: (rowId: string, delta: number) => void;
+  /** Tapping the Rest cell of a running countdown stops it. */
+  onCancelRest?: (rowId: string) => void;
 }
 
 /** Column widths in points. `name` is whatever is left over. */
@@ -72,6 +74,7 @@ export function RoutineTable({
   editing = false,
   onRemove,
   onMove,
+  onCancelRest,
 }: RoutineTableProps) {
   const t = useTheme();
   const col = useColumns();
@@ -178,9 +181,17 @@ export function RoutineTable({
               className="items-center justify-center"
               accessibilityRole="button"
               accessibilityLabel={
-                isResting ? `Descanso, quedan ${remaining} segundos` : `Descanso de ${row.name}`
+                isResting
+                  ? `Descanso en marcha, quedan ${remaining} segundos. Tocar para detenerlo`
+                  : `Descanso de ${row.name}`
               }
-              onPress={onEdit ? () => onEdit(row.id, 'rest') : undefined}
+              onPress={
+                isResting
+                  ? () => onCancelRest?.(row.id)
+                  : onEdit
+                    ? () => onEdit(row.id, 'rest')
+                    : undefined
+              }
             >
               <Text
                 className={isResting ? 'font-extrabold' : 'font-medium'}

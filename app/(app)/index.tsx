@@ -25,6 +25,7 @@ import { blankRow } from '@/lib/domain/routine';
 import { formatDuration, parseDuration } from '@/lib/domain/time';
 import type { Exercise, RoutineRow } from '@/lib/domain/types';
 import { videoUrlFor, youtubeSearchUrl } from '@/lib/domain/video';
+import { useRestTimer } from '@/lib/hooks/useRestTimer';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useActiveDay, useActiveRoutine, useRoutineStore } from '@/lib/store/routineStore';
 
@@ -50,6 +51,7 @@ export default function TodayScreen() {
   const moveRow = useRoutineStore((s) => s.moveRow);
   const resetDay = useRoutineStore((s) => s.resetDay);
 
+  const rest = useRestTimer();
   const [editing, setEditing] = useState(false);
   const [editTarget, setEditTarget] = useState<{ rowId: string; field: EditableField } | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -119,6 +121,23 @@ export default function TodayScreen() {
     setEditTarget(null);
   };
 
+  /**
+   * Ticking a row off starts its rest; unticking it stops the countdown.
+   * The rest is the number in that row's own Rest cell, so the sheet stays
+   * the single source of truth for how long to wait.
+   */
+  const handleToggle = (rowId: string) => {
+    const row = day.rows.find((r) => r.id === rowId);
+    if (!row) return;
+
+    if (row.done) {
+      if (rest.restingRowId === rowId) rest.cancel();
+    } else {
+      rest.start(rowId, row.restSeconds, row.name);
+    }
+    toggleRow(day.id, rowId);
+  };
+
   const handleRemove = (rowId: string) => {
     const index = day.rows.findIndex((r) => r.id === rowId);
     const row = day.rows[index];
@@ -159,13 +178,26 @@ export default function TodayScreen() {
             )}
           </View>
 
-          <View className="items-end">
-            <Text className="text-2xl font-extrabold" style={{ color: t.primaryContainer }}>
-              {done}/{total}
-            </Text>
-            <Text className="text-[11px] uppercase tracking-wider" style={{ color: t.outline }}>
-              hechos
-            </Text>
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              onPress={() => router.push('/stopwatch')}
+              accessibilityRole="button"
+              accessibilityLabel="Abrir el cronómetro"
+              hitSlop={6}
+              className="items-center justify-center rounded-xl border"
+              style={{ width: 44, minHeight: 44, borderColor: t.outlineVariant }}
+            >
+              <MaterialCommunityIcons name="timer-sand" size={20} color={t.onSurfaceVariant} />
+            </Pressable>
+
+            <View className="items-end">
+              <Text className="text-2xl font-extrabold" style={{ color: t.primaryContainer }}>
+                {done}/{total}
+              </Text>
+              <Text className="text-[11px] uppercase tracking-wider" style={{ color: t.outline }}>
+                hechos
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -222,7 +254,9 @@ export default function TodayScreen() {
         <RoutineTable
           rows={day.rows}
           editing={editing}
-          onToggle={(rowId) => toggleRow(day.id, rowId)}
+          restRemaining={rest.remaining}
+          onToggle={handleToggle}
+          onCancelRest={rest.cancel}
           onOpenVideo={openVideo}
           onOpenTimer={() => router.push('/tabata')}
           onEdit={(rowId, field) => setEditTarget({ rowId, field })}

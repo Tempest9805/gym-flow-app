@@ -73,6 +73,7 @@ export default function AppLayout() {
 
       {/* Reachable from inside the tabs, never from the footer. */}
       <Tabs.Screen name="exercise/[id]" options={{ href: null }} />
+      <Tabs.Screen name="stopwatch" options={{ href: null }} />
       <Tabs.Screen name="timer" options={{ href: null }} />
       <Tabs.Screen name="timer-active" options={{ href: null }} />
       <Tabs.Screen name="tabata" options={{ href: null }} />

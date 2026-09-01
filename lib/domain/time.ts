@@ -22,3 +22,18 @@ export function parseDuration(input: string): number | null {
 
   return null;
 }
+
+/**
+ * Stopwatch display: m:ss.cc.
+ *
+ * Hundredths rather than milliseconds — three digits flicker too fast to
+ * read and nobody times a set to the millisecond.
+ */
+export function formatStopwatch(milliseconds: number): string {
+  const total = Math.max(0, Math.floor(milliseconds));
+  const minutes = Math.floor(total / 60000);
+  const seconds = Math.floor((total % 60000) / 1000);
+  const hundredths = Math.floor((total % 1000) / 10);
+
+  return `${minutes}:${String(seconds).padStart(2, '0')}.${String(hundredths).padStart(2, '0')}`;
+}

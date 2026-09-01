@@ -101,6 +101,7 @@ export default function SettingsScreen() {
             onPress={() => setLanguage(language === 'es' ? 'en' : 'es')}
           />
           <Row icon="timer-outline" title="Tabata" onPress={() => router.push('/tabata')} />
+          <Row icon="timer-sand" title="Cronómetro" onPress={() => router.push('/stopwatch')} />
           <Row icon="av-timer" title="Temporizador de intervalos" onPress={() => router.push('/timer')} />
           <Row
             icon="restore"
