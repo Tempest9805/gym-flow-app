@@ -25,6 +25,13 @@ describe('exercise library seed', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it('only ever pins real YouTube links', () => {
+    for (const entry of exercises!) {
+      if (entry.videoUrl === null) continue;
+      expect(entry.videoUrl).toMatch(/^https:\/\/www\.youtube\.com\/watch\?v=[\w-]{11}$/);
+    }
+  });
+
   it('gives every entry a Spanish name, a description and tips', () => {
     for (const entry of exercises!) {
       expect(entry.nameEs.trim()).not.toBe('');
@@ -82,6 +89,19 @@ describe('starter routine seed', () => {
       }
     }
     expect(dangling).toEqual([]);
+  });
+
+  it('gives every row a pinned video, not just the search fallback', () => {
+    const byId = new Map(exercises!.map((e) => [e.id, e]));
+    const missing: string[] = [];
+
+    for (const day of routine!.days) {
+      for (const row of day.rows) {
+        const exercise = row.exerciseId ? byId.get(row.exerciseId) : undefined;
+        if (!exercise?.videoUrl) missing.push(`${day.label}: ${row.name}`);
+      }
+    }
+    expect(missing).toEqual([]);
   });
 
   it('starts with nothing checked off', () => {

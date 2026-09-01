@@ -47,6 +47,13 @@ el ▶ lo abre; si no, abre una búsqueda de YouTube del ejercicio. El respaldo
 funciona para los 169 desde el primer día, sin curación y sin links que se
 pudran.
 
+Hay **37 videos fijados** en `lib/data/video-links.json`, los que cubren las 47
+filas de la rutina. **Están elegidos por título y canal en una búsqueda en
+español: no se ha podido ver ninguno**, así que conviene revisarlos. El campo
+es editable desde la app, y un link que se caiga solo degrada al buscador.
+El canal del parte original (*Coaching Nach*) no aparece en los buscadores, así
+que no se pudo priorizar.
+
 ## Deuda conocida
 
 - `.env` sigue teniendo credenciales de Supabase que ya no usa nadie. Está en

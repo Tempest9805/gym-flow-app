@@ -13,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE = path.join(root, 'assets', 'exercises_final_updated.csv');
 const EXTRAS = path.join(root, 'lib', 'data', 'extra-exercises.json');
+const VIDEOS = path.join(root, 'lib', 'data', 'video-links.json');
 const TARGET = path.join(root, 'lib', 'data', 'exercises.seed.json');
 
 /** Minimal RFC-4180 reader: handles quoted fields with commas and newlines. */
@@ -97,6 +98,19 @@ for (const extra of extras) {
   if (seen.has(extra.id)) throw new Error(`Extra "${extra.id}" collides with a CSV slug`);
   seen.add(extra.id);
   exercises.push(extra);
+}
+
+// Pinned videos. Anything without one falls back to a YouTube search at
+// runtime, so a missing entry is a soft landing, not a hole.
+const videos = JSON.parse(fs.readFileSync(VIDEOS, 'utf8'));
+const known = new Set(exercises.map((e) => e.id));
+for (const id of Object.keys(videos)) {
+  if (id.startsWith('_')) continue;
+  if (!known.has(id)) throw new Error(`video-links.json points at unknown exercise "${id}"`);
+}
+for (const exercise of exercises) {
+  const pinned = videos[exercise.id];
+  if (pinned) exercise.videoUrl = pinned;
 }
 
 exercises.sort((a, b) => a.nameEs.localeCompare(b.nameEs, 'es'));

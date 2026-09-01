@@ -14,7 +14,7 @@
     "nameEs": "Abducción de cadera",
     "nameEn": "Hip Abduction",
     "muscleGroup": "glutes medius",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=2vCRMi-lgJ4",
     "description": "Hip abduction exercises target the gluteus medius and minimus, which are crucial for hip stability, knee alignment, and single-leg athletic movements. Commonly performed on a machine or with a band.",
     "tips": "Sit on the hip abduction machine with pads on the outside of your thighs. Press your legs apart against the resistance by contracting your outer glutes. Hold briefly at the end range. Slowly return to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -134,7 +134,7 @@
     "nameEs": "Caminata del granjero",
     "nameEn": "Farmer's Walk",
     "muscleGroup": "grip/core",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=69hTPgHwA08",
     "description": "The farmer's walk is a loaded carry exercise that develops total body strength, grip endurance, traps, and core stability. It is highly functional and transfers to everyday activities.",
     "tips": "Pick up a heavy dumbbell, kettlebell, or trap bar in each hand. Stand tall with shoulders retracted and core braced. Walk forward for the desired distance taking short controlled steps. Keep the weights at your sides without letting them touch your body. Maintain upright posture throughout.",
     "commonMistakes": null
@@ -214,7 +214,7 @@
     "nameEs": "Curl con barra",
     "nameEn": "Barbell Curl",
     "muscleGroup": "biceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=wGYyXpZ4kVs",
     "description": "The barbell curl is the gold-standard bicep mass exercise. Standing with a barbell held at arm's length, you curl the bar up to shoulder height while keeping the elbows stationary. It primarily targets the biceps brachii.",
     "tips": "Stand with feet shoulder-width apart and hold the barbell with an underhand grip, hands shoulder-width apart. Keep elbows close to your sides. Curl the barbell up toward your chest, exhaling as you lift. Pause at the top and squeeze your biceps. Lower back to starting position, inhaling as you lower. Repeat for desired reps.",
     "commonMistakes": null
@@ -224,7 +224,7 @@
     "nameEs": "Curl con mancuernas",
     "nameEn": "Dumbbell Curl",
     "muscleGroup": "biceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=8BsqlTaRg6Q",
     "description": "The dumbbell curl is a foundational bicep exercise that allows independent arm movement, helping to correct strength imbalances between sides. It targets the biceps brachii and brachialis.",
     "tips": "Stand with feet shoulder-width apart, holding a dumbbell in each hand with arms fully extended and palms facing forward. Keep elbows close to your sides. Curl the dumbbells up toward your shoulders. Squeeze at the top. Lower back to starting position with control. Repeat for desired reps.",
     "commonMistakes": null
@@ -244,7 +244,7 @@
     "nameEs": "Curl en polea",
     "nameEn": "Cable Curl",
     "muscleGroup": "biceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=N_uBjdamfi8",
     "description": "The cable curl is a bicep isolation exercise that provides constant tension on the muscle throughout the full range of motion, unlike free weights which lose tension at the top.",
     "tips": "Attach a straight bar or rope to a low cable pulley. Stand facing the machine with feet shoulder-width apart. Grip the handle with an underhand grip. Keep elbows close to your sides and curl the handles up toward your shoulders. Hold for a second at the top, then slowly lower back down. Repeat for desired reps.",
     "commonMistakes": null
@@ -284,7 +284,7 @@
     "nameEs": "Curl inclinado con mancuernas",
     "nameEn": "Incline Dumbbell Curl",
     "muscleGroup": "biceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=P1L6CD-tSnE",
     "description": "The incline dumbbell curl is performed on an incline bench, which pre-stretches the bicep at the bottom for a greater range of motion and increased long head activation.",
     "tips": "Set an adjustable bench to a 45-60 degree incline. Sit back with a dumbbell in each hand, arms hanging straight down. Curl both dumbbells up toward your shoulders simultaneously. Squeeze the biceps at the top. Lower slowly back to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -294,7 +294,7 @@
     "nameEs": "Curl martillo",
     "nameEn": "Hammer Curl",
     "muscleGroup": "biceps/forearms",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=i60DlC_Wj0E",
     "description": "The hammer curl uses a neutral (palms-facing) grip to target the brachialis and brachioradialis in addition to the biceps, helping build overall arm thickness and forearm development.",
     "tips": "Stand with feet shoulder-width apart, holding a dumbbell in each hand with palms facing each other (neutral grip). Keep elbows close to your sides. Curl the dumbbells up toward your shoulders without rotating your wrists. Pause at the top. Lower slowly back to starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -334,7 +334,7 @@
     "nameEs": "Dominada",
     "nameEn": "Pull-Up",
     "muscleGroup": "lats",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=Oc7toRMi5fY",
     "description": "The pull-up is one of the most demanding bodyweight upper body exercises. It targets the latissimus dorsi, rhomboids, and biceps using an overhand grip and full range of motion.",
     "tips": "Grip an overhead bar slightly wider than shoulder-width with an overhand (pronated) grip. Hang with arms fully extended. Pull yourself up until your chin is above the bar by driving your elbows down and back. Lower with control to a full hang. Repeat for desired reps.",
     "commonMistakes": null
@@ -384,7 +384,7 @@
     "nameEs": "Elevación de piernas en suelo",
     "nameEn": "Leg Raise",
     "muscleGroup": "lower abs/hip flexors",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=oxJj5FoBycQ",
     "description": "The floor leg raise targets the lower abs and hip flexors by raising straight legs from the floor. The long lever arm makes it more demanding than knee raises.",
     "tips": "Lie flat on your back with hands under your glutes for support or at your sides. Keep legs straight and together. Raise your legs until they are perpendicular to the floor or as high as possible. Slowly lower them back toward the floor without touching. Repeat for desired reps.",
     "commonMistakes": null
@@ -404,7 +404,7 @@
     "nameEs": "Elevación de talones",
     "nameEn": "Calf Raise",
     "muscleGroup": "calves",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=EptZC_AY6fE",
     "description": "The calf raise is an isolation exercise for the gastrocnemius and soleus muscles of the lower leg. It can be performed standing or seated with bodyweight or added load.",
     "tips": "Stand with feet hip-width apart and the balls of your feet on the edge of a step or flat on the floor. Rise up onto your tiptoes by contracting your calves. Hold briefly at the top. Lower your heels as far down as possible. Repeat for desired reps.",
     "commonMistakes": null
@@ -454,7 +454,7 @@
     "nameEs": "Elevaciones laterales",
     "nameEn": "Lateral Raise",
     "muscleGroup": "side delts",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=aKl46TMtzGk",
     "description": "The lateral raise isolates the medial (side) deltoid by abducting the arm against gravity with a dumbbell. It is the primary exercise for developing shoulder width.",
     "tips": "Stand with feet shoulder-width apart holding dumbbells at your sides. With a slight bend at the elbows, raise both arms out to the sides until they reach shoulder height. Pause briefly. Lower with control. Repeat for desired reps.",
     "commonMistakes": null
@@ -464,7 +464,7 @@
     "nameEs": "Elevaciones laterales en polea",
     "nameEn": "Cable Lateral Raise",
     "muscleGroup": "side delts",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=zkP3tV_NwnY",
     "description": "The cable lateral raise uses a low cable to provide constant tension throughout the lateral deltoid abduction, unlike dumbbells which lose tension at the bottom. It is highly effective for side delt isolation.",
     "tips": "Attach a single handle to a low cable pulley. Stand sideways to the machine and grip the handle with the far hand. With a slight bend in the elbow, raise your arm out to the side until it reaches shoulder height. Lower with control. Complete reps then switch sides.",
     "commonMistakes": null
@@ -484,7 +484,7 @@
     "nameEs": "Empuje de escápulas",
     "nameEn": "Scapular Push-Up",
     "muscleGroup": "traps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=5cjeO0G86Yo",
     "description": "Movimiento de protracción y retracción escapular en posición de plancha. Enseña a controlar las escápulas, base de todo empuje y tracción sanos.",
     "tips": "En posición de plancha alta con los codos extendidos y bloqueados. Deja caer el pecho juntando las escápulas y después empuja el suelo separándolas al máximo. Todo el recorrido sale de la espalda alta: los codos no se doblan.",
     "commonMistakes": "Flexionar los codos y convertirlo en una flexión; mover la cadera arriba y abajo; recorrido demasiado corto; perder la línea del cuerpo."
@@ -624,7 +624,7 @@
     "nameEs": "Extensión de piernas",
     "nameEn": "Leg Extension",
     "muscleGroup": "quadriceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=Q2-N3JmOQvI",
     "description": "The leg extension is a quad isolation exercise performed on a machine. It targets the rectus femoris and other quadriceps muscles through knee extension without hip flexion.",
     "tips": "Sit on the leg extension machine and adjust the roller pad to just above your ankles. Grip the handles. Extend your legs by contracting your quadriceps until legs are nearly straight. Squeeze the quads at the top. Lower with control to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -634,7 +634,7 @@
     "nameEs": "Extensión de tríceps en polea",
     "nameEn": "Triceps Pushdown",
     "muscleGroup": "triceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=bluq3g4XIWg",
     "description": "The cable triceps pushdown is one of the most common tricep exercises, performed at a cable machine. It effectively isolates all three heads of the triceps through constant tension.",
     "tips": "Attach a straight bar or rope to a high cable pulley. Stand facing the machine with feet shoulder-width apart. Grip the bar with an overhand grip at about chest height. Keep your elbows pinned to your sides. Push the bar down until your arms are fully extended. Squeeze the triceps. Slowly return to starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -644,7 +644,7 @@
     "nameEs": "Extensión de tríceps por encima de la cabeza",
     "nameEn": "Overhead Triceps Extension",
     "muscleGroup": "triceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=PyNaiTP1PIA",
     "description": "The overhead triceps extension stretches the triceps long head fully by placing the arm overhead, providing a unique stimulus compared to pushdown variations. Can be performed with dumbbells, cable, or barbell.",
     "tips": "Hold a dumbbell with both hands and raise it overhead with arms fully extended. Keep your elbows pointing forward and close to your head. Lower the dumbbell behind your head by bending at the elbows until your forearms are parallel to the floor. Press back up to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -654,7 +654,7 @@
     "nameEs": "Face pull",
     "nameEn": "Face Pull",
     "muscleGroup": "rear delts",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=Q18p2QtQAes",
     "description": "The face pull is a cable exercise targeting the rear delts, rotator cuff, and upper traps. It is an essential exercise for shoulder health, posture correction, and balanced upper body development.",
     "tips": "Attach a rope to a high cable pulley. Stand facing the machine and grip each end of the rope with palms facing each other. Pull the rope toward your face with elbows flared high. Squeeze your rear delts and upper traps at the end. Slowly return to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -824,7 +824,7 @@
     "nameEs": "Hip thrust",
     "nameEn": "Hip Thrust",
     "muscleGroup": "glutes",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=c2iJjdXpt1U",
     "description": "The hip thrust is the most effective exercise for gluteus maximus development. Performed with the upper back on a bench and a barbell across the hips, it provides peak glute contraction under load.",
     "tips": "Place your upper back against a bench with a barbell across your hips. Plant your feet flat on the floor hip-width apart. Drive through your heels to thrust your hips up until your body is parallel to the floor. Squeeze your glutes hard at the top. Lower your hips to the floor. Repeat for desired reps.",
     "commonMistakes": null
@@ -874,7 +874,7 @@
     "nameEs": "Jalón al pecho",
     "nameEn": "Lat Pulldown",
     "muscleGroup": "lats",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=eSlKErmf5WU",
     "description": "The lat pulldown is a cable machine exercise that mimics the pull-up motion. It targets the latissimus dorsi with adjustable resistance, making it accessible for all fitness levels.",
     "tips": "Sit at the lat pulldown machine and secure your thighs under the pad. Grip the bar slightly wider than shoulder-width with an overhand grip. Pull the bar down to your upper chest by driving your elbows toward your hips. Squeeze your lats at the bottom. Slowly raise the bar back to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -914,7 +914,7 @@
     "nameEs": "Máquina de abdominales",
     "nameEn": "Ab Crunch Machine",
     "muscleGroup": "abdominals",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=dJqB4oA4sdA",
     "description": "The ab crunch machine provides a guided resistance for core flexion, targeting the rectus abdominis with adjustable weight and reduced hip flexor involvement.",
     "tips": "Adjust the machine seat and select the desired weight. Sit with your back flat and grip the handles or pads. Crunch forward by flexing your spine, bringing your ribcage toward your hips. Squeeze your abs at the bottom. Slowly return to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -974,7 +974,7 @@
     "nameEs": "Pec deck invertido",
     "nameEn": "Reverse Pec Deck",
     "muscleGroup": "rear delts",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=E2uXi3W6ouU",
     "description": "The reverse pec deck uses a machine to perform horizontal abduction targeting the rear delts and rhomboids. The chest-supported position and guided path provide excellent isolation.",
     "tips": "Sit facing the pec deck machine. Grip the handles with arms extended forward. Pull the handles back and outward in a wide arc by squeezing your rear delts and shoulder blades together. Pause at the end range. Return with control to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -984,7 +984,7 @@
     "nameEs": "Peck deck",
     "nameEn": "Pec Deck",
     "muscleGroup": "pectorals",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=WKfTStqIXrw",
     "description": "Aperturas de pecho en máquina guiada. Aísla el pectoral con la trayectoria fija de la máquina, sin exigir estabilización, por lo que permite buscar el fallo con seguridad.",
     "tips": "Ajusta el asiento de forma que las empuñaduras queden a la altura del pecho. Apoya la espalda completa en el respaldo. Junta los brazos describiendo un arco y aprieta el pectoral 1 segundo en el punto de máxima contracción. Vuelve controlado sin dejar que el peso choque.",
     "commonMistakes": "Subir el asiento de más y convertirlo en un ejercicio de hombro; separar la espalda del respaldo para empujar con el cuerpo; bloquear los codos; soltar el peso de golpe en la vuelta."
@@ -994,7 +994,7 @@
     "nameEs": "Peso muerto",
     "nameEn": "Deadlift",
     "muscleGroup": "posterior chain",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=kancsOn7CJY",
     "description": "The deadlift is the king of posterior chain exercises, training the entire back, glutes, hamstrings, and traps simultaneously. It is one of the most effective movements for total body strength.",
     "tips": "Stand with feet hip-width apart and the bar over your mid-foot. Hinge at the hips and grip the bar just outside your legs. Take a deep breath, brace your core, and engage your lats. Drive through the floor to lift the bar, keeping it close to your body. Lock out hips and knees at the top. Lower with control to the floor. Repeat for desired reps.",
     "commonMistakes": null
@@ -1044,7 +1044,7 @@
     "nameEs": "Plancha",
     "nameEn": "Plank",
     "muscleGroup": "abdominals",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=2wRv2J3sufM",
     "description": "The plank is a fundamental isometric core exercise that develops anti-extension strength and endurance throughout the entire trunk. It requires no equipment and serves as the basis for many core progressions.",
     "tips": "Get into a push-up position and lower onto your forearms. Elbows directly under your shoulders. Keep your body in a perfectly straight line from head to heels. Engage your core, glutes, and quads. Breathe steadily. Avoid letting your hips sag or rise. Hold for the desired duration.",
     "commonMistakes": null
@@ -1094,7 +1094,7 @@
     "nameEs": "Prensa de piernas",
     "nameEn": "Leg Press",
     "muscleGroup": "quadriceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=csiX38JS0zI",
     "description": "The leg press is a compound leg exercise using a machine to press weight away from the body. It targets the quads, glutes, and hamstrings with reduced spinal loading compared to the squat.",
     "tips": "Sit in the leg press machine with your back and head flat against the pad. Place feet hip-width apart on the platform. Release the safety handles. Lower the platform by bending your knees toward your chest. Press through your feet to extend your legs. Do not lock out knees at the top. Repeat for desired reps.",
     "commonMistakes": null
@@ -1154,7 +1154,7 @@
     "nameEs": "Press de hombro con mancuernas",
     "nameEn": "Dumbbell Shoulder Press",
     "muscleGroup": "delts",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=oI3kX7cclb4",
     "description": "The dumbbell shoulder press is the primary overhead pressing exercise for deltoid development. It allows more natural wrist rotation and greater range of motion than the barbell version.",
     "tips": "Sit or stand holding a dumbbell in each hand at shoulder height, palms facing forward. Press the dumbbells overhead until arms are nearly fully extended. Lower back to shoulder height. Repeat for desired reps.",
     "commonMistakes": null
@@ -1174,7 +1174,7 @@
     "nameEs": "Press de pecho en máquina",
     "nameEn": "Chest Press Machine",
     "muscleGroup": "pectorals",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=d-gwsl5BlMQ",
     "description": "The chest press machine provides a guided pressing motion that targets the pectoralis major, anterior deltoids, and triceps. The machine path makes it suitable for beginners.",
     "tips": "Adjust the seat so the handles are at chest height. Sit with your back flat against the pad. Grip the handles and press forward until arms are nearly fully extended. Squeeze your chest at the end. Slowly return to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -1204,7 +1204,7 @@
     "nameEs": "Press inclinado con barra",
     "nameEn": "Incline Barbell Bench Press",
     "muscleGroup": "upper chest",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=RkveusFgV30",
     "description": "The incline barbell bench press targets the upper portion of the pectoralis major and anterior deltoid by pressing from an angled position. It is essential for complete chest development.",
     "tips": "Set the bench to 30-45 degrees. Lie back and grip the barbell slightly wider than shoulder-width. Unrack and hold above your upper chest. Lower the bar to your upper chest with elbows at 45-60 degrees. Press back up to the starting position. Repeat for desired reps.",
     "commonMistakes": null
@@ -1234,7 +1234,7 @@
     "nameEs": "Press pallof",
     "nameEn": "Pallof Press",
     "muscleGroup": "abdominals",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=W8Yf1uyUnoM",
     "description": "Ejercicio antirrotación para el core. No se trata de mover el peso, sino de resistir el giro que la polea intenta provocar. Trabaja la estabilidad profunda del tronco.",
     "tips": "Colócate de perfil a la polea con los pies a la anchura de los hombros. Sujeta el agarre con ambas manos a la altura del esternón. Extiende los brazos al frente y mantén 2-3 segundos resistiendo la rotación. Vuelve al pecho sin girar el tronco.",
     "commonMistakes": "Dejar que el tronco rote hacia la polea; usar demasiado peso y compensar con los brazos; contener la respiración; separar los pies del suelo o mover la cadera."
@@ -1254,7 +1254,7 @@
     "nameEs": "Puente de glúteo",
     "nameEn": "Glute Bridge",
     "muscleGroup": "glutes",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=mSthijBNMm4",
     "description": "The glute bridge is a fundamental hip extension exercise that activates the gluteus maximus with minimal lower back stress. It is performed lying on the floor and is ideal for beginners or as a warm-up movement.",
     "tips": "Lie on your back with knees bent and feet flat on the floor, hip-width apart. Drive through your heels to lift your hips off the floor until your body forms a straight line from knees to shoulders. Squeeze your glutes hard at the top. Lower your hips back to the floor. Repeat for desired reps.",
     "commonMistakes": null
@@ -1324,7 +1324,7 @@
     "nameEs": "Remo en Smith",
     "nameEn": "Smith Machine Row",
     "muscleGroup": "middle back",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=y-PXAGAIEM0",
     "description": "Remo horizontal con barra guiada en máquina Smith. La guía elimina la necesidad de estabilizar la barra, lo que permite concentrarse en la espalda y cargar más que en el remo libre.",
     "tips": "Colócate con el tronco inclinado unos 45 grados y las rodillas ligeramente flexionadas. Agarre algo más ancho que los hombros. Lleva la barra hacia el abdomen bajo tirando con los codos, no con las manos. Aprieta las escápulas al final del recorrido.",
     "commonMistakes": "Incorporar el tronco a cada repetición para dar impulso; tirar hacia el pecho en vez de hacia el abdomen; redondear la zona lumbar; usar recorrido corto por exceso de peso."
@@ -1384,7 +1384,7 @@
     "nameEs": "Remo unilateral en polea",
     "nameEn": "Single-Arm Cable Row",
     "muscleGroup": "lats",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=ThYEWIpPB0o",
     "description": "The single-arm cable row allows unilateral back training, helping to correct muscle imbalances between sides. It targets the lat, rhomboid, and rear delt with rotation and full range of motion.",
     "tips": "Set a cable pulley to mid height. Stand facing the machine and grip the single handle with one hand. Step back to create tension. Pull the handle toward your hip by driving your elbow back. Rotate your torso slightly at the end range. Squeeze your lat. Return to starting position with control. Complete reps then switch sides.",
     "commonMistakes": null
@@ -1414,7 +1414,7 @@
     "nameEs": "Rotación de brazos",
     "nameEn": "Arm Circles",
     "muscleGroup": "delts",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=YTueIW_xapc",
     "description": "Movilidad articular para el hombro. Calienta la articulación y prepara el manguito rotador antes de entrenar tren superior.",
     "tips": "De pie, brazos extendidos en cruz. Describe círculos progresivamente más amplios, primero hacia delante y después hacia atrás. Mantén el tronco firme y los hombros lejos de las orejas.",
     "commonMistakes": "Hacer círculos muy rápidos y pequeños en vez de amplios y controlados; encoger los hombros; arquear la zona lumbar para ganar amplitud."
@@ -1424,7 +1424,7 @@
     "nameEs": "Rotación de hombros en pared",
     "nameEn": "Wall Slide",
     "muscleGroup": "delts",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=uxPzcxKTdlQ",
     "description": "Deslizamiento de brazos por la pared. Mejora la movilidad de hombro en flexión y la rotación externa, y corrige la postura de hombros adelantados.",
     "tips": "Espalda, glúteos y cabeza apoyados en la pared. Antebrazos contra la pared formando una W. Desliza los brazos hacia arriba hasta la Y sin despegar muñecas ni codos, y baja controlado.",
     "commonMistakes": "Despegar la zona lumbar de la pared arqueando la espalda; perder el contacto de las muñecas al subir; forzar el rango con dolor; encoger los hombros."
@@ -1434,7 +1434,7 @@
     "nameEs": "Rotación interna y externa del fémur",
     "nameEn": "Hip Internal and External Rotation",
     "muscleGroup": "glutes",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=AXOjz-0vr28",
     "description": "Movilidad de cadera en rotación. Recupera el rango que se pierde al pasar muchas horas sentado y mejora la profundidad de la sentadilla.",
     "tips": "Sentado en el suelo con las rodillas flexionadas y los pies separados más que la cadera. Deja caer ambas rodillas a un lado y luego al otro, manteniendo los pies apoyados. Movimiento lento, sin rebotes.",
     "commonMistakes": "Hacerlo con impulso en vez de controlado; despegar los pies del suelo; forzar hasta el dolor; olvidar trabajar los dos lados por igual."
@@ -1544,7 +1544,7 @@
     "nameEs": "Sentadilla con palo",
     "nameEn": "Overhead Stick Squat",
     "muscleGroup": "quadriceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=B3mFhJ50_VM",
     "description": "Sentadilla de movilidad con un palo sostenido sobre la cabeza. Expone las limitaciones de tobillo, cadera y hombro sin cargar peso, y sirve para pulir el patrón antes de cargar.",
     "tips": "Sujeta el palo con agarre amplio y llévalo sobre la cabeza con los codos extendidos. Baja tan profundo como puedas manteniendo el palo alineado sobre el centro del pie y el pecho alto. Sube sin dejar que el palo se vaya adelante.",
     "commonMistakes": "Dejar que el palo caiga hacia delante; levantar los talones; juntar las rodillas al subir; buscar profundidad redondeando la espalda baja."
@@ -1614,7 +1614,7 @@
     "nameEs": "Sentadilla trasera con barra",
     "nameEn": "Barbell Back Squat",
     "muscleGroup": "quadriceps",
-    "videoUrl": null,
+    "videoUrl": "https://www.youtube.com/watch?v=PbrlKe246E8",
     "description": "The barbell back squat is the king of lower body exercises, targeting the quads, glutes, hamstrings, and core under heavy load. It is the most effective compound movement for lower body mass.",
     "tips": "Place a barbell on your upper back and stand with feet slightly wider than shoulder-width, toes pointed slightly out. Take a deep breath and brace your core. Push your knees out over your toes and sit your hips back and down until thighs are parallel to the floor. Drive through your heels to stand. Repeat for desired reps.",
     "commonMistakes": null

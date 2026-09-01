@@ -1,0 +1,46 @@
+{
+  "_comment": "Videos fijados para los ejercicios de la rutina de Pablo. Elegidos por titulo y canal en una busqueda en espanol; no se ha podido verificar el contenido de cada video, asi que conviene revisarlos. Cualquier ejercicio sin entrada aqui abre una busqueda de YouTube, que siempre funciona. El campo videoUrl es editable desde la app.",
+
+  "pull-up": "https://www.youtube.com/watch?v=Oc7toRMi5fY",
+  "smith-machine-row": "https://www.youtube.com/watch?v=y-PXAGAIEM0",
+  "single-arm-cable-row": "https://www.youtube.com/watch?v=ThYEWIpPB0o",
+  "cable-curl": "https://www.youtube.com/watch?v=N_uBjdamfi8",
+  "lateral-raise": "https://www.youtube.com/watch?v=aKl46TMtzGk",
+  "incline-dumbbell-curl": "https://www.youtube.com/watch?v=P1L6CD-tSnE",
+  "triceps-pushdown": "https://www.youtube.com/watch?v=bluq3g4XIWg",
+
+  "barbell-back-squat": "https://www.youtube.com/watch?v=PbrlKe246E8",
+  "deadlift": "https://www.youtube.com/watch?v=kancsOn7CJY",
+  "leg-press": "https://www.youtube.com/watch?v=csiX38JS0zI",
+  "leg-extension": "https://www.youtube.com/watch?v=Q2-N3JmOQvI",
+  "hip-thrust": "https://www.youtube.com/watch?v=c2iJjdXpt1U",
+  "hip-abduction": "https://www.youtube.com/watch?v=2vCRMi-lgJ4",
+  "calf-raise": "https://www.youtube.com/watch?v=EptZC_AY6fE",
+
+  "pec-deck": "https://www.youtube.com/watch?v=WKfTStqIXrw",
+  "chest-press-machine": "https://www.youtube.com/watch?v=d-gwsl5BlMQ",
+  "incline-barbell-bench-press": "https://www.youtube.com/watch?v=RkveusFgV30",
+  "barbell-curl": "https://www.youtube.com/watch?v=wGYyXpZ4kVs",
+  "hammer-curl": "https://www.youtube.com/watch?v=i60DlC_Wj0E",
+
+  "lat-pulldown": "https://www.youtube.com/watch?v=eSlKErmf5WU",
+  "face-pull": "https://www.youtube.com/watch?v=Q18p2QtQAes",
+  "reverse-pec-deck": "https://www.youtube.com/watch?v=E2uXi3W6ouU",
+
+  "dumbbell-shoulder-press": "https://www.youtube.com/watch?v=oI3kX7cclb4",
+  "dumbbell-curl": "https://www.youtube.com/watch?v=8BsqlTaRg6Q",
+  "cable-lateral-raise": "https://www.youtube.com/watch?v=zkP3tV_NwnY",
+  "overhead-triceps-extension": "https://www.youtube.com/watch?v=PyNaiTP1PIA",
+
+  "arm-circles": "https://www.youtube.com/watch?v=YTueIW_xapc",
+  "scapular-push-up": "https://www.youtube.com/watch?v=5cjeO0G86Yo",
+  "wall-shoulder-rotation": "https://www.youtube.com/watch?v=uxPzcxKTdlQ",
+  "hip-rotation": "https://www.youtube.com/watch?v=AXOjz-0vr28",
+  "stick-overhead-squat": "https://www.youtube.com/watch?v=B3mFhJ50_VM",
+  "glute-bridge": "https://www.youtube.com/watch?v=mSthijBNMm4",
+  "ab-crunch-machine": "https://www.youtube.com/watch?v=dJqB4oA4sdA",
+  "plank": "https://www.youtube.com/watch?v=2wRv2J3sufM",
+  "pallof-press": "https://www.youtube.com/watch?v=W8Yf1uyUnoM",
+  "farmer-s-walk": "https://www.youtube.com/watch?v=69hTPgHwA08",
+  "leg-raise": "https://www.youtube.com/watch?v=oxJj5FoBycQ"
+}
