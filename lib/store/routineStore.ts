@@ -39,12 +39,21 @@ interface RoutineState {
   toggleRow: (dayId: string, rowId: string) => void;
   updateRow: (dayId: string, rowId: string, patch: Partial<Omit<RoutineRow, 'id'>>) => void;
   addRow: (dayId: string, row: RoutineRow) => void;
+  insertRow: (dayId: string, row: RoutineRow, index: number) => void;
   removeRow: (dayId: string, rowId: string) => void;
   moveRow: (dayId: string, rowId: string, delta: number) => void;
   resetDay: (dayId: string) => void;
 
+  createRoutine: (name: string) => string;
   saveRoutine: (routine: Routine) => void;
   removeRoutine: (routineId: string) => void;
+  addDay: (routineId: string, focus: string) => void;
+  removeDay: (routineId: string, dayId: string) => void;
+  setDayFocus: (routineId: string, dayId: string, focus: string) => void;
+  updateRoutineMeta: (
+    routineId: string,
+    patch: Partial<Pick<Routine, 'name' | 'athleteName' | 'goal' | 'coachName'>>,
+  ) => void;
   upsertExercise: (exercise: Exercise) => void;
   resetEverything: () => Promise<void>;
 }
@@ -73,6 +82,20 @@ export const useRoutineStore = create<RoutineState>((set, get) => {
     const nextRoutine = domainRoutine.replaceDay(routine, nextDay, new Date().toISOString());
     const nextRoutines = routines.map((r) => (r.id === nextRoutine.id ? nextRoutine : r));
 
+    set({ routines: nextRoutines });
+    persistRoutines(nextRoutines);
+  };
+
+  /** Apply a pure routine transform by id and persist. */
+  const editRoutine = (routineId: string, transform: (routine: Routine) => Routine) => {
+    const { routines } = get();
+    const routine = routines.find((r) => r.id === routineId);
+    if (!routine) return;
+
+    const next = transform(routine);
+    if (next === routine) return;
+
+    const nextRoutines = routines.map((r) => (r.id === routineId ? next : r));
     set({ routines: nextRoutines });
     persistRoutines(nextRoutines);
   };
@@ -123,12 +146,50 @@ export const useRoutineStore = create<RoutineState>((set, get) => {
 
     addRow: (dayId, row) => editDay(dayId, (day) => domainRoutine.addRow(day, row)),
 
+    insertRow: (dayId, row, index) =>
+      editDay(dayId, (day) => domainRoutine.insertRow(day, row, index)),
+
     removeRow: (dayId, rowId) => editDay(dayId, (day) => domainRoutine.removeRow(day, rowId)),
 
     moveRow: (dayId, rowId, delta) =>
       editDay(dayId, (day) => domainRoutine.moveRow(day, rowId, delta)),
 
     resetDay: (dayId) => editDay(dayId, (day) => domainDay.resetDay(day, todayIso())),
+
+    createRoutine: (name) => {
+      const routine = domainRoutine.blankRoutine(name, new Date().toISOString());
+      const next = [...get().routines, routine];
+
+      set({
+        routines: next,
+        activeRoutineId: routine.id,
+        activeDayId: routine.days[0]?.id ?? null,
+      });
+      persistRoutines(next);
+      return routine.id;
+    },
+
+    addDay: (routineId, focus) =>
+      editRoutine(routineId, (r) => domainRoutine.addDay(r, focus, new Date().toISOString())),
+
+    removeDay: (routineId, dayId) => {
+      editRoutine(routineId, (r) => domainRoutine.removeDay(r, dayId, new Date().toISOString()));
+      // The selected day may have just disappeared.
+      const routine = get().routines.find((r) => r.id === routineId);
+      if (routine && !routine.days.some((d) => d.id === get().activeDayId)) {
+        set({ activeDayId: routine.days[0]?.id ?? null });
+      }
+    },
+
+    setDayFocus: (routineId, dayId, focus) =>
+      editRoutine(routineId, (r) =>
+        domainRoutine.setDayFocus(r, dayId, focus, new Date().toISOString()),
+      ),
+
+    updateRoutineMeta: (routineId, patch) =>
+      editRoutine(routineId, (r) =>
+        domainRoutine.updateRoutineMeta(r, patch, new Date().toISOString()),
+      ),
 
     saveRoutine: (routine) => {
       const { routines } = get();

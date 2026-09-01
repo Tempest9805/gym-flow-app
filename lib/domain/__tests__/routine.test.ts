@@ -1,4 +1,7 @@
-import { addRow, removeRow, updateRow, moveRow, replaceDay, blankRow } from '../routine';
+import {
+  addRow, insertRow, removeRow, updateRow, moveRow, replaceDay, blankRow,
+  blankDay, blankRoutine, addDay, removeDay, setDayFocus, updateRoutineMeta,
+} from '../routine';
 import type { Routine, RoutineDay, RoutineRow } from '../types';
 
 const row = (id: string): RoutineRow => ({
@@ -89,5 +92,108 @@ describe('replaceDay', () => {
 
   it('is a no-op when the day does not belong to the routine', () => {
     expect(replaceDay(routine, { ...day, id: 'nope' }, '2026-09-02T00:00:00.000Z')).toBe(routine);
+  });
+});
+
+describe('insertRow', () => {
+  it('puts a row back where it was', () => {
+    const removed = removeRow(day, 'b');
+    const restored = insertRow(removed, row('b'), 1);
+    expect(restored.rows.map((r) => r.id)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('clamps an index past the end', () => {
+    expect(insertRow(day, row('z'), 99).rows.map((r) => r.id)).toEqual(['a', 'b', 'c', 'z']);
+  });
+
+  it('clamps a negative index to the start', () => {
+    expect(insertRow(day, row('z'), -5).rows.map((r) => r.id)).toEqual(['z', 'a', 'b', 'c']);
+  });
+
+  it('does not mutate the input', () => {
+    insertRow(day, row('z'), 0);
+    expect(day.rows).toHaveLength(3);
+  });
+});
+
+describe('blankDay', () => {
+  it('derives the icon from the focus', () => {
+    expect(blankDay('Día 1', 'Espalda').icon).toBe('weight-lifter');
+    expect(blankDay('Día 1', '').icon).toBe('dumbbell');
+  });
+
+  it('starts empty and unchecked', () => {
+    const d = blankDay('Día 1', 'Pecho');
+    expect(d.rows).toEqual([]);
+    expect(d.lastResetOn).toBeNull();
+  });
+});
+
+describe('blankRoutine', () => {
+  it('starts with exactly one day so it is trainable immediately', () => {
+    const r = blankRoutine('Mi rutina', '2026-09-01T00:00:00.000Z');
+    expect(r.days).toHaveLength(1);
+    expect(r.days[0].label).toBe('Día 1');
+    expect(r.name).toBe('Mi rutina');
+  });
+});
+
+describe('addDay', () => {
+  it('numbers the new day after the existing ones', () => {
+    const r = addDay(routine, 'Pecho', '2026-09-02T00:00:00.000Z');
+    expect(r.days.map((d) => d.label)).toEqual(['Día 1', 'Día 2']);
+    expect(r.days[1].focus).toBe('Pecho');
+    expect(r.updatedAt).toBe('2026-09-02T00:00:00.000Z');
+  });
+
+  it('supports growing to seven days', () => {
+    let r = routine;
+    for (let i = 0; i < 6; i += 1) r = addDay(r, 'X', '2026-09-02T00:00:00.000Z');
+    expect(r.days).toHaveLength(7);
+    expect(r.days[6].label).toBe('Día 7');
+  });
+});
+
+describe('removeDay', () => {
+  const three = addDay(addDay(routine, 'Pecho', 'x'), 'Pierna', 'x');
+
+  it('renumbers the remaining days so labels have no gaps', () => {
+    const r = removeDay(three, three.days[1].id, '2026-09-02T00:00:00.000Z');
+    expect(r.days.map((d) => d.label)).toEqual(['Día 1', 'Día 2']);
+    expect(r.days.map((d) => d.focus)).toEqual(['Espalda', 'Pierna']);
+  });
+
+  it('refuses to remove the only day', () => {
+    expect(removeDay(routine, routine.days[0].id, 'x')).toBe(routine);
+  });
+
+  it('is a no-op for an unknown day', () => {
+    expect(removeDay(three, 'nope', 'x')).toBe(three);
+  });
+});
+
+describe('setDayFocus', () => {
+  it('updates the icon alongside the focus', () => {
+    const r = setDayFocus(routine, routine.days[0].id, 'Movilidad', '2026-09-02T00:00:00.000Z');
+    expect(r.days[0].focus).toBe('Movilidad');
+    expect(r.days[0].icon).toBe('yoga');
+  });
+
+  it('is a no-op for an unknown day', () => {
+    expect(setDayFocus(routine, 'nope', 'X', 'x')).toBe(routine);
+  });
+});
+
+describe('updateRoutineMeta', () => {
+  it('patches only what it is given', () => {
+    const r = updateRoutineMeta(routine, { coachName: 'Nach' }, '2026-09-02T00:00:00.000Z');
+    expect(r.coachName).toBe('Nach');
+    expect(r.name).toBe('R');
+    expect(r.updatedAt).toBe('2026-09-02T00:00:00.000Z');
+  });
+
+  it('can clear an optional field back to null', () => {
+    const withCoach = updateRoutineMeta(routine, { coachName: 'Nach' }, 'x');
+    expect(updateRoutineMeta(withCoach, { coachName: null }, 'x').coachName).toBeNull();
   });
 });

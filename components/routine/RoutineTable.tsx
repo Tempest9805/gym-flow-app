@@ -29,6 +29,10 @@ export interface RoutineTableProps {
   onOpenVideo: (row: RoutineRow) => void;
   onEdit?: (rowId: string, field: EditableField) => void;
   onOpenTimer?: (row: RoutineRow) => void;
+  /** In edit mode the checkbox column becomes reorder + delete controls. */
+  editing?: boolean;
+  onRemove?: (rowId: string) => void;
+  onMove?: (rowId: string, delta: number) => void;
 }
 
 /** Column widths in points. `name` is whatever is left over. */
@@ -65,6 +69,9 @@ export function RoutineTable({
   onOpenVideo,
   onEdit,
   onOpenTimer,
+  editing = false,
+  onRemove,
+  onMove,
 }: RoutineTableProps) {
   const t = useTheme();
   const col = useColumns();
@@ -83,7 +90,11 @@ export function RoutineTable({
         <HeaderCell label="Series" width={col.sets} color={t.onPrimaryContainer} />
         <HeaderCell label="Reps" width={col.reps} color={t.onPrimaryContainer} />
         <HeaderCell label="Rest" width={col.rest} color={t.onPrimaryContainer} />
-        <HeaderCell label="✓" width={col.check} color={t.onPrimaryContainer} />
+        <HeaderCell
+          label={editing ? '⇅' : '✓'}
+          width={editing ? col.check + 56 : col.check}
+          color={t.onPrimaryContainer}
+        />
       </View>
 
       {rows.map((row, index) => {
@@ -182,22 +193,69 @@ export function RoutineTable({
               </Text>
             </Pressable>
 
-            {/* Done */}
-            <Pressable
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked: row.done }}
-              accessibilityLabel={`Marcar ${row.name} como completado`}
-              onPress={() => onToggle(row.id)}
-              hitSlop={8}
-              style={{ width: col.check, minHeight: 44 }}
-              className="items-center justify-center"
-            >
-              <MaterialCommunityIcons
-                name={row.done ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                size={col.roomy ? 30 : 26}
-                color={row.done ? t.primaryContainer : t.outline}
-              />
-            </Pressable>
+            {/* Done, or the edit controls */}
+            {editing ? (
+              <View className="flex-row items-center" style={{ width: col.check + 56 }}>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Subir ${row.name}`}
+                  disabled={index === 0}
+                  onPress={() => onMove?.(row.id, -1)}
+                  hitSlop={4}
+                  style={{ width: 28, minHeight: 44 }}
+                  className="items-center justify-center"
+                >
+                  <MaterialCommunityIcons
+                    name="chevron-up"
+                    size={22}
+                    color={index === 0 ? t.surfaceContainerHighest : t.onSurfaceVariant}
+                  />
+                </Pressable>
+
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Bajar ${row.name}`}
+                  disabled={index === rows.length - 1}
+                  onPress={() => onMove?.(row.id, 1)}
+                  hitSlop={4}
+                  style={{ width: 28, minHeight: 44 }}
+                  className="items-center justify-center"
+                >
+                  <MaterialCommunityIcons
+                    name="chevron-down"
+                    size={22}
+                    color={index === rows.length - 1 ? t.surfaceContainerHighest : t.onSurfaceVariant}
+                  />
+                </Pressable>
+
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={`Quitar ${row.name}`}
+                  onPress={() => onRemove?.(row.id)}
+                  hitSlop={4}
+                  style={{ width: col.check, minHeight: 44 }}
+                  className="items-center justify-center"
+                >
+                  <MaterialCommunityIcons name="close-circle" size={24} color={t.error} />
+                </Pressable>
+              </View>
+            ) : (
+              <Pressable
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: row.done }}
+                accessibilityLabel={`Marcar ${row.name} como completado`}
+                onPress={() => onToggle(row.id)}
+                hitSlop={8}
+                style={{ width: col.check, minHeight: 44 }}
+                className="items-center justify-center"
+              >
+                <MaterialCommunityIcons
+                  name={row.done ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                  size={col.roomy ? 30 : 26}
+                  color={row.done ? t.primaryContainer : t.outline}
+                />
+              </Pressable>
+            )}
           </View>
         );
       })}
