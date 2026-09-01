@@ -19,6 +19,7 @@ import { CellEditor } from '@/components/routine/CellEditor';
 import { DayTabs } from '@/components/routine/DayTabs';
 import { ExercisePicker } from '@/components/routine/ExercisePicker';
 import { RoutineTable, type EditableField } from '@/components/routine/RoutineTable';
+import { ShareSheet } from '@/components/routine/ShareSheet';
 import { TipsStrip } from '@/components/routine/TipsStrip';
 import { dayProgress } from '@/lib/domain/day';
 import { blankRow } from '@/lib/domain/routine';
@@ -56,6 +57,7 @@ export default function TodayScreen() {
   const [editTarget, setEditTarget] = useState<{ rowId: string; field: EditableField } | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [removed, setRemoved] = useState<RemovedRow | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const openVideo = useCallback(
     (row: RoutineRow) => {
@@ -179,6 +181,17 @@ export default function TodayScreen() {
           </View>
 
           <View className="flex-row items-center gap-3">
+            <Pressable
+              onPress={() => setShareOpen(true)}
+              accessibilityRole="button"
+              accessibilityLabel="Copiar o compartir la rutina"
+              hitSlop={6}
+              className="items-center justify-center rounded-xl border"
+              style={{ width: 44, minHeight: 44, borderColor: t.outlineVariant }}
+            >
+              <MaterialCommunityIcons name="content-copy" size={18} color={t.onSurfaceVariant} />
+            </Pressable>
+
             <Pressable
               onPress={() => router.push('/stopwatch')}
               accessibilityRole="button"
@@ -331,6 +344,13 @@ export default function TodayScreen() {
         exercises={exercises}
         onCancel={() => setPickerOpen(false)}
         onPick={handlePick}
+      />
+
+      <ShareSheet
+        visible={shareOpen}
+        routine={routine}
+        day={day}
+        onClose={() => setShareOpen(false)}
       />
     </SafeAreaView>
   );

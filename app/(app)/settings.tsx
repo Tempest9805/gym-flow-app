@@ -1,5 +1,5 @@
 /**
- * Ajustes — theme, language, timers, and a way back to the seeded data.
+ * Ajustes — theme, timers, and a way back to the seeded data.
  * No account, no profile: there is nobody to log in as.
  */
 import React from 'react';
@@ -10,7 +10,6 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useThemeStore } from '@/lib/store/themeStore';
-import { useLanguageStore } from '@/lib/store/languageStore';
 import { useRoutineStore } from '@/lib/store/routineStore';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
@@ -61,8 +60,6 @@ export default function SettingsScreen() {
 
   const theme = useThemeStore((s) => s.theme);
   const setTheme = useThemeStore((s) => s.setTheme);
-  const language = useLanguageStore((s) => s.language);
-  const setLanguage = useLanguageStore((s) => s.setLanguage);
   const resetEverything = useRoutineStore((s) => s.resetEverything);
   const routineCount = useRoutineStore((s) => s.routines.length);
   const exerciseCount = useRoutineStore((s) => s.exercises.length);
@@ -93,12 +90,6 @@ export default function SettingsScreen() {
             title="Tema"
             value={theme.label}
             onPress={() => setTheme(theme.id === 'purple' ? 'orange' : 'purple')}
-          />
-          <Row
-            icon="translate"
-            title="Idioma"
-            value={language === 'es' ? 'Español' : 'English'}
-            onPress={() => setLanguage(language === 'es' ? 'en' : 'es')}
           />
           <Row icon="timer-outline" title="Tabata" onPress={() => router.push('/tabata')} />
           <Row icon="timer-sand" title="Cronómetro" onPress={() => router.push('/stopwatch')} />

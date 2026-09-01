@@ -2,89 +2,81 @@
 tags: [architecture, gym-flow-app]
 ---
 
-# Architecture
+# Arquitectura
 
-Ver también: [[entities]], [[screens]], [[stores]], [[services]]
-
-## Stack
-
-| Capa | Tecnología |
-|---|---|
-| Framework | React Native + Expo SDK 54 |
-| Routing | Expo Router v6 (file-based) |
-| Backend | Supabase (Auth + PostgreSQL + Storage) |
-| Estado | Zustand v5 |
-| Data fetching | TanStack React Query v5 |
-| Styling | NativeWind v4 (Tailwind para RN) |
-| Validación | Zod v4 |
-| Auth storage | expo-secure-store |
-| Persistencia local | AsyncStorage |
+Ver también: [[_INDEX]], [[domain]], [[screens]], [[decisions]]
 
 ## Capas
 
 ```
-┌─────────────────────────────────────────────┐
-│            app/ (Expo Router)               │
-│   (auth)/  |  (app)/tabs+screens  |  onboarding/  │
-└────────────────────┬────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────┐
-│         lib/hooks/  (React Query hooks)     │
-│   useRoutines, useExercises, useSchedule…   │
-└────────────────────┬────────────────────────┘
-                     │
-┌────────────────────▼────────────────────────┐
-│           lib/api/  (API layer)             │
-│   routinesApi, exercisesApi, authApi,       │
-│   workoutLogsApi, skillTreeApi, challengesApi │
-└──────────┬──────────────────────┬───────────┘
-           │                      │
-           │          ┌───────────▼───────────────┐
-           │          │  lib/skills/ (motores PUROS) │
-           │          │  unlock · readiness · derive │
-           │          │  routineGate · avatar · equip │
-           │          │  (sin Supabase/RN, testeados) │
-           │          └──────────────────────────────┘
-           ▼
-┌─────────────────────────────────────────────┐
-│         lib/supabase.ts (Supabase JS)       │
-│   PostgreSQL RLS + Auth + Storage CDN       │
-└─────────────────────────────────────────────┘
-
-Estado global (transversal):
-┌──────────────────────────────────────────────┐
-│  lib/store/  (Zustand)                       │
-│  authStore | themeStore | languageStore      │
-│  sessionStore | tabataStore                  │
-└──────────────────────────────────────────────┘
+app/                      Expo Router — 4 tabs + 6 pantallas ocultas
+  └── components/         RoutineTable · DayTabs · CellEditor · ExercisePicker
+        │                 TipsStrip · ShareSheet
+        ▼
+      lib/store/          Zustand: estado en memoria
+        │                 routineStore · themeStore · tabataStore
+        ▼
+      lib/storage/        AsyncStorage: repositorio + parser defensivo
+        │
+        ▼
+      lib/domain/         Lógica pura: sin I/O, sin React, sin storage
 ```
 
-## Principio central
+**La regla de dependencia apunta hacia dentro.** `lib/domain/` no importa nada
+de las capas de fuera; por eso es la única parte con tests unitarios de verdad
+(131 de ellos) y la que sobreviviría intacta si algún día vuelve un backend.
 
-App mobile-first con backend Supabase. Sin offline-first real: los datos se leen desde Supabase en tiempo de ejecución con React Query como caché. El estado de sesión de workout se persiste localmente en AsyncStorage (reseteo semanal automático).
-
-**Motores deterministas (`lib/skills/`)**: la lógica del árbol de skills (desbloqueos, readiness, gate de rutina, estado del avatar) son **funciones puras** sin dependencias de Supabase/RN, testeadas con Jest. Los `*Api.sync*` de `lib/api/` hacen el I/O (leer logs/progresiones → llamar al motor puro → upsert estado). Ver [[services]] y [[data-flow]] (Flujo 7).
-
-## Secuencia de arranque
+## Arranque
 
 ```
-RootLayout monta
-  │
-  ├── initialize()      → supabase.auth.getSession()
-  ├── loadTheme()       → AsyncStorage 'gymflow_theme'
-  └── loadLanguage()    → AsyncStorage 'gymflow_language'
-          │
-          ▼
-      AuthGuard evalúa:
-          │
-          ├── !isAuthenticated       → Redirect /(auth)/login
-          ├── !profile.goal          → Redirect /onboarding/goal
-          └── ok                     → Render (app)/ tabs
+RootLayout
+  ├── loadTheme()   AsyncStorage
+  └── load()        AsyncStorage → siembra si está vacío
+        │
+        └── (app)/index — Hoy
 ```
 
-## Design system
+Dos lecturas locales y a entrenar. **No hay AuthGuard, ni onboarding, ni
+redirecciones**: nada se interpone entre abrir la app y ver la tabla.
 
-- Estética "Stitch dark neon" — fondos oscuros (#19101c base)
-- Dos temas: **Neon Purple** (default, `#bc13fe`) y **Neon Orange** (`#ff5f1f`)
-- Custom tab bar (`StitchTabBar`) con indicador superior y glow effect
-- Tokens en `lib/store/themeStore.ts` → acceso via `useTheme()` hook
+## Persistencia
+
+Dos claves de AsyncStorage:
+
+| Clave | Contenido |
+|---|---|
+| `gymflow_routines` | Las rutinas, con sus días y filas |
+| `gymflow_exercises` | La biblioteca de 169 ejercicios |
+
+Más `gymflow_theme` y `gymflow_tabata_config` para preferencias.
+
+**En el primer arranque** se copian las semillas de `lib/data/`. A partir de
+ahí manda el almacenamiento y las semillas se ignoran, así que actualizar la
+app nunca pisa lo que el usuario ha editado. Ajustes → «Restaurar datos
+originales» borra las claves y vuelve a sembrar.
+
+`lib/storage/serialize.ts` valida al leer: cualquier cosa que no encaje con el
+modelo se rechaza entera y se vuelve a sembrar, en vez de arrastrar datos a
+medio validar. Lo que se puede arreglar sin riesgo (un `focus` ausente, un
+`mode` desconocido) se normaliza en lugar de descartarse.
+
+## Escrituras
+
+El store escribe primero en memoria y persiste en segundo plano
+(`void save(...).catch(...)`). La UI nunca espera al disco, y un fallo de
+almacenamiento no interrumpe a quien está entrenando.
+
+## Estado del día
+
+Los checks se reinician solos: al cargar, cualquier día cuyo `lastResetOn` no
+sea hoy y tenga marcas se limpia. Cada día empieza como una hoja en blanco,
+igual que en papel. La fecha se calcula en la zona del dispositivo, no en UTC
+—si no, entrenar por la noche al oeste de Greenwich reiniciaría un día antes.
+
+## Stack
+
+Expo ~54 · React Native 0.81 · React 19.1 · expo-router ~6 · Zustand ~5 ·
+NativeWind ~4 · AsyncStorage · expo-notifications · expo-haptics ·
+expo-keep-awake · expo-clipboard
+
+**Sin** Supabase, sin React Query, sin autenticación, sin red.

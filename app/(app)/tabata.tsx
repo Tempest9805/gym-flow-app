@@ -167,7 +167,7 @@ export default function TabataSetupScreen() {
     loadConfig().then(() => {
       setLocalConfig(useTabataStore.getState().config);
     });
-  }, []);
+  }, [loadConfig]);
 
   const update = <K extends keyof TabataConfig>(key: K, value: TabataConfig[K]) => {
     setLocalConfig((prev) => ({ ...prev, [key]: value }));

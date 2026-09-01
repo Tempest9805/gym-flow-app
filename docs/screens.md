@@ -1,98 +1,69 @@
 ---
-tags: [screens, routing, gym-flow-app]
+tags: [screens, navigation, gym-flow-app]
 ---
 
-# Screens
+# Pantallas
 
-Framework de routing: **Expo Router v6** (file-based). Todas las rutas en `app/`.
-
-Ver también: [[architecture]], [[data-flow]]
-
-## Mapa de rutas
+Ver también: [[_INDEX]], [[architecture]], [[domain]]
 
 ```
 app/
-├── _layout.tsx          RootLayout — providers + AuthGuard
-│
-├── (auth)/              Grupo de autenticación (no requiere sesión)
-│   ├── _layout.tsx
-│   ├── login.tsx
-│   ├── sign-up.tsx
-│   ├── forgot-password.tsx
-│   ├── reset-password.tsx
-│   └── email-confirmed.tsx
-│
-├── onboarding/          Onboarding post-registro
-│   ├── _layout.tsx
-│   ├── goal.tsx         Selección de objetivo de fitness
-│   └── equipment.tsx    Captura de equipamiento disponible (available_equipment)
-│
-└── (app)/               Grupo principal (requiere sesión + profile.goal)
-    ├── _layout.tsx      Tabs + StitchTabBar custom
+├── _layout.tsx              providers + carga local (sin AuthGuard)
+└── (app)/
+    ├── _layout.tsx          tab bar propia, 4 pestañas
     │
-    │   ── TABS VISIBLES (bottom nav, default = Entrenar) ──
-    ├── tree.tsx          Árbol de skills (calistenia) — avatar HUD, ramas, retos
-    ├── index.tsx         Entrenar — dashboard / sesión de hoy
-    ├── exercises.tsx     Exercise library — calistenia/casa (filtra gimnasio)
-    ├── routines.tsx      Lista de rutinas (badge "Bloqueada" si pending)
-    ├── profile.tsx       Perfil de usuario
+    │   ── PESTAÑAS ──
+    ├── index.tsx            Hoy ⭐ la tabla del día
+    ├── routines.tsx         Rutinas — cuál está activa, días, cabecera
+    ├── exercises.tsx        Ejercicios — biblioteca de 169
+    ├── settings.tsx         Ajustes — tema, timers, restaurar datos
     │
-    │   ── PANTALLAS OCULTAS (no en nav) ──
-    ├── agenda.tsx             Agenda semanal (oculta; absorber en Entrenar)
-    ├── workout.tsx            Workout (modo no-sesión)
-    ├── workout-session.tsx    Sesión activa de workout
-    ├── day-detail.tsx         Detalle del día en agenda
-    ├── routine-start.tsx      Pantalla pre-inicio de rutina
-    ├── routine-detail.tsx     Detalle de rutina
-    ├── routine-builder.tsx    Crear/editar rutinas
-    ├── import-routine.tsx     Importar rutina desde share
-    ├── exercise/[id].tsx      Detalle de ejercicio
-    ├── share/[id].tsx         Pantalla de share recibido
-    ├── timer.tsx              Configuración de timer
-    ├── timer-active.tsx       Timer activo
-    ├── tabata.tsx             Configuración Tabata
-    ├── tabata-active.tsx      Sesión Tabata activa
-    └── tabata-summary.tsx     Resumen post-Tabata
+    │   ── OCULTAS ──
+    ├── exercise/[id].tsx    Ejecución, recomendaciones, errores comunes
+    ├── stopwatch.tsx        Cronómetro con vueltas
+    ├── timer.tsx            Temporizador de intervalos (setup)
+    ├── timer-active.tsx     Temporizador corriendo
+    ├── tabata.tsx           Tabata (setup)
+    ├── tabata-active.tsx    Tabata corriendo
+    └── tabata-summary.tsx   Resumen post-tabata
 ```
 
-## Flujo de navegación principal
+## Hoy — la pantalla que importa
 
-```
-App launch
-    │
-    ▼
-AuthGuard
-    ├── Sin sesión ──────────────────► (auth)/login
-    │                                       │
-    │                                  sign-up / forgot-password
-    │
-    ├── Sesión, sin goal ────────────► onboarding/goal
-    │
-    ├── Sesión, sin equipamiento ────► onboarding/equipment
-    │
-    └── Sesión + goal + equipo ──────► (app) tabs (default Entrenar)
-                                            │
-                            ┌───────────────┼────────────────┐
-                            ▼               ▼                ▼
-                         Árbol          exercises         routines
-                            │                                │
-                     exercise/[id]              routine-detail / routine-builder
-                                                            │
-                                                      routine-start
-                                                            │
-                                                    workout-session
-```
+Réplica del parte impreso: cabecera (rutina · enfoque · objetivo · coach),
+pestañas de día, tabla, y las «Indicaciones generales» plegadas al final.
 
-## Bottom Navigation
+**Tiene dos modos.** Entrenando, la tabla está limpia: `▶` abre el video,
+el checkbox marca la serie. «Editar» convierte la última columna en subir /
+bajar / quitar y saca el botón de añadir. Así el camino de entrenar no tiene
+ruido y nada se borra por un toque perdido a mitad de serie.
 
-5 tabs visibles definidos en `StitchTabBar` (`app/(app)/_layout.tsx`):
+**Al marcar una fila** arranca su descanso: esa celda `Rest` se agranda, se
+resalta y cuenta atrás. Al llegar a 0 vibra y avisa —también con la app en
+segundo plano, porque el móvil se guarda durante los 2-3 minutos. Tocar la
+celda mientras corre lo detiene.
 
-| Tab | Ruta | Icono |
-|---|---|---|
-| Árbol | `tree` | ◬ |
-| Entrenar ⭐ | `index` | ⌂ |
-| Exercises | `exercises` | ◈ |
-| Routines | `routines` | ≡ |
-| Profile | `profile` | ◯/● |
+**Edición inline**: tocar `Ejercicio`, `Series`, `Reps` o `Rest` abre un modal
+de un solo campo con atajos (`3`, `6-8`, `2:00`) y validación. Sin formularios.
 
-> Default de fábrica = **Entrenar** (cambiable en Perfil). Agenda ya no es tab (oculta, pendiente de absorber en Entrenar).
+**Quitar una fila** ofrece DESHACER, que la devuelve a su posición exacta.
+
+## Tabla
+
+Columnas: `▶ | Ejercicio | Series | Reps | Rest | ☐`
+
+Las numéricas tienen ancho fijo y el nombre se queda con el resto, envolviendo
+a dos líneas. **Nunca hay scroll horizontal**: en tablet (≥768 pt) las columnas
+y la tipografía crecen, no aparece una barra.
+
+No usa librería de tablas. `react-native-table-component` publicó su última
+versión en febrero de 2022 y su README dice que está abandonado; ninguna de las
+alternativas hace edición inline. Una fila propia es menos código y más
+control.
+
+## Copiar / compartir
+
+El botón de copiar en la cabecera de Hoy exporta el día o la rutina entera
+como markdown **autoexplicativo**: tabla más una leyenda que define cada
+columna. Está pensado para pegarlo en un chat con un LLM y que se entienda sin
+contexto: el descanso sale como `3:00`, no como `180`.

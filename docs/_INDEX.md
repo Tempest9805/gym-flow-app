@@ -4,35 +4,39 @@ tags: [index, gym-flow-app]
 
 # gym-flow-app
 
-Aplicación móvil de fitness construida con Expo + Supabase. Permite gestionar rutinas de ejercicio, seguir una agenda semanal, compartir rutinas entre usuarios y usar timers Tabata.
+Una hoja de entrenamiento en papel, digital.
+
+Abres la app y ves la tabla del día: `▶ | Ejercicio | Series | Reps | Rest | ☐`.
+Marcas lo que vas haciendo, el descanso cuenta atrás solo, y el ▶ te lleva al
+video. Nada más.
+
+**Sin cuenta, sin servidor, sin sincronización, sin pagos.** Todo vive en el
+dispositivo.
 
 ## Notas
 
-- [[architecture]] — Stack, capas, secuencia de arranque
-- [[entities]] — Modelo de datos (Zod schemas)
-- [[screens]] — Mapa de rutas y pantallas
-- [[data-flow]] — Flujos principales de datos
-- [[stores]] — Estado global (Zustand)
-- [[services]] — Capa de API / Supabase
+- [[architecture]] — Capas, arranque, y por qué está montado así
+- [[domain]] — El modelo de datos y la lógica pura
+- [[screens]] — Las 4 pestañas y las pantallas ocultas
+- [[decisions]] — Qué se eliminó del proyecto anterior y por qué
 
-## Pivote calistenia (2026-06)
+## Referencia rápida
 
-- [[roadmap]] — **Estado vivo del rediseño** (dónde estamos, secuencia de planes, cómo retomar)
-- [[market_research]] — Investigación de mercado que motivó el pivote
-- Spec de diseño (madre) → `superpowers/specs/2026-06-13-calistenia-skill-tree-design.md`
-- Spec Árbol (slice) → `superpowers/specs/2026-06-14-arbol-screen-slice-design.md`
-- Plan 1 (núcleo lógica+datos) ✅ → `superpowers/plans/2026-06-13-logic-core-and-data-schema.md`
-- Plan 2 (capa de datos + hooks) ✅ → `superpowers/plans/2026-06-14-skill-tree-data-layer.md`
-- Plan 3 (navegación 5 tabs) ✅ → `superpowers/plans/2026-06-14-nav-restructure-5-tabs.md`
-- Plan 4 (pantalla Árbol slice) ⏳ T1–T5 → `superpowers/plans/2026-06-14-arbol-screen-slice.md`
-
-## Links rápidos
-
-| Archivo | Propósito |
+| Archivo | Para qué |
 |---|---|
-| `app/_layout.tsx` | Entry point, providers, AuthGuard |
-| `app/(app)/_layout.tsx` | Tab navigator + StitchTabBar |
-| `lib/api/schemas.ts` | Todos los tipos Zod |
-| `lib/supabase.ts` | Cliente Supabase con SecureStore |
-| `lib/store/` | Todos los stores Zustand |
-| `lib/api/` | Capa de acceso a datos |
+| `app/(app)/index.tsx` | Hoy — la pantalla que importa |
+| `components/routine/RoutineTable.tsx` | La tabla |
+| `lib/domain/` | Toda la lógica, sin I/O ni React |
+| `lib/storage/repository.ts` | AsyncStorage: la única persistencia |
+| `lib/store/routineStore.ts` | Estado en memoria + escritura diferida |
+| `lib/data/*.seed.json` | Semillas generadas por `npm run seed` |
+
+## Comandos
+
+```bash
+npx expo start          # dev server
+npx tsc --noEmit        # typecheck
+npx jest                # tests
+npx expo lint           # lint
+npm run seed            # regenerar las semillas desde el CSV y el parte
+```

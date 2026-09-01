@@ -14,7 +14,6 @@ export default function TimerActiveScreen() {
   const workTime = Number(params.work) || 60;
   const restTime = Number(params.rest) || 0;
   const totalRounds = Number(params.rounds) || 1;
-  const soundEnabled = params.sound === '1';
 
   const [phase, setPhase] = useState<'WORK' | 'REST' | 'DONE'>('WORK');
   const [currentRound, setCurrentRound] = useState(1);
