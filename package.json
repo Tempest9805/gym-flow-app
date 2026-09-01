@@ -10,12 +10,12 @@
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "test": "jest",
+    "seed": "node scripts/build-exercise-seed.mjs && node scripts/build-routine-seed.mjs",
+    "seed:exercises": "node scripts/build-exercise-seed.mjs",
+    "seed:routine": "node scripts/build-routine-seed.mjs",
     "convert:webp": "node scripts/convert-to-webp.js",
-    "convert:webp:force": "node scripts/convert-to-webp.js --force",
-    "convert:webp:hires": "node scripts/convert-to-webp.js --hires",
     "media:index": "node scripts/generate-media-index.js",
-    "media:pipeline": "node scripts/convert-to-webp.js && node scripts/generate-media-index.js",
-    "media:sync": "node scripts/sync-exercises-to-supabase.mjs"
+    "media:pipeline": "node scripts/convert-to-webp.js && node scripts/generate-media-index.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.1.1",
