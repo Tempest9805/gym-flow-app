@@ -9,7 +9,7 @@
  * delete controls and reveals the add button — so the training path stays
  * uncluttered and nothing is ever deleted by a mis-tap mid-workout.
  */
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, ScrollView, Pressable, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -30,8 +30,13 @@ import { useRestTimer } from '@/lib/hooks/useRestTimer';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useActiveDay, useActiveRoutine, useRoutineStore } from '@/lib/store/routineStore';
 
-/** A row that was just deleted, kept around so it can be put back. */
+/**
+ * A row that was just deleted, kept around so it can be put back.
+ * The day is part of it: undo has to restore the row where it came from,
+ * not into whatever day happens to be on screen when the button is tapped.
+ */
 interface RemovedRow {
+  dayId: string;
   row: RoutineRow;
   index: number;
 }
@@ -69,6 +74,12 @@ export default function TodayScreen() {
     },
     [exercises],
   );
+
+  // Switching day retires the undo offer: leaving it up would show a row the
+  // user can no longer see, and restore it out of sight.
+  useEffect(() => {
+    setRemoved(null);
+  }, [day?.id]);
 
   if (!routine || !day) {
     return (
@@ -145,7 +156,7 @@ export default function TodayScreen() {
     const row = day.rows[index];
     if (!row) return;
 
-    setRemoved({ row, index });
+    setRemoved({ dayId: day.id, row, index });
     removeRow(day.id, rowId);
   };
 
@@ -306,7 +317,7 @@ export default function TodayScreen() {
           </Text>
           <Pressable
             onPress={() => {
-              insertRow(day.id, removed.row, removed.index);
+              insertRow(removed.dayId, removed.row, removed.index);
               setRemoved(null);
             }}
             accessibilityRole="button"

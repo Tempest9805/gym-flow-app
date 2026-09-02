@@ -225,7 +225,7 @@ export default function TabataActiveScreen() {
           if (next.phase === 'done') {
             setTimeout(() => {
               router.replace({
-                pathname: '/tabata-summary' as any,
+                pathname: '/tabata-summary',
                 params: {
                   totalSeconds: String(totalWorkoutSeconds),
                   roundsCompleted: String(prev.currentRound),

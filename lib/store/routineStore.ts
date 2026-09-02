@@ -204,14 +204,20 @@ export const useRoutineStore = create<RoutineState>((set, get) => {
 
     removeRoutine: (routineId) => {
       const next = get().routines.filter((r) => r.id !== routineId);
-      const active = get().activeRoutineId === routineId ? (next[0] ?? null) : null;
 
-      set({
-        routines: next,
-        ...(active !== null || get().activeRoutineId === routineId
-          ? { activeRoutineId: active?.id ?? null, activeDayId: active?.days[0]?.id ?? null }
-          : {}),
-      });
+      // Deleting the routine on screen moves us to whatever is left, if
+      // anything. Deleting any other routine leaves the selection alone.
+      if (get().activeRoutineId === routineId) {
+        const fallback = next[0] ?? null;
+        set({
+          routines: next,
+          activeRoutineId: fallback?.id ?? null,
+          activeDayId: fallback?.days[0]?.id ?? null,
+        });
+      } else {
+        set({ routines: next });
+      }
+
       persistRoutines(next);
     },
 
@@ -228,7 +234,10 @@ export const useRoutineStore = create<RoutineState>((set, get) => {
 
     resetEverything: async () => {
       await resetToSeed();
-      set({ isLoaded: false });
+      // Deliberately not flipping isLoaded: the root layout swaps the whole
+      // navigator for a loading screen while it is false, which would tear
+      // down the tabs and drop the user back on Hoy. `load()` replaces the
+      // data in one `set` at the end, so the screen simply refreshes.
       await get().load();
     },
   };

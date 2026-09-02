@@ -38,8 +38,19 @@ export function useRestTimer(): UseRestTimer {
   const [now, setNow] = useState(() => Date.now());
   const notificationId = useRef<string | null>(null);
 
+  /**
+   * Bumped by every start and every clear.
+   *
+   * Asking for notification permission is async, so between starting a rest
+   * and actually scheduling its alert the user may have stopped it or started
+   * a different one. Without this token the stale alert would still be
+   * scheduled — and would fire minutes later on a rest nobody is taking.
+   */
+  const generation = useRef(0);
+
   /** Stop the countdown and release everything it holds. */
   const clear = useCallback(() => {
+    generation.current += 1;
     setTimer(null);
     void cancelScheduled(notificationId.current);
     notificationId.current = null;
@@ -57,6 +68,7 @@ export function useRestTimer(): UseRestTimer {
       void cancelScheduled(notificationId.current);
       notificationId.current = null;
 
+      const mine = ++generation.current;
       if (seconds <= 0) return;
 
       const next = startRest(rowId, seconds, Date.now());
@@ -67,9 +79,16 @@ export function useRestTimer(): UseRestTimer {
 
       void (async () => {
         const allowed = await ensureNotificationPermission();
-        if (!allowed) return;
-        // The rest may have been cancelled while we waited on permission.
-        notificationId.current = await scheduleRestFinished(exerciseName, seconds);
+        // This rest may have been stopped, or replaced by another, while the
+        // permission prompt was up.
+        if (!allowed || generation.current !== mine) return;
+
+        const id = await scheduleRestFinished(exerciseName, seconds);
+        if (generation.current !== mine) {
+          void cancelScheduled(id);
+          return;
+        }
+        notificationId.current = id;
       })();
     },
     [],
