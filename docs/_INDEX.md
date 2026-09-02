@@ -19,6 +19,7 @@ dispositivo.
 - [[domain]] — El modelo de datos y la lógica pura
 - [[screens]] — Las 4 pestañas y las pantallas ocultas
 - [[decisions]] — Qué se eliminó del proyecto anterior y por qué
+- [[HISTORIAL]] — Timeline de sesiones y bugs resueltos
 
 ## Referencia rápida
 
@@ -30,6 +31,11 @@ dispositivo.
 | `lib/storage/repository.ts` | AsyncStorage: la única persistencia |
 | `lib/store/routineStore.ts` | Estado en memoria + escritura diferida |
 | `lib/data/*.seed.json` | Semillas generadas por `npm run seed` |
+
+## Comandos de Claude Code
+
+`/qa-adb` · `/debug` · `/checkpoint` · `/ui-review` · `/feature`
+Ver `.claude/commands/README.md`. Reglas duras en `.claude/RULES.md`.
 
 ## Comandos
 

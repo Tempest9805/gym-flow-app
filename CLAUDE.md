@@ -6,6 +6,9 @@ Abres la app y ves la tabla del día: `▶ | Ejercicio | Series | Reps | Rest | 
 Marcas lo que haces, el descanso cuenta atrás solo, el ▶ lleva al video.
 
 > Contexto completo en `docs/`. Abrir `docs/` como vault en Obsidian para ver el grafo.
+> **Reglas duras en `.claude/RULES.md`** (Must Always / Must Never / Hall of Fame).
+> Comandos de workflow en `.claude/commands/` — `/qa-adb`, `/debug`, `/checkpoint`,
+> `/ui-review`, `/feature`.
 
 ## Architecture Map
 
