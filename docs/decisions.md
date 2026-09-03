@@ -54,6 +54,26 @@ es editable desde la app, y un link que se caiga solo degrada al buscador.
 El canal del parte original (*Coaching Nach*) no aparece en los buscadores, así
 que no se pudo priorizar.
 
+**Se declaran permisos de alarma exacta.** El QA del 2026-09-02 midió que el
+aviso de «Descanso completo» llegaba 2 min 15 s tarde con la app en segundo
+plano. `expo-notifications` usa `setExactAndAllowWhileIdle` sólo si
+`canScheduleExactAlarms()` es cierto, y si no cae a una alarma inexacta que
+Android estrangula a ~1 disparo cada 9 minutos. Ni la librería ni su plugin ni
+`app.json` declaraban permiso alguno.
+
+`plugins/withExactAlarm.js` declara `USE_EXACT_ALARM` (Android 13+, concedido
+al instalar, sin diálogo) y `SCHEDULE_EXACT_ALARM` limitado a `maxSdkVersion=32`
+para cubrir Android 12, donde el primero aún no existe. Hace falta un plugin
+porque `android.permissions` de app.json sólo sabe escribir `android:name`, y
+el tope de versión es justo lo que evita que el segundo permiso llegue a
+Android 13+, donde obligaría a pasar por los ajustes del sistema.
+
+**Coste a vigilar:** Google Play restringe `USE_EXACT_ALARM` a apps cuya
+función principal es una alarma, un temporizador o un calendario. Aquí la
+cuenta atrás del descanso es esa función y hay que declararlo así al publicar.
+Si Play lo rechazara, la alternativa es `SCHEDULE_EXACT_ALARM` sin tope, que sí
+obliga a mandar al usuario a una pantalla de ajustes a concederlo.
+
 ## Deuda conocida
 
 - `.env` sigue teniendo credenciales de Supabase que ya no usa nadie. Está en
@@ -62,3 +82,12 @@ que no se pudo priorizar.
   `node_modules` es de pnpm; `npx expo install` lo detecta y hace lo correcto.
 - Los avisos de peer dependency de `react-dom@19.2.6` vs `react@19.1.0` vienen
   de antes de este refactor.
+- El manifest generado incluye `SYSTEM_ALERT_WINDOW`, `READ_EXTERNAL_STORAGE` y
+  `WRITE_EXTERNAL_STORAGE`, que vienen de la plantilla de Expo y que esta app no
+  usa: no hay galería, ni cámara, ni superposición. Se quitan con
+  `android.blockedPermissions` en `app.json`. Conviene hacerlo antes de publicar,
+  porque pedir «mostrar sobre otras apps» invita a mirar con lupa la
+  declaración de `USE_EXACT_ALARM`.
+- La nota de arriba sobre que *«el canal Coaching Nach no aparece en los
+  buscadores»* quedó en duda: en el QA el video de Dominadas resultó ser de
+  `@nahuelsaluzzofitness`. Conviene revisar de qué canal es cada uno de los 37.

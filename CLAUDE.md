@@ -68,14 +68,39 @@ Sin AuthGuard, sin onboarding, sin redirecciones.
 ### Comandos útiles
 
 ```bash
-npx expo start                # dev server
-npx expo start --android      # Android
-npx expo start --ios          # iOS
+npx expo start                # dev server (Expo Go — ojo con el aviso de abajo)
+npm run android               # dev build: prebuild + gradle + instalar
 npx tsc --noEmit              # typecheck
 npx jest                      # tests
 npx expo lint                 # lint
 npm run seed                  # regenerar semillas desde el CSV y el parte
 ```
+
+> **El aviso del descanso no se puede probar en Expo Go.** Expo Go corre con su
+> propio AndroidManifest, así que los permisos de alarma exacta que declara
+> `plugins/withExactAlarm.js` no existen ahí y la notificación llega minutos
+> tarde. Para cualquier cosa que dependa del manifest, dev build.
+>
+> `android/` está gitignored: se regenera con `npx expo prebuild`.
+
+**Compilar en Windows tiene dos trampas conocidas** (ver `docs/HISTORIAL.md`):
+
+1. `npx expo run:android` se cuelga eligiendo dispositivo si no hay stdin.
+   Compilar a mano: `cd android && ./gradlew.bat assembleDebug --no-daemon`,
+   luego `adb install -r android/app/build/outputs/apk/debug/app-debug.apk`.
+2. Ninja no soporta rutas >260 caracteres y la del proyecto no cabe. Se sortea
+   con un junction corto y un directorio de build corto — ya creados en esta
+   máquina:
+   - `C:\g` → junction a la raíz del proyecto (`mklink /J`), se compila desde
+     `C:\g\android`
+   - `C:\b` → salida de Gradle (`subprojects { buildDir }` en
+     `android/build.gradle`)
+   - `android/gradle.properties` lleva
+     `android.packagingOptions.pickFirsts=**/libworklets.so`, porque reanimated
+     y worklets emiten los dos el mismo `.so`
+   Los tres parches viven en `android/`, que se regenera: **al siguiente
+   prebuild hay que volver a ponerlos.** Para deshacerlos: `rmdir C:\g` y
+   borrar `C:\b`.
 
 > Toolchain: usar **npx/node**. `node_modules` está montado con pnpm y
 > `npx expo install` lo detecta solo; no hace falta invocar pnpm a mano.

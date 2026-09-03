@@ -58,6 +58,15 @@ tomada, no de buenas intenciones.
   justo lo que se rompe al reorganizar la navegación.
 - **`git add .` sin mirar `git status`.** `.env` está gitignored; que siga así.
 - **Añadir imágenes de ejercicios.** El ▶ abre YouTube. Fueron 200 MB.
+- **Quitar `plugins/withExactAlarm.js` ni cambiarlo por `android.permissions` de
+  `app.json`.** Ese campo sólo sabe escribir `android:name`, y el
+  `maxSdkVersion=32` del segundo permiso es justo lo que impide que
+  `SCHEDULE_EXACT_ALARM` llegue a Android 13+, donde exigiría pasar por los
+  ajustes del sistema. Sin ese plugin el aviso del descanso vuelve a llegar
+  minutos tarde. Ver `docs/decisions.md`.
+- **Dar por probada una notificación en Expo Go.** Expo Go corre con **su**
+  AndroidManifest, no con el nuestro: los permisos que declaramos no existen
+  ahí. Todo lo que dependa del manifest se verifica en un dev build.
 
 ---
 
@@ -67,6 +76,7 @@ Si un síntoma se parece a uno de estos, probar primero esta hipótesis.
 
 | Síntoma | Causa raíz | Sesión |
 |---|---|---|
+| El aviso del descanso llega minutos tarde o no llega | Sin permiso de alarma exacta, `expo-notifications` cae a `setAndAllowWhileIdle`, que Android estrangula a ~1 disparo cada 9 min | 2026-09-02 |
 | DESHACER restaura la fila en el día equivocado | El handler usaba el día en pantalla, no el día de origen de la acción | 2026-09-02 |
 | Suena un aviso de descanso que ya se canceló | El `await` del permiso de notificaciones deja una ventana en la que el estado cambia; sin token de generación el programado stale sobrevive | 2026-09-02 |
 | Una acción de Ajustes te devuelve a Hoy | `isLoaded: false` desmonta el navegador entero vía el layout raíz | 2026-09-02 |
