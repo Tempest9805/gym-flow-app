@@ -6,6 +6,7 @@ const exercise = (over: Partial<Exercise> = {}): Exercise => ({
   nameEs: 'Peck deck',
   nameEn: 'Pec Deck',
   muscleGroup: 'pectorals',
+  progressesTo: null,
   videoUrl: null,
   description: null,
   tips: null,

@@ -101,6 +101,9 @@ function parseExercise(raw: unknown): Exercise | null {
     description: nullableString(raw.description),
     tips: nullableString(raw.tips),
     commonMistakes: nullableString(raw.commonMistakes),
+    // Un dato viejo sin este campo, o que apunta a un slug borrado,
+    // se comporta como "sin progresion": la pantalla no se rompe.
+    progressesTo: nullableString(raw.progressesTo),
   };
 }
 

@@ -41,6 +41,7 @@ const exercise: Exercise = {
   nameEs: 'Dominada',
   nameEn: 'Pull-Up',
   muscleGroup: 'lats',
+  progressesTo: null,
   videoUrl: null,
   description: 'Tracción vertical.',
   tips: 'Escápulas abajo.',

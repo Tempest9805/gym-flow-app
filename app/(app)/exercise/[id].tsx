@@ -1,13 +1,19 @@
 /**
- * Exercise detail — how to execute it, cues, and what people get wrong.
- * The ▶ is the only media: it opens the video rather than shipping images.
+ * Detalle del ejercicio: como se ejecuta, que cuidar y que suele fallar.
+ *
+ * Arriba va la ilustracion — dos posiciones con el musculo trabajado en rojo —
+ * y justo debajo el boton de video. 146 de los 169 ejercicios tienen imagen;
+ * el resto simplemente no la muestra.
  */
 import React from 'react';
 import { View, Text, ScrollView, Pressable, Linking, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image as ExpoImage } from 'expo-image';
 
+import { exerciseImage } from '@/lib/data/exercise-images';
+import { nextLevel } from '@/lib/domain/progression';
 import { videoUrlFor } from '@/lib/domain/video';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useRoutineStore } from '@/lib/store/routineStore';
@@ -33,6 +39,9 @@ export default function ExerciseDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const exercise = useRoutineStore((s) => s.exercises.find((e) => e.id === id) ?? null);
+  const imagen = exerciseImage(exercise?.id);
+  const biblioteca = useRoutineStore((s) => s.exercises);
+  const siguiente = nextLevel(exercise, biblioteca);
 
   if (!exercise) {
     return (
@@ -81,6 +90,32 @@ export default function ExerciseDetailScreen() {
           )}
         </View>
 
+        {imagen !== null && (
+          <View
+            className="rounded-2xl overflow-hidden border"
+            style={{
+              // La lamina es blanca a proposito: el dibujo tiene fondo blanco,
+              // asi que sobre un tema oscuro necesita su propio soporte o se
+              // le ve el recorte.
+              backgroundColor: '#ffffff',
+              borderColor: t.outlineVariant,
+              aspectRatio: 900 / 536,
+            }}
+          >
+            <ExpoImage
+              source={imagen}
+              // expo-router reutiliza esta pantalla al saltar de un ejercicio a
+              // otro, asi que sin `recyclingKey` la vista sigue enseñando la
+              // imagen anterior mientras carga la nueva.
+              recyclingKey={exercise.id}
+              contentFit="contain"
+              transition={120}
+              accessibilityLabel={`Ilustración de ${exercise.nameEs}`}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </View>
+        )}
+
         <Pressable
           onPress={openVideo}
           accessibilityRole="button"
@@ -97,6 +132,33 @@ export default function ExerciseDetailScreen() {
         <Section title="Ejecución" body={exercise.description} />
         <Section title="Recomendaciones" body={exercise.tips} />
         <Section title="Errores comunes" body={exercise.commonMistakes} />
+
+        {siguiente !== null && (
+          <Pressable
+            onPress={() => router.replace(`/exercise/${siguiente.id}`)}
+            accessibilityRole="button"
+            accessibilityLabel={`Siguiente nivel: ${siguiente.nameEs}`}
+            className="rounded-2xl border p-4 gap-1"
+            style={{ borderColor: t.primary, minHeight: 56 }}
+          >
+            <Text
+              className="text-[11px] font-bold uppercase tracking-widest"
+              style={{ color: t.onSurfaceVariant }}
+            >
+              Cuando deje de costarte
+            </Text>
+            <View className="flex-row items-center justify-between gap-2">
+              <Text
+                className="text-[17px] font-extrabold flex-1"
+                style={{ color: t.onSurface }}
+                numberOfLines={2}
+              >
+                {siguiente.nameEs}
+              </Text>
+              <MaterialCommunityIcons name="arrow-right" size={22} color={t.primary} />
+            </View>
+          </Pressable>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

@@ -35,6 +35,14 @@ export interface Exercise {
   tips: string | null;
   /** What people get wrong. */
   commonMistakes: string | null;
+  /**
+   * El ejercicio al que pasar cuando este deje de costar, por slug.
+   *
+   * Solo hay entrada cuando progresar significa cambiar de movimiento. Si la
+   * progresion es anadir peso o repeticiones, esto es null: eso no es otro
+   * ejercicio.
+   */
+  progressesTo: string | null;
 }
 
 /** One line of a training day. */

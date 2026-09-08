@@ -21,6 +21,20 @@ import {
 
 export const ROUTINES_KEY = 'gymflow_routines';
 export const EXERCISES_KEY = 'gymflow_exercises';
+export const LIBRARY_VERSION_KEY = 'gymflow_library_version';
+
+/**
+ * Version de la biblioteca empaquetada. **Subir al tocar `lib/data/`.**
+ *
+ * La biblioteca es dato de referencia: nadie la edita desde la app, solo se
+ * consulta. Si se congelara en la primera instalacion, todo lo que se le anada
+ * despues —videos, progresiones, traducciones— solo lo verian las instalaciones
+ * nuevas. Las RUTINAS son lo contrario: son del usuario y no se tocan nunca.
+ *
+ * 1 → semilla original
+ * 2 → escaleras de progresion (`progressesTo`)
+ */
+export const LIBRARY_VERSION = 2;
 
 /** The bundled library, validated through the same parser as stored data. */
 function seedExercises(): Exercise[] {
@@ -32,18 +46,34 @@ function seedRoutines(): Routine[] {
   return parseRoutines(JSON.stringify([routineSeed])) ?? [];
 }
 
+/** Que version de la biblioteca hay guardada. 0 si no hay o es ilegible. */
+async function storedLibraryVersion(): Promise<number> {
+  try {
+    const raw = await AsyncStorage.getItem(LIBRARY_VERSION_KEY);
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  } catch {
+    return 0;
+  }
+}
+
 /**
- * Load the exercise library, seeding it on first run.
+ * Carga la biblioteca, sembrandola en el primer arranque y **refrescandola
+ * cuando la version empaquetada es mas nueva**.
  *
- * A corrupt or unreadable payload is treated as a first run: the seed is
- * restored rather than leaving the user with an empty library.
+ * Refrescar es seguro porque nadie edita la biblioteca desde la app; lo que el
+ * usuario sí edita son las rutinas, y esas no se tocan aqui. Un payload
+ * corrupto se trata como primer arranque: mejor resembrar que dejar a alguien
+ * sin biblioteca.
  */
 export async function loadExercises(): Promise<Exercise[]> {
   try {
     const stored = parseExercises(await AsyncStorage.getItem(EXERCISES_KEY));
-    if (stored !== null) return stored;
+    if (stored !== null && (await storedLibraryVersion()) >= LIBRARY_VERSION) {
+      return stored;
+    }
   } catch {
-    // Fall through to seeding.
+    // Sigue hacia la siembra.
   }
 
   const seed = seedExercises();
@@ -52,7 +82,10 @@ export async function loadExercises(): Promise<Exercise[]> {
 }
 
 export async function saveExercises(exercises: Exercise[]): Promise<void> {
-  await AsyncStorage.setItem(EXERCISES_KEY, serializeExercises(exercises));
+  await AsyncStorage.multiSet([
+    [EXERCISES_KEY, serializeExercises(exercises)],
+    [LIBRARY_VERSION_KEY, String(LIBRARY_VERSION)],
+  ]);
 }
 
 /** Load every routine, seeding the starter routine on first run. */
@@ -75,5 +108,5 @@ export async function saveRoutines(routines: Routine[]): Promise<void> {
 
 /** Wipe stored data so the next load re-seeds. Used by the reset in Ajustes. */
 export async function resetToSeed(): Promise<void> {
-  await AsyncStorage.multiRemove([ROUTINES_KEY, EXERCISES_KEY]);
+  await AsyncStorage.multiRemove([ROUTINES_KEY, EXERCISES_KEY, LIBRARY_VERSION_KEY]);
 }

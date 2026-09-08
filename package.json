@@ -10,7 +10,7 @@
     "lint": "eslint . --ext .ts,.tsx",
     "typecheck": "tsc --noEmit",
     "test": "jest",
-    "seed": "node scripts/build-exercise-seed.mjs && node scripts/build-routine-seed.mjs",
+    "seed": "node scripts/build-exercise-seed.mjs && node scripts/build-routine-seed.mjs && node scripts/build-exercise-images.mjs",
     "seed:exercises": "node scripts/build-exercise-seed.mjs",
     "seed:routine": "node scripts/build-routine-seed.mjs"
   },

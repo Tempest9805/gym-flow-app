@@ -14,6 +14,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const SOURCE = path.join(root, 'assets', 'exercises_final_updated.csv');
 const EXTRAS = path.join(root, 'lib', 'data', 'extra-exercises.json');
 const VIDEOS = path.join(root, 'lib', 'data', 'video-links.json');
+const PROGRESIONES = path.join(root, 'lib', 'data', 'progressions.json');
 const TARGET = path.join(root, 'lib', 'data', 'exercises.seed.json');
 
 /** Minimal RFC-4180 reader: handles quoted fields with commas and newlines. */
@@ -113,6 +114,20 @@ for (const exercise of exercises) {
   if (pinned) exercise.videoUrl = pinned;
 }
 
+// Escaleras de dificultad. Solo hay entrada cuando progresar significa cambiar
+// de movimiento; anadir peso no es otro ejercicio. Se valida en los dos
+// sentidos para que un slug renombrado no deje una progresion apuntando al aire.
+const progresiones = JSON.parse(fs.readFileSync(PROGRESIONES, 'utf8'));
+for (const [de, a] of Object.entries(progresiones)) {
+  if (de.startsWith('_')) continue;
+  if (!known.has(de)) throw new Error(`progressions.json parte de un ejercicio inexistente: "${de}"`);
+  if (!known.has(a)) throw new Error(`progressions.json apunta a un ejercicio inexistente: "${a}"`);
+  if (de === a) throw new Error(`progressions.json: "${de}" apunta a si mismo`);
+}
+for (const exercise of exercises) {
+  exercise.progressesTo = progresiones[exercise.id] ?? null;
+}
+
 exercises.sort((a, b) => a.nameEs.localeCompare(b.nameEs, 'es'));
 
 fs.mkdirSync(path.dirname(TARGET), { recursive: true });
@@ -120,4 +135,6 @@ fs.writeFileSync(TARGET, `${JSON.stringify(exercises, null, 2)}\n`, 'utf8');
 
 const withVideo = exercises.filter((e) => e.videoUrl).length;
 console.log(`${exercises.length} ejercicios (${exercises.length - extras.length} del CSV + ${extras.length} extras) -> ${path.relative(root, TARGET)}`);
+const conProgresion = exercises.filter((e) => e.progressesTo).length;
+console.log(`  con progresion: ${conProgresion}`);
 console.log(`  con video fijado: ${withVideo} | con descripcion: ${exercises.filter((e) => e.description).length} | con tips: ${exercises.filter((e) => e.tips).length}`);
