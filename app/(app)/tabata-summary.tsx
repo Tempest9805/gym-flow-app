@@ -128,7 +128,7 @@ export default function TabataSummaryScreen() {
           >
             <Text
               className="text-[10px] font-bold uppercase text-center mb-2"
-              style={{ color: '#b537f2', letterSpacing: 4 }}
+              style={{ color: '#d4d4d4', letterSpacing: 4 }}
             >
               ROUNDS
             </Text>
@@ -152,7 +152,7 @@ export default function TabataSummaryScreen() {
           >
             <Text
               className="text-[10px] font-bold uppercase text-center mb-2"
-              style={{ color: '#b537f2', letterSpacing: 4 }}
+              style={{ color: '#d4d4d4', letterSpacing: 4 }}
             >
               CYCLES
             </Text>
@@ -175,8 +175,8 @@ export default function TabataSummaryScreen() {
           onPress={() => router.replace('/')}
           className="w-full h-16 rounded-lg items-center justify-center"
           style={{
-            backgroundColor: '#bc13fe',
-            shadowColor: '#bc13fe',
+            backgroundColor: '#ffffff',
+            shadowColor: '#ffffff',
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.4,
             shadowRadius: 20,

@@ -1,12 +1,12 @@
 /**
  * LoadingScreen — Themed loading state matching Stitch dark aesthetic.
- * Uses PURPLE_THEME as the baseline since it's called before theme is loaded.
+ * Uses DARK_THEME as the baseline since it's called before theme is loaded.
  */
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { PURPLE_THEME } from '@/lib/store/themeStore';
+import { DARK_THEME } from '@/lib/store/themeStore';
 
 interface LoadingScreenProps {
   message?: string;
@@ -14,7 +14,7 @@ interface LoadingScreenProps {
 }
 
 export function LoadingScreen({ message, isOverlay = false }: LoadingScreenProps) {
-  const t = PURPLE_THEME.tokens;
+  const t = DARK_THEME.tokens;
 
   const content = (
     <View className="flex-1 items-center justify-center gap-6 p-6">
@@ -25,7 +25,7 @@ export function LoadingScreen({ message, isOverlay = false }: LoadingScreenProps
       />
       <ActivityIndicator
         size="large"
-        color={t.primaryContainer}
+        color={t.primary}
       />
       {message && (
         <Text className="text-sm font-semibold tracking-widest uppercase" style={{ color: t.onSurfaceVariant }}>

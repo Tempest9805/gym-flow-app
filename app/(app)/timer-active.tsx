@@ -71,7 +71,7 @@ export default function TimerActiveScreen() {
   const isDone = phase === 'DONE';
 
   const bgColor = isDone ? t.surfaceContainer : isRest ? t.secondaryContainer : t.background;
-  const accentColor = isDone ? t.outlineVariant : isRest ? t.onSecondaryContainer : t.primaryContainer;
+  const accentColor = isDone ? t.outlineVariant : isRest ? t.onSecondaryContainer : t.primary;
   const textColor = isDone ? t.onSurface : isRest ? t.onSecondaryContainer : t.onBackground;
 
   return (
@@ -93,7 +93,7 @@ export default function TimerActiveScreen() {
       <View className="flex-1 items-center justify-center px-5">
         <View 
           className="px-4 py-2 rounded-full border-2 mb-6"
-          style={{ borderColor: 'rgba(255,255,255,0.1)' }}
+          style={{ borderColor: t.outlineVariant }}
         >
           <Text className="text-lg font-extrabold tracking-[4px]" style={{ color: accentColor }}>
             {isDone ? 'COMPLETED' : phase}

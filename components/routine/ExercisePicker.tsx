@@ -104,12 +104,12 @@ export function ExercisePicker({ visible, exercises, onCancel, onPick }: Exercis
                 accessibilityLabel={`Añadir ${typed} como ejercicio nuevo`}
                 className="flex-row items-center gap-3 rounded-xl border px-4 mb-2"
                 style={{
-                  borderColor: t.primaryContainer,
+                  borderColor: t.primary,
                   backgroundColor: `${t.primaryContainer}18`,
                   minHeight: 60,
                 }}
               >
-                <MaterialCommunityIcons name="plus-circle-outline" size={24} color={t.primaryContainer} />
+                <MaterialCommunityIcons name="plus-circle-outline" size={24} color={t.primary} />
                 <View className="flex-1">
                   <Text className="text-[15px] font-bold" style={{ color: t.onSurface }} numberOfLines={1}>
                     Añadir «{typed}»

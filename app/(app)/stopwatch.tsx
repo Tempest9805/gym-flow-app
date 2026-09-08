@@ -110,7 +110,7 @@ export default function StopwatchScreen() {
           accessibilityLabel={`Tiempo ${formatStopwatch(elapsed)}`}
           className="font-extrabold"
           style={{
-            color: running ? t.primaryContainer : t.onSurface,
+            color: running ? t.primary : t.onSurface,
             fontSize: 64,
             fontVariant: ['tabular-nums'],
           }}

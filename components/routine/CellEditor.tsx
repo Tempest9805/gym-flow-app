@@ -7,6 +7,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, Modal, KeyboardAvoidingView, Platform } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { formatDuration, parseDuration } from '@/lib/domain/time';
 import { useTheme } from '@/lib/hooks/useTheme';
@@ -37,6 +38,7 @@ const QUICK: Partial<Record<EditableField, string[]>> = {
 
 export function CellEditor({ visible, field, initialValue, onCancel, onSave }: CellEditorProps) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -54,8 +56,12 @@ export function CellEditor({ visible, field, initialValue, onCancel, onSave }: C
       <Pressable className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onPress={onCancel}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <Pressable
-            className="rounded-t-3xl border-t px-5 pt-5 pb-10 gap-4"
-            style={{ backgroundColor: t.surfaceContainerLow, borderTopColor: t.outlineVariant }}
+            className="rounded-t-3xl border-t px-5 pt-5 gap-4"
+            style={{
+              backgroundColor: t.surfaceContainerLow,
+              borderTopColor: t.outlineVariant,
+              paddingBottom: Math.max(insets.bottom, 24) + 16,
+            }}
             onPress={(event) => event.stopPropagation()}
           >
             <View className="gap-1">
@@ -102,7 +108,7 @@ export function CellEditor({ visible, field, initialValue, onCancel, onSave }: C
                     className="rounded-lg border px-4 justify-center"
                     style={{
                       minHeight: 44,
-                      borderColor: value === option ? t.primaryContainer : t.outlineVariant,
+                      borderColor: value === option ? t.primary : t.outlineVariant,
                       backgroundColor: value === option ? `${t.primaryContainer}22` : t.surfaceContainerHigh,
                     }}
                   >

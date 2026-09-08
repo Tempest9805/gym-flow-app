@@ -6,7 +6,8 @@
  */
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text, Pressable, Platform } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
@@ -24,6 +25,7 @@ const TABS: { name: string; label: string; icon: IconName }[] = [
 
 function TabBar({ state, navigation }: BottomTabBarProps) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const activeName = state.routes[state.index]?.name;
 
   return (
@@ -32,13 +34,17 @@ function TabBar({ state, navigation }: BottomTabBarProps) {
       style={{
         backgroundColor: t.surfaceContainerLowest,
         borderTopColor: t.outlineVariant,
-        paddingBottom: Platform.OS === 'ios' ? 24 : 10,
+        // `edgeToEdgeEnabled` hace que la app dibuje por DEBAJO de la barra de
+        // navegacion. Con gestos son ~24dp y un relleno fijo casi colaba; con
+        // los tres botones son ~48 y las pestanas quedaban detras de ellos,
+        // intocables. El inset real es el unico numero que vale.
+        paddingBottom: Math.max(insets.bottom, 10),
         paddingTop: 10,
       }}
     >
       {TABS.map((tab) => {
         const isActive = activeName === tab.name;
-        const color = isActive ? t.primaryContainer : t.onSurfaceVariant;
+        const color = isActive ? t.primary : t.onSurfaceVariant;
 
         return (
           <Pressable

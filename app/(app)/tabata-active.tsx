@@ -51,7 +51,7 @@ const PHASE_COLORS: Record<TabataPhase, string> = {
   rest: '#FF3B30',
   'cycle-rest': '#3B82F6',
   cooldown: '#3B82F6',
-  done: '#BC13FE',
+  done: '#ffffff',
 };
 
 const PHASE_LABELS: Record<TabataPhase, string> = {
@@ -311,7 +311,7 @@ export default function TabataActiveScreen() {
   };
 
   return (
-    <View className="flex-1" style={{ backgroundColor: '#19101C' }}>
+    <View className="flex-1" style={{ backgroundColor: '#0a0a0a' }}>
       {/* ─── Zone 1: Current phase (flex:1, ~70%) ─── */}
       <Animated.View
         className="flex-1 items-center justify-center"
@@ -324,7 +324,7 @@ export default function TabataActiveScreen() {
           alignItems: 'center',
         }}>
           <Text style={{
-            color: '#19101C',
+            color: '#0a0a0a',
             fontSize: 20,
             fontWeight: '700',
             opacity: 0.55,
@@ -334,7 +334,7 @@ export default function TabataActiveScreen() {
             {formatTime(totalTimeLeft)}
           </Text>
           <Text style={{
-            color: '#19101C',
+            color: '#0a0a0a',
             fontSize: 10,
             fontWeight: '700',
             opacity: 0.4,
@@ -348,7 +348,7 @@ export default function TabataActiveScreen() {
 
         <Text
           style={{
-            color: '#19101C',
+            color: '#0a0a0a',
             fontSize: 52,
             fontWeight: '800',
             letterSpacing: -1,
@@ -365,7 +365,7 @@ export default function TabataActiveScreen() {
           adjustsFontSizeToFit
           numberOfLines={1}
           style={{
-            color: '#19101C',
+            color: '#0a0a0a',
             fontSize: 112,
             fontWeight: '900',
             lineHeight: 112,
@@ -392,7 +392,7 @@ export default function TabataActiveScreen() {
       >
         <Text
           style={{
-            color: '#19101C',
+            color: '#0a0a0a',
             fontSize: 32,
             fontWeight: '800',
             letterSpacing: -1,
@@ -405,7 +405,7 @@ export default function TabataActiveScreen() {
         {nextPhaseData.duration > 0 && (
           <Text
             style={{
-              color: '#19101C',
+              color: '#0a0a0a',
               fontSize: 64,
               fontWeight: '900',
               fontVariant: ['tabular-nums'],
@@ -423,7 +423,7 @@ export default function TabataActiveScreen() {
         className="flex-row items-center justify-between px-8 z-20"
         style={{
           height: 256,
-          backgroundColor: '#19101C',
+          backgroundColor: '#0a0a0a',
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -20 },
           shadowOpacity: 0.5,
@@ -468,7 +468,7 @@ export default function TabataActiveScreen() {
                 cy="50"
                 r="45"
                 fill="none"
-                stroke="#3b313e"
+                stroke="#2e2e2e"
                 strokeWidth="4"
               />
               {/* Progress ring */}
@@ -503,17 +503,17 @@ export default function TabataActiveScreen() {
               activeOpacity={0.8}
             >
               {phase === 'done' ? (
-                <Text style={{ fontSize: 36, color: '#19101C', fontWeight: '900' }}>✓</Text>
+                <Text style={{ fontSize: 36, color: '#0a0a0a', fontWeight: '900' }}>✓</Text>
               ) : isPaused ? (
                 /* Play triangle */
-                <Text style={{ fontSize: 32, color: '#19101C', marginLeft: 4 }}>▶</Text>
+                <Text style={{ fontSize: 32, color: '#0a0a0a', marginLeft: 4 }}>▶</Text>
               ) : (
                 /* Stop square */
                 <View
                   style={{
                     width: 32,
                     height: 32,
-                    backgroundColor: '#19101C',
+                    backgroundColor: '#0a0a0a',
                     borderRadius: 4,
                   }}
                 />
@@ -540,16 +540,16 @@ export default function TabataActiveScreen() {
               marginTop: 8,
               borderRadius: 999,
               borderWidth: 1,
-              borderColor: '#504254',
+              borderColor: '#2e2e2e',
             }}
             activeOpacity={0.6}>
             <MaterialCommunityIcons
               name="replay"
               size={13}
-              color="#9d8ba0"
+              color="#8a8a8a"
             />
             <Text style={{
-              color: '#9d8ba0',
+              color: '#8a8a8a',
               fontSize: 10,
               fontWeight: '700',
               letterSpacing: 2,

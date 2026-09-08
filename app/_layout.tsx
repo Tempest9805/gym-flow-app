@@ -20,6 +20,7 @@ import { useThemeStore } from '@/lib/store/themeStore';
 export default function RootLayout() {
   const loadTheme = useThemeStore((s) => s.loadTheme);
   const themeLoaded = useThemeStore((s) => s.isLoaded);
+  const themeId = useThemeStore((s) => s.themeId);
   const loadData = useRoutineStore((s) => s.load);
   const dataLoaded = useRoutineStore((s) => s.isLoaded);
 
@@ -34,7 +35,10 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <ErrorBoundary>
-          <StatusBar style="light" />
+          {/* La hora y los iconos del sistema los pinta Android, no nosotros:
+              con el tema claro tienen que ir en oscuro o se pierden sobre el
+              fondo. */}
+          <StatusBar style={themeId === 'light' ? 'dark' : 'light'} />
           {themeLoaded && dataLoaded ? <Slot /> : <LoadingScreen />}
         </ErrorBoundary>
       </SafeAreaProvider>

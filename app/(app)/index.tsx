@@ -215,7 +215,7 @@ export default function TodayScreen() {
             </Pressable>
 
             <View className="items-end">
-              <Text className="text-2xl font-extrabold" style={{ color: t.primaryContainer }}>
+              <Text className="text-2xl font-extrabold" style={{ color: t.primary }}>
                 {done}/{total}
               </Text>
               <Text className="text-[11px] uppercase tracking-wider" style={{ color: t.outline }}>
@@ -238,18 +238,18 @@ export default function TodayScreen() {
           className="flex-row items-center gap-1.5 rounded-lg border px-3"
           style={{
             minHeight: 40,
-            borderColor: editing ? t.primaryContainer : t.outlineVariant,
+            borderColor: editing ? t.primary : t.outlineVariant,
             backgroundColor: editing ? `${t.primaryContainer}22` : 'transparent',
           }}
         >
           <MaterialCommunityIcons
             name={editing ? 'check' : 'pencil-outline'}
             size={16}
-            color={editing ? t.primaryContainer : t.onSurfaceVariant}
+            color={editing ? t.primary : t.onSurfaceVariant}
           />
           <Text
             className="text-[13px] font-semibold"
-            style={{ color: editing ? t.primaryContainer : t.onSurfaceVariant }}
+            style={{ color: editing ? t.primary : t.onSurfaceVariant }}
           >
             {editing ? 'Listo' : 'Editar'}
           </Text>
@@ -294,10 +294,10 @@ export default function TodayScreen() {
             accessibilityRole="button"
             accessibilityLabel="Añadir ejercicio a este día"
             className="flex-row items-center justify-center gap-2 rounded-xl border-2 border-dashed"
-            style={{ borderColor: t.primaryContainer, minHeight: 56 }}
+            style={{ borderColor: t.primary, minHeight: 56 }}
           >
-            <MaterialCommunityIcons name="plus" size={22} color={t.primaryContainer} />
-            <Text className="text-[15px] font-bold" style={{ color: t.primaryContainer }}>
+            <MaterialCommunityIcons name="plus" size={22} color={t.primary} />
+            <Text className="text-[15px] font-bold" style={{ color: t.primary }}>
               Añadir ejercicio
             </Text>
           </Pressable>
@@ -325,7 +325,7 @@ export default function TodayScreen() {
             className="px-3 justify-center"
             style={{ minHeight: 44 }}
           >
-            <Text className="text-[14px] font-bold" style={{ color: t.primaryContainer }}>
+            <Text className="text-[14px] font-bold" style={{ color: t.primary }}>
               DESHACER
             </Text>
           </Pressable>

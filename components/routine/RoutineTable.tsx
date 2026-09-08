@@ -197,7 +197,7 @@ export function RoutineTable({
                 className={isResting ? 'font-extrabold' : 'font-medium'}
                 style={{
                   fontSize: isResting ? col.fontSize + 6 : col.fontSize,
-                  color: isResting ? t.primaryContainer : row.done ? t.outline : t.onSurfaceVariant,
+                  color: isResting ? t.primary : row.done ? t.outline : t.onSurfaceVariant,
                 }}
               >
                 {formatDuration(isResting ? remaining : row.restSeconds)}
@@ -263,7 +263,7 @@ export function RoutineTable({
                 <MaterialCommunityIcons
                   name={row.done ? 'checkbox-marked' : 'checkbox-blank-outline'}
                   size={col.roomy ? 30 : 26}
-                  color={row.done ? t.primaryContainer : t.outline}
+                  color={row.done ? t.primary : t.outline}
                 />
               </Pressable>
             )}

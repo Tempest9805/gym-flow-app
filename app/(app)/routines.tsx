@@ -6,7 +6,7 @@
  */
 import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Modal, TextInput, Alert, KeyboardAvoidingView, Platform } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -97,7 +97,7 @@ export default function RoutinesScreen() {
               key={routine.id}
               className="rounded-2xl border overflow-hidden"
               style={{
-                borderColor: isActive ? t.primaryContainer : t.outlineVariant,
+                borderColor: isActive ? t.primary : t.outlineVariant,
                 backgroundColor: t.surfaceContainerLow,
               }}
             >
@@ -270,6 +270,7 @@ function FocusSheet({
   onSubmit: (focus: string) => void;
 }) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const current = target?.dayId
     ? routines.find((r) => r.id === target.routineId)?.days.find((d) => d.id === target.dayId)?.focus
     : '';
@@ -286,8 +287,12 @@ function FocusSheet({
       <Pressable className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onPress={onCancel}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <Pressable
-            className="rounded-t-3xl border-t px-5 pt-5 pb-10 gap-4"
-            style={{ backgroundColor: t.surfaceContainerLow, borderTopColor: t.outlineVariant }}
+            className="rounded-t-3xl border-t px-5 pt-5 gap-4"
+            style={{
+              backgroundColor: t.surfaceContainerLow,
+              borderTopColor: t.outlineVariant,
+              paddingBottom: Math.max(insets.bottom, 24) + 16,
+            }}
             onPress={(event) => event.stopPropagation()}
           >
             <Text className="text-[20px] font-extrabold" style={{ color: t.onSurface }}>
@@ -322,7 +327,7 @@ function FocusSheet({
                   className="rounded-lg border px-3 justify-center"
                   style={{
                     minHeight: 44,
-                    borderColor: value === focus ? t.primaryContainer : t.outlineVariant,
+                    borderColor: value === focus ? t.primary : t.outlineVariant,
                     backgroundColor: value === focus ? `${t.primaryContainer}22` : t.surfaceContainerHigh,
                   }}
                 >
@@ -369,6 +374,7 @@ function HeaderSheet({
   onSubmit: (patch: Partial<Pick<Routine, 'name' | 'athleteName' | 'goal' | 'coachName'>>) => void;
 }) {
   const t = useTheme();
+  const insets = useSafeAreaInsets();
   const [name, setName] = useState('');
   const [athlete, setAthlete] = useState('');
   const [goal, setGoal] = useState('');
@@ -397,8 +403,12 @@ function HeaderSheet({
       <Pressable className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onPress={onCancel}>
         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
           <Pressable
-            className="rounded-t-3xl border-t px-5 pt-5 pb-10 gap-3"
-            style={{ backgroundColor: t.surfaceContainerLow, borderTopColor: t.outlineVariant }}
+            className="rounded-t-3xl border-t px-5 pt-5 gap-3"
+            style={{
+              backgroundColor: t.surfaceContainerLow,
+              borderTopColor: t.outlineVariant,
+              paddingBottom: Math.max(insets.bottom, 24) + 16,
+            }}
             onPress={(event) => event.stopPropagation()}
           >
             <Text className="text-[20px] font-extrabold" style={{ color: t.onSurface }}>

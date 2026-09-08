@@ -84,13 +84,13 @@ export function ShareSheet({ visible, routine, day, onClose }: ShareSheetProps) 
                 className="flex-1 rounded-xl border items-center justify-center"
                 style={{
                   minHeight: 48,
-                  borderColor: isActive ? t.primaryContainer : t.outlineVariant,
+                  borderColor: isActive ? t.primary : t.outlineVariant,
                   backgroundColor: isActive ? `${t.primaryContainer}22` : 'transparent',
                 }}
               >
                 <Text
                   className="text-[14px] font-bold"
-                  style={{ color: isActive ? t.primaryContainer : t.onSurfaceVariant }}
+                  style={{ color: isActive ? t.primary : t.onSurfaceVariant }}
                 >
                   {label}
                 </Text>
@@ -135,12 +135,18 @@ export function ShareSheet({ visible, routine, day, onClose }: ShareSheetProps) 
             className="flex-1 flex-row items-center justify-center gap-2 rounded-xl"
             style={{ backgroundColor: copied ? t.secondaryContainer : t.primaryContainer, minHeight: 56 }}
           >
+            {/* El fondo cambia al copiar, asi que la tinta tiene que cambiar
+                con el: dejarla fija dejaba «Copiado» en 2,48:1 en el tema
+                naranja, marron oscuro sobre naranja oscuro. */}
             <MaterialCommunityIcons
               name={copied ? 'check' : 'content-copy'}
               size={20}
-              color={t.onPrimaryContainer}
+              color={copied ? t.onSecondaryContainer : t.onPrimaryContainer}
             />
-            <Text className="text-[15px] font-bold" style={{ color: t.onPrimaryContainer }}>
+            <Text
+              className="text-[15px] font-bold"
+              style={{ color: copied ? t.onSecondaryContainer : t.onPrimaryContainer }}
+            >
               {copied ? 'Copiado' : 'Copiar'}
             </Text>
           </Pressable>

@@ -57,14 +57,14 @@ export function DayTabs({ days, activeDayId, onSelect }: DayTabsProps) {
             className="rounded-2xl border px-4 py-3 min-w-[104px]"
             style={{
               backgroundColor: isActive ? `${t.primaryContainer}22` : t.surfaceContainerLow,
-              borderColor: isActive ? t.primaryContainer : t.outlineVariant,
+              borderColor: isActive ? t.primary : t.outlineVariant,
             }}
           >
             <View className="flex-row items-center gap-2">
               <MaterialCommunityIcons
                 name={day.icon as IconName}
                 size={18}
-                color={isActive ? t.primaryContainer : t.onSurfaceVariant}
+                color={isActive ? t.primary : t.onSurfaceVariant}
               />
               <Text
                 className="text-[13px] font-bold"
@@ -73,7 +73,7 @@ export function DayTabs({ days, activeDayId, onSelect }: DayTabsProps) {
                 {day.label}
               </Text>
               {complete && (
-                <MaterialCommunityIcons name="check-circle" size={14} color={t.primaryContainer} />
+                <MaterialCommunityIcons name="check-circle" size={14} color={t.primary} />
               )}
             </View>
 

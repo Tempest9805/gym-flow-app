@@ -89,7 +89,7 @@ export default function SettingsScreen() {
             icon="palette-outline"
             title="Tema"
             value={theme.label}
-            onPress={() => setTheme(theme.id === 'purple' ? 'orange' : 'purple')}
+            onPress={() => setTheme(theme.id === 'dark' ? 'light' : 'dark')}
           />
           <Row icon="timer-outline" title="Tabata" onPress={() => router.push('/tabata')} />
           <Row icon="timer-sand" title="Cronómetro" onPress={() => router.push('/stopwatch')} />
