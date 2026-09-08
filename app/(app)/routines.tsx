@@ -11,6 +11,7 @@ import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import { dayProgress } from '@/lib/domain/day';
+import { pluralize } from '@/lib/domain/plural';
 import type { Routine } from '@/lib/domain/types';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useRoutineStore } from '@/lib/store/routineStore';
@@ -62,27 +63,48 @@ export default function RoutinesScreen() {
         <Text className="text-2xl font-extrabold" style={{ color: t.onSurface }}>
           Rutinas
         </Text>
-        <Pressable
-          onPress={() => {
-            const id = createRoutine(`Rutina ${routines.length + 1}`);
-            setExpandedId(id);
-          }}
-          accessibilityRole="button"
-          accessibilityLabel="Crear una rutina nueva"
-          className="flex-row items-center gap-1.5 rounded-lg px-3"
-          style={{ backgroundColor: t.primaryContainer, minHeight: 40 }}
-        >
-          <MaterialCommunityIcons name="plus" size={18} color={t.onPrimaryContainer} />
-          <Text className="text-[13px] font-bold" style={{ color: t.onPrimaryContainer }}>
-            Nueva
-          </Text>
-        </Pressable>
+        <View className="flex-row items-center gap-2">
+          {/* Pegar va primero porque es el camino corto: la rutina ya existe
+              escrita en algun sitio, y teclearla nunca merece la pena. */}
+          <Pressable
+            onPress={() => router.push('/import')}
+            accessibilityRole="button"
+            accessibilityLabel="Pegar una rutina escrita"
+            className="flex-row items-center gap-1.5 rounded-lg px-3"
+            style={{ backgroundColor: t.primaryContainer, minHeight: 40 }}
+          >
+            <MaterialCommunityIcons
+              name="clipboard-text-outline"
+              size={18}
+              color={t.onPrimaryContainer}
+            />
+            <Text className="text-[13px] font-bold" style={{ color: t.onPrimaryContainer }}>
+              Pegar
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => {
+              const id = createRoutine(`Rutina ${routines.length + 1}`);
+              setExpandedId(id);
+            }}
+            accessibilityRole="button"
+            accessibilityLabel="Crear una rutina vacia"
+            className="flex-row items-center gap-1.5 rounded-lg border px-3"
+            style={{ borderColor: t.outline, minHeight: 40 }}
+          >
+            <MaterialCommunityIcons name="plus" size={18} color={t.onSurface} />
+            <Text className="text-[13px] font-bold" style={{ color: t.onSurface }}>
+              Nueva
+            </Text>
+          </Pressable>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32, gap: 12 }}>
         {routines.length === 0 && (
           <Text className="text-center mt-8" style={{ color: t.onSurfaceVariant }}>
-            Todavía no hay ninguna rutina. Toca «Nueva» para empezar.
+            Todavía no hay ninguna rutina. Toca «Pegar» y suelta la tuya tal cual esté escrita.
           </Text>
         )}
 
@@ -105,7 +127,7 @@ export default function RoutinesScreen() {
                 onPress={() => setExpandedId(isOpen ? null : routine.id)}
                 accessibilityRole="button"
                 accessibilityState={{ expanded: isOpen }}
-                accessibilityLabel={`${routine.name}, ${routine.days.length} días`}
+                accessibilityLabel={`${routine.name}, ${pluralize(routine.days.length, 'día', 'días')}`}
                 className="px-4 py-3 gap-1"
               >
                 <View className="flex-row items-center gap-2">
@@ -135,7 +157,8 @@ export default function RoutinesScreen() {
                 )}
 
                 <Text className="text-[12px]" style={{ color: t.outline }}>
-                  {routine.days.length} días · {totalRows} ejercicios · {doneRows} hechos
+                  {pluralize(routine.days.length, 'día', 'días')} ·{' '}
+                    {pluralize(totalRows, 'ejercicio', 'ejercicios')} · {doneRows} hechos
                 </Text>
               </Pressable>
 
@@ -160,7 +183,8 @@ export default function RoutinesScreen() {
                           {day.label}
                         </Text>
                         <Text className="text-[12px]" style={{ color: t.onSurfaceVariant }} numberOfLines={1}>
-                          {day.focus || 'Sin enfoque · toca para ponerle uno'} · {day.rows.length} ejercicios
+                          {day.focus || 'Sin enfoque · toca para ponerle uno'} ·{' '}
+                          {pluralize(day.rows.length, 'ejercicio', 'ejercicios')}
                         </Text>
                       </Pressable>
 

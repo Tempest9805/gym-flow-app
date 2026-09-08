@@ -42,3 +42,17 @@ describe('compound focuses', () => {
     expect(iconForFocus('full body')).toBe('kettlebell');
   });
 });
+
+// Partir por patron de movimiento es tan comun como partir por musculo, y la
+// rutina que motivo el importador lo hace asi.
+describe('dias de empuje y tiron', () => {
+  it('reconoce el empuje', () => {
+    expect(iconForFocus('Empuje (pecho/hombro/tríceps)')).toBe('human-handsup');
+    expect(iconForFocus('Push day')).toBe('human-handsup');
+  });
+
+  it('reconoce el tiron, con acento o sin el', () => {
+    expect(iconForFocus('Tirón + Bíceps + Espalda')).toBe('weight-lifter');
+    expect(iconForFocus('Tiron')).toBe('weight-lifter');
+  });
+});

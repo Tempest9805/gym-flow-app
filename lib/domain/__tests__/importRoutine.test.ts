@@ -1,4 +1,8 @@
-import { parseRoutineText } from '../importRoutine';
+import seed from '@/lib/data/exercises.seed.json';
+import { countLinked, parseRoutineText, routineFromParsed } from '../importRoutine';
+import type { Exercise } from '../types';
+
+const BIBLIOTECA = seed as Exercise[];
 
 // La rutina real que motivo el importador, tal cual se pega desde WhatsApp.
 const RUTINA_DANIEL = `
@@ -211,5 +215,62 @@ describe('la rutina completa de cuatro dias', () => {
     const bulgara = r.days[2].rows[1];
     expect(bulgara.name).toBe('búlgara con KB en mano');
     expect(bulgara.sets).toBe(3);
+  });
+});
+
+describe('routineFromParsed', () => {
+  const rutina = routineFromParsed(
+    parseRoutineText(RUTINA_COMPLETA),
+    'Mi rutina',
+    BIBLIOTECA,
+    '2026-01-01T00:00:00.000Z',
+  );
+
+  it('conserva los dias y las filas que se leyeron', () => {
+    expect(rutina.days).toHaveLength(4);
+    expect(rutina.days.map((d) => d.rows.length)).toEqual([8, 8, 7, 7]);
+  });
+
+  it('cada dia estrena su icono segun el enfoque', () => {
+    expect(rutina.days[2].focus).toBe('Piernas + Glúteo');
+    expect(rutina.days[2].icon).toBe('run');
+  });
+
+  it('los identificadores no se repiten', () => {
+    const ids = rutina.days.flatMap((d) => d.rows.map((r) => r.id));
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  // Es lo que hace que la fila pegada traiga foto, video y progresion.
+  it('ata a la biblioteca mas de la mitad de las filas', () => {
+    const deFuerza = rutina.days.flatMap((d) => d.rows).filter((r) => r.mode === 'reps');
+    expect(countLinked(rutina) / deFuerza.length).toBeGreaterThan(0.5);
+  });
+
+  it('guarda el nombre que escribio el usuario, no el de la biblioteca', () => {
+    const primera = rutina.days[0].rows[0];
+    expect(primera.name).toBe('Push ups clásicas');
+    expect(primera.exerciseId).toBe('push-up');
+  });
+
+  it('deja sin atar lo que no reconoce, sin perder la fila', () => {
+    const muneca = rutina.days[0].rows[6];
+    expect(muneca.name).toBe('Curl de muñeca');
+    expect(muneca.exerciseId).toBeNull();
+  });
+
+  it('respeta el descanso de dos minutos', () => {
+    expect(rutina.days[0].rows[0].restSeconds).toBe(120);
+  });
+
+  it('arranca sin nada marcado', () => {
+    const hechas = rutina.days.flatMap((d) => d.rows).filter((r) => r.done);
+    expect(hechas).toHaveLength(0);
+  });
+
+  it('cae en un nombre por defecto si no le dan ninguno', () => {
+    expect(routineFromParsed(parseRoutineText('Sentadilla 4x8'), '  ', BIBLIOTECA, 'x').name).toBe(
+      'Mi rutina',
+    );
   });
 });

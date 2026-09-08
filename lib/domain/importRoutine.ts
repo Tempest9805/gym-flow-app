@@ -11,6 +11,10 @@
  * Es preferible una fila a medias que una linea desaparecida en silencio.
  */
 
+import { findExercise } from './matchExercise';
+import { blankDay, blankRow } from './routine';
+import type { Exercise, Routine } from './types';
+
 /** Descanso por defecto cuando el texto pegado no lo dice, que es casi siempre. */
 export const DEFAULT_REST_SECONDS = 120;
 
@@ -169,4 +173,60 @@ export function parseRoutineText(text: string): ParsedRoutine {
 
   // Una cabecera sin ejercicios debajo no es un dia, es ruido.
   return { days: days.filter((d) => d.rows.length > 0), unparsedLines };
+}
+
+/**
+ * Convierte lo leido en una rutina de verdad, lista para guardar.
+ *
+ * Cada fila intenta atarse a la biblioteca: si lo consigue, hereda gratis la
+ * ilustracion, el video y la escalera de progresion. Si no, se queda con su
+ * nombre tal cual y el boton de video cae en la busqueda de YouTube — que
+ * funciona igual, solo que sin foto.
+ *
+ * El nombre que se guarda es **siempre el que escribio el usuario**, tambien
+ * cuando hay ejercicio enlazado. Su parte dice "Push ups clasicas" y eso es
+ * lo que reconoce de un vistazo; "Flexiones" seria mas correcto y menos suyo.
+ */
+export function routineFromParsed(
+  parsed: ParsedRoutine,
+  name: string,
+  library: readonly Exercise[],
+  nowIso: string,
+): Routine {
+  const days = parsed.days.map((dia, i) => {
+    const base = blankDay(dia.label.trim() === '' ? 'Día ' + (i + 1) : dia.label, dia.focus);
+
+    return {
+      ...base,
+      rows: dia.rows.map((fila) => {
+        const encontrado = findExercise(fila.name, library);
+        return {
+          ...blankRow(fila.name),
+          exerciseId: encontrado?.id ?? null,
+          sets: fila.sets,
+          reps: fila.reps,
+          restSeconds: fila.restSeconds,
+          mode: fila.mode,
+        };
+      }),
+    };
+  });
+
+  return {
+    id: 'routine-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+    name: name.trim() === '' ? 'Mi rutina' : name.trim(),
+    athleteName: null,
+    goal: null,
+    coachName: null,
+    days,
+    updatedAt: nowIso,
+  };
+}
+
+/** Cuantas filas quedaron enlazadas a la biblioteca. Para poder decirlo. */
+export function countLinked(routine: Routine): number {
+  return routine.days.reduce(
+    (total, dia) => total + dia.rows.filter((fila) => fila.exerciseId !== null).length,
+    0,
+  );
 }

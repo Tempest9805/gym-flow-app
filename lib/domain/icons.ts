@@ -16,6 +16,13 @@ const BY_KEYWORD: [string, string][] = [
   ['core', 'ab-testing'],
   ['espalda', 'weight-lifter'],
   ['dorsal', 'weight-lifter'],
+  // Un parte partido por patron de movimiento en vez de por musculo: es como
+  // lo escribe medio mundo, y sin esto todos los dias salen con el icono
+  // generico.
+  ['empuje', 'human-handsup'],
+  ['push', 'human-handsup'],
+  ['tiron', 'weight-lifter'],
+  ['pull', 'weight-lifter'],
   ['pecho', 'human-handsup'],
   ['pectoral', 'human-handsup'],
   ['hombro', 'human-handsup'],
