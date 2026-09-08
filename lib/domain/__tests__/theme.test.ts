@@ -1,5 +1,7 @@
 import {
   CRITICAL_PAIRS,
+  TABATA_FILL,
+  TABATA_ON_FILL,
   DARK_THEME,
   DEFAULT_THEME_ID,
   LIGHT_THEME,
@@ -93,5 +95,20 @@ describe.each([
       minimo: pair.min,
       pasa: ratio >= pair.min,
     }).toMatchObject({ pasa: true });
+  });
+});
+
+// La pantalla inmersiva del tabata pinta el color de fase a pantalla completa
+// con texto negro encima. No depende del tema, asi que se comprueba una vez.
+describe('relleno de fase del tabata', () => {
+  it.each(Object.entries(TABATA_FILL))('%s aguanta tinta negra', (_fase, relleno) => {
+    // 4.5 aunque el numero sea enorme: la etiqueta pequena va sobre el mismo
+    // relleno, y esa si es texto normal.
+    expect(Number(contrastRatio(TABATA_ON_FILL, relleno).toFixed(2))).toBeGreaterThanOrEqual(4.5);
+  });
+
+  it('las cuatro fases se distinguen entre si', () => {
+    const valores = Object.values(TABATA_FILL);
+    expect(new Set(valores).size).toBe(valores.length);
   });
 });

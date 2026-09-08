@@ -124,6 +124,9 @@ export const CRITICAL_PAIRS: ContrastPair[] = [
   { label: 'Boton Pausar', fg: 'onSurface', bg: 'errorContainer', min: 4.5, where: 'stopwatch.tsx' },
   { label: 'Texto de error sobre el fondo', fg: 'error', bg: 'background', min: 4.5, where: 'settings.tsx, routines.tsx' },
   { label: 'Icono de fila tabata', fg: 'secondary', bg: 'surfaceContainer', min: 4.5, where: 'RoutineTable.tsx' },
+  { label: 'Fase preparar como TINTA', fg: 'tabataPrepare', bg: 'background', min: 4.5, where: 'tabata-active.tsx' },
+  { label: 'Fase trabajo como TINTA', fg: 'tabataWork', bg: 'background', min: 4.5, where: 'tabata-active.tsx' },
+  { label: 'Fase descanso como TINTA', fg: 'tabataRest', bg: 'background', min: 4.5, where: 'tabata-active.tsx' },
 ];
 
 export const DARK_THEME: Theme = {
@@ -204,8 +207,8 @@ export const LIGHT_THEME: Theme = {
     onError: '#ffffff',
     glowPrimary: 'rgba(0, 0, 0, 0.12)',
     glowPrimaryStrong: 'rgba(0, 0, 0, 0.20)',
-    tabataPrepare: '#a16207',
-    tabataWork: '#4d7c0f',
+    tabataPrepare: '#854d0e',
+    tabataWork: '#3f6212',
     tabataRest: '#b91c1c',
   },
 };
@@ -214,6 +217,32 @@ export const THEMES: Record<ThemeId, Theme> = {
   dark: DARK_THEME,
   light: LIGHT_THEME,
 };
+
+/**
+ * Los colores de fase como RELLENO, para la pantalla inmersiva del tabata.
+ *
+ * No dependen del tema, y es a proposito: ahi el color ocupa el 70% de la
+ * pantalla y su trabajo es leerse de reojo, sudando, desde un metro. Los tokens
+ * `tabataPrepare/Work/Rest` de cada tema son la version TINTA — el mismo
+ * significado escrito sobre el fondo — y esa si cambia, porque un lima sobre
+ * blanco no se ve.
+ *
+ * Es la misma regla que ya evito un bug: relleno y tinta no son el mismo color.
+ * El texto que va encima es siempre `TABATA_ON_FILL`.
+ */
+export const TABATA_FILL = {
+  prepare: '#eab308',
+  work: '#c0ff00',
+  rest: '#ff3b30',
+  /** El descanso largo entre ciclos: neutro a proposito, para no confundirlo
+   *  con el corto de 20 segundos. */
+  cooldown: '#d4d4d4',
+} as const;
+
+/** La tinta que va sobre cualquier `TABATA_FILL`. Negra en los cuatro. */
+export const TABATA_ON_FILL = '#000000';
+
+export type TabataFillId = keyof typeof TABATA_FILL;
 
 /** El tema con el que arranca alguien que nunca ha elegido. */
 export const DEFAULT_THEME_ID: ThemeId = 'dark';
