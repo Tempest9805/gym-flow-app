@@ -24,10 +24,18 @@ app/ (Expo Router — 4 tabs + 6 pantallas ocultas)
       lib/storage/         AsyncStorage + parser defensivo
         ▼
       lib/domain/          Lógica pura: sin I/O, sin React
+                           (incluida la paleta, en theme.ts)
 ```
 
 **La regla de dependencia apunta hacia dentro.** `lib/domain/` no importa nada
-de fuera; ahí viven los 131 tests.
+de fuera; ahí viven los 174 tests.
+
+**El tema son dos: claro y oscuro**, monocromos. La paleta vive en
+`lib/domain/theme.ts` porque es dato puro, y por eso `theme.test.ts` puede
+comprobar el contraste de los 15 pares fondo/texto que la app pinta de verdad.
+La regla que evita el bug: **`primary` es tinta** (va sobre el fondo),
+**`primaryContainer` es relleno** (el texto va encima, en `onPrimaryContainer`).
+Mezclarlas fue un fallo medido de 4,12:1.
 
 ### Principio central
 
@@ -114,5 +122,6 @@ npm run seed                  # regenerar semillas desde el CSV y el parte
 - Los iconos son glifos de `MaterialCommunityIcons` (ya viene con
   `@expo/vector-icons`). **Verificar que el nombre existe** en el glyphmap antes
   de usarlo: un nombre inválido no falla en typecheck, se ve en pantalla.
-- Nada de imágenes de ejercicios: el ▶ abre YouTube.
+- El detalle de ejercicio lleva ilustración (146 de 169) encima del ▶.
+  El mapa lo genera `npm run seed`; los PNG originales de 198 MB no vuelven.
 - Toda superficie tocable, mínimo 44 pt de alto.

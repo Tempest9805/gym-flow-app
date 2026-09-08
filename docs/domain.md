@@ -47,6 +47,9 @@ representar la rutina real que originó este MVP**.
 | `video.ts` | Link fijado, o búsqueda de YouTube como respaldo |
 | `export.ts` | Markdown para persona o LLM |
 | `icons.ts` | Glifo del día según su enfoque |
+| `theme.ts` | La paleta y el contraste WCAG de cada par que se pinta |
+| `progression.ts` | A qué ejercicio pasar cuando este deje de costar |
+| `importRoutine.ts` | Leer una rutina pegada como texto, sin IA |
 
 ## Dos detalles que costaron un test
 
@@ -70,6 +73,8 @@ de espalda.
 | `exercises.seed.json` | 169 ejercicios | `scripts/build-exercise-seed.mjs` |
 | `extra-exercises.json` | Los 8 que el CSV no cubría, escritos a mano | — |
 | `routine-pablo.seed.json` | 6 días / 47 filas | `scripts/build-routine-seed.mjs` |
+| `progressions.json` | 39 escaleras de dificultad, curadas a mano | — |
+| `exercise-images.ts` | Mapa de `require()` de las 146 ilustraciones | `scripts/build-exercise-images.mjs` |
 
 `npm run seed` regenera ambos. `lib/data/__tests__/seeds.test.ts` es el
 contrato entre los generadores y la app: si una semilla deja de encajar con el

@@ -67,3 +67,12 @@ El botón de copiar en la cabecera de Hoy exporta el día o la rutina entera
 como markdown **autoexplicativo**: tabla más una leyenda que define cada
 columna. Está pensado para pegarlo en un chat con un LLM y que se entienda sin
 contexto: el descanso sale como `3:00`, no como `180`.
+
+## Detalle del ejercicio
+
+Orden de arriba abajo: nombre · **ilustración** (146 de 169 la tienen) ·
+**Ver video** · Ejecución · Recomendaciones · Errores comunes · **Cuando deje
+de costarte**, que lleva al siguiente de la escalera.
+
+La ilustración va sobre lámina blanca a propósito: el dibujo tiene fondo
+blanco y sin ella se le ve el recorte en tema oscuro.

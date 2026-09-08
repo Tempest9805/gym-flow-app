@@ -23,6 +23,13 @@ tomada, no de buenas intenciones.
 - **`npx expo install`** para paquetes nuevos (detecta pnpm solo y elige versión
   compatible con el SDK). Nunca `npm install` a pelo.
 - **Toda superficie tocable, mínimo 44 pt de alto.**
+- **Cualquier cosa pegada abajo usa `useSafeAreaInsets()`, nunca un relleno
+  fijo.** La app dibuja bajo la barra de navegación: con gestos son ~24dp, con
+  los tres botones ~48. Un número a ojo deja la tab bar intocable.
+- **Subir `LIBRARY_VERSION` al tocar `lib/data/`.** La biblioteca es dato de
+  referencia y nadie la edita desde la app, así que se refresca sola cuando la
+  versión empaquetada es más nueva. Sin subirla, lo que añadas solo lo ven las
+  instalaciones nuevas. Las **rutinas** son del usuario y nunca se pisan.
 - **Regenerar semillas con `npm run seed`**, nunca editar `lib/data/*.seed.json`
   a mano: los generadores fallan si un alias apunta a un slug inexistente, y ese
   guard es lo que mantiene las 47 filas enlazadas.
@@ -57,7 +64,12 @@ tomada, no de buenas intenciones.
 - **Usar `as any` en un nombre de ruta.** Oculta errores reales de ruta, que es
   justo lo que se rompe al reorganizar la navegación.
 - **`git add .` sin mirar `git status`.** `.env` está gitignored; que siga así.
-- **Añadir imágenes de ejercicios.** El ▶ abre YouTube. Fueron 200 MB.
+- **Volver a meter los PNG originales de ejercicios.** Eran 198 MB. Lo que sí
+  entra son los **webp de `normalized`** (900×536, ~85 KB): 146 de los 169
+  ejercicios, 12,3 MB, en el detalle encima del botón de video. Decidido el
+  2026-09-08. El mapa de `require()` lo genera `npm run seed`, no se edita a
+  mano, y `scripts/build-exercise-images.mjs` falla si sobra una imagen que no
+  corresponde a ningún ejercicio.
 - **Quitar `plugins/withExactAlarm.js` ni cambiarlo por `android.permissions` de
   `app.json`.** Ese campo sólo sabe escribir `android:name`, y el
   `maxSdkVersion=32` del segundo permiso es justo lo que impide que
@@ -76,6 +88,10 @@ Si un síntoma se parece a uno de estos, probar primero esta hipótesis.
 
 | Síntoma | Causa raíz | Sesión |
 |---|---|---|
+| Un cambio en `lib/data/` no se ve en la app | El almacenamiento manda tras la primera siembra; hay que subir `LIBRARY_VERSION` | 2026-09-08 |
+| Texto invisible en una pantalla concreta | Fondo hardcodeado + tinta del tema. Solo era seguro mientras todos los temas eran oscuros; con el claro da 1,1:1 | 2026-09-08 |
+| Un token de borde usado como color de texto | `outlineVariant` existe para separar, no para leerse: 1,4:1 en los dos temas | 2026-09-08 |
+| Las pestañas no se dejan tocar | `edgeToEdgeEnabled` dibuja bajo la barra del sistema; con relleno fijo en vez del inset real, los tres botones tapan la tab bar | 2026-09-08 |
 | El aviso del descanso llega minutos tarde o no llega | Sin permiso de alarma exacta, `expo-notifications` cae a `setAndAllowWhileIdle`, que Android estrangula a ~1 disparo cada 9 min | 2026-09-02 |
 | DESHACER restaura la fila en el día equivocado | El handler usaba el día en pantalla, no el día de origen de la acción | 2026-09-02 |
 | Suena un aviso de descanso que ya se canceló | El `await` del permiso de notificaciones deja una ventana en la que el estado cambia; sin token de generación el programado stale sobrevive | 2026-09-02 |

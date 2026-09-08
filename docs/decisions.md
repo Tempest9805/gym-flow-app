@@ -74,6 +74,27 @@ cuenta atrás del descanso es esa función y hay que declararlo así al publicar
 Si Play lo rechazara, la alternativa es `SCHEDULE_EXACT_ALARM` sin tope, que sí
 obliga a mandar al usuario a una pantalla de ajustes a concederlo.
 
+**El tema pasa a ser claro/oscuro, no morado/naranja.** Los dos temas
+anteriores eran ambos oscuros: el ajuste «Tema» elegía acento, no luminosidad,
+que no es lo que espera nadie. Ahora hay `dark` y `light`, monocromos.
+
+Ir a monocromo no es solo estética: **elimina por construcción la clase de bug
+de contraste** que tenía la app. Un acento de tono medio no puede ser a la vez
+relleno (con texto encima) y tinta (sobre el fondo); en blanco y negro esa
+tensión no existe. La regla queda escrita en `lib/domain/theme.ts` por si algún
+día vuelve un color de marca.
+
+La paleta vive en `lib/domain/`, no en el store, porque es dato puro y así
+`theme.test.ts` puede comprobar los 15 pares que la app pinta. Recuperar los
+temas de neón es volver a `git`, pero habría que devolverles también los dos
+fallos medidos.
+
+**Las pantallas de tabata siguen siendo oscuras en los dos temas.** Son
+inmersivas y a pantalla completa, y sus colores de fase (ámbar, verde, rojo)
+son señales funcionales que se leen de reojo a mitad de serie: ahí el color
+carga significado y sobrevive al monocromo. Si se quiere que sigan al tema,
+es un cambio aparte.
+
 ## Deuda conocida
 
 - `.env` sigue teniendo credenciales de Supabase que ya no usa nadie. Está en

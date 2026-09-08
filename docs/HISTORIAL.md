@@ -10,6 +10,151 @@ Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
 
 ---
 
+## 2026-09-08 — Contraste en los timers, insets, e imágenes de vuelta
+
+### Los bugs de contraste, medidos
+
+`AppTopBar` hardcodeaba fondo `#0A0A0A` y tomaba la tinta del tema: en claro
+daba **1,14:1**, invisible. Era la barra de Tabata y del Temporizador. Se borró
+—se titulaba «ELITE PERFORMANCE» y llevaba un selector de idioma muerto— y las
+dos pantallas pasaron a la misma cabecera con ‹ que ya usaban Cronómetro y el
+detalle de ejercicio.
+
+Además:
+
+- `outlineVariant` (token de **borde**) usado como color de texto en dos sitios:
+  **1,39:1** en claro, **1,55:1** en oscuro. Invisible en ambos, y anterior al
+  cambio de tema.
+- Temporizador: 6 fondos de botón en `rgba(255,255,255,0.05)`, invisibles sobre
+  claro.
+- **Un bug propio**: al despurpurar, el script cambió `#bc13fe` por blanco en el
+  botón de Tabata, cuyo texto ya era blanco. Botón blanco con letras blancas.
+- `tabata.tsx` reescrita contra el tema (tenía **0 tokens y 31 valores fijos**)
+  y traducida.
+
+### La barra de navegación tapaba las pestañas
+
+`edgeToEdgeEnabled` hace que la app dibuje bajo la barra del sistema, y la tab
+bar usaba `paddingBottom: 10` fijo. Con gestos (~24dp) casi colaba; **con los
+tres botones (~48dp) las cuatro pestañas quedaban detrás de ◀ ● ■ y no se
+podían tocar.** Verificado en el emulador antes y después. Ahora usa
+`useSafeAreaInsets()`, y las tres hojas ancladas abajo también.
+
+### Números cortados en el temporizador
+
+Un `<Text>` de 40px con otro de 16px anidado dentro y sin `lineHeight`: Android
+recortaba ascendentes y descendentes. La unidad pasa a ser `Text` hermano con
+`lineHeight` explícito. De paso, `ControlRow` se redefinía en cada render.
+
+### Imágenes de ejercicio
+
+Recuperadas de `git` (`2855fdc^`), juego `normalized` (900×536): **146 de 169
+ejercicios, 12,3 MB**. Van en el detalle encima del botón de video, sobre lámina
+blanca porque el dibujo tiene fondo blanco. Los 23 sin imagen simplemente no la
+muestran. El mapa de `require()` lo genera `scripts/build-exercise-images.mjs`
+dentro de `npm run seed`, y falla si sobra una imagen sin ejercicio.
+
+Se anotó la excepción en `.claude/RULES.md`: los 198 MB de PNG originales siguen
+prohibidos; los webp de 12,3 MB entran.
+
+### Hallazgo sin resolver: el contenido está en inglés
+
+**161 de los 169 ejercicios tienen `description` y `tips` en inglés.** El detalle
+muestra «EJECUCIÓN» y «RECOMENDACIONES» con el cuerpo en inglés. Solo los 8
+escritos a mano están en español. Esto cambia el encargo del bilingüe: no falta
+inglés, falta **español**. Pendiente de decidir.
+
+
+### Progresiones, y por qué la biblioteca no se actualizaba
+
+La progresión vive en la **biblioteca**, no en la tabla: es dato de referencia
+(«cuando las flexiones dejen de costar, pasa a las declinadas»), no algo que
+cambie de un día para otro. `Exercise.progressesTo` + `lib/data/progressions.json`
+con **39 escaleras** curadas, validadas en los dos sentidos por `npm run seed`.
+Solo hay entrada cuando cambia el movimiento: añadir peso no es otro ejercicio.
+
+Al probarlo salió algo más gordo: **la tarjeta no aparecía porque el
+almacenamiento manda tras la primera siembra.** La biblioteca es dato de
+referencia que nadie edita, así que congelarla en la instalación dejaba fuera
+todo lo que se le añadiera después — progresiones, videos, y las traducciones al
+español que están pendientes. Ahora `LIBRARY_VERSION` la refresca cuando la
+empaquetada es más nueva; las rutinas, que sí son del usuario, no se tocan.
+
+### Imagen del ejercicio anterior
+
+`expo-router` reutiliza la pantalla de detalle, y `expo-image` mantenía la
+imagen vieja mientras cargaba la nueva. `recyclingKey` — su documentación
+describe el síntoma literalmente.
+
+### Fluidez: el APK es de debug
+
+`DEBUGGABLE`, con el bundle de JS descargándose de Metro en cada arranque en vez
+de embebido. Revisados los selectores de Zustand: estables, ninguno crea objetos
+por render. El build de release para medirlo falló por el mismo problema de
+rutas largas de Windows. **Pendiente de medir de verdad.**
+
+
+### Importador: pegar la rutina como texto
+
+`lib/domain/importRoutine.ts` — parsing puro, sin IA y sin red. Entiende
+cabeceras, viñetas, `4x15`, `5×5`, `10 por lado`, `3x60seg`, separadores
+decorativos, y convierte una línea de cuerda en fila de tabata. Lo que va tras
+una flecha se descarta: es progresión, y esa vive en la biblioteca.
+
+Regla del parser: **no perder nunca una línea.** Lo que no sabe leer entra con
+su texto literal para corregirlo de un toque.
+
+Probado contra la rutina real de 4 días: filas 8/8/7/7, cada día terminando en
+la cuerda, **cero líneas sin leer**.
+
+tsc ✅ · jest 202 ✅ · lint ✅ · comprobado en emulador
+
+Commits: `71ba25c` tema · `2159e67` ejercicios · `65f10e8` importador
+
+---
+
+## 2026-09-03 — Tema en blanco y negro, con el contraste como test
+
+Neon Purple y Neon Orange desaparecen. El eje del ajuste deja de ser «qué
+acento» y pasa a ser **claro u oscuro**: el claro es la hoja de papel, el
+oscuro su negativo, que es literalmente lo que la app dice ser.
+
+### Dos bugs de contraste reales, medidos
+
+| | Antes | Ahora |
+|---|---|---|
+| Acento como texto (contador `0/7`, `+ Añadir`) — tema morado | **4,12:1** ❌ | 21:1 · 14,7:1 |
+| Botón «Copiado» — tema naranja | **2,48:1** ❌ | 14,2:1 · 8,5:1 |
+| Cabecera de tabla (margen sobre AA) | 4,50 y 4,55 — cero margen | 21:1 · 17,4:1 |
+
+La causa raíz era una sola: **`primaryContainer` hacía de relleno y de tinta a
+la vez** — 54 usos frente a 9 de `primary`. Un acento de tono medio no puede
+cumplir las dos cosas. Se separaron los roles en 33 sitios.
+
+### Dónde vive ahora
+
+`lib/domain/theme.ts` — la paleta es dato puro, así que baja al dominio. Eso
+permite que `theme.test.ts` compruebe los **15 pares fondo/texto que la app
+pinta de verdad**, en los dos temas: un retoque futuro que rompa la
+legibilidad falla en jest, no en una pantalla. El store se queda solo con
+elegir y persistir.
+
+`themeIdFromStored()` migra lo guardado: `purple` y `orange` eran los dos
+oscuros, así que ambos caen en `dark`. Nadie se encuentra la app en claro
+después de actualizar.
+
+### De paso
+
+- Se quitó el morado hardcodeado de las tres pantallas de tabata (27 valores).
+  Siguen siendo oscuras a propósito: son pantallas inmersivas de temporizador.
+- `LoadingScreen` importaba `PURPLE_THEME`, que ya no existe.
+
+tsc ✅ · jest 174 (133 + 41 del tema) ✅ · lint ✅
+
+Diseño y auditoría completa: artefacto «Tema blanco y negro».
+
+---
+
 ## 2026-09-02 — P1 del descanso: arreglado y verificado en un dev build
 
 `plugins/withExactAlarm.js` declara `USE_EXACT_ALARM` (Android 13+, concedido al
