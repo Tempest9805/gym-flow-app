@@ -8,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { pluralize } from '@/lib/domain/plural';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useThemeStore } from '@/lib/store/themeStore';
 import { useRoutineStore } from '@/lib/store/routineStore';
@@ -97,7 +98,7 @@ export default function SettingsScreen() {
           <Row
             icon="restore"
             title="Restaurar datos originales"
-            value={`${routineCount} rutinas · ${exerciseCount} ejercicios`}
+            value={`${pluralize(routineCount, 'rutina', 'rutinas')} · ${pluralize(exerciseCount, 'ejercicio', 'ejercicios')}`}
             onPress={confirmReset}
             destructive
           />

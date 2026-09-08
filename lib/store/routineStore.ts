@@ -21,6 +21,8 @@ import {
   resetToSeed,
   saveExercises,
   saveRoutines,
+  hasSeenWelcome,
+  markWelcomeSeen,
 } from '@/lib/storage/repository';
 
 interface RoutineState {
@@ -31,8 +33,12 @@ interface RoutineState {
   /** Which day of that routine is selected. */
   activeDayId: string | null;
   isLoaded: boolean;
+  /** Si toca ensenar la bienvenida. Solo es true en el primer arranque. */
+  needsWelcome: boolean;
 
   load: () => Promise<void>;
+  /** Cierra la bienvenida y la marca vista, para que no vuelva. */
+  dismissWelcome: () => void;
   setActiveRoutine: (routineId: string) => void;
   setActiveDay: (dayId: string) => void;
 
@@ -106,9 +112,16 @@ export const useRoutineStore = create<RoutineState>((set, get) => {
     activeRoutineId: null,
     activeDayId: null,
     isLoaded: false,
+    needsWelcome: false,
 
     load: async () => {
-      const [routines, exercises] = await Promise.all([loadRoutines(), loadExercises()]);
+      // Las tres lecturas van juntas: la bienvenida se decide en el mismo
+      // arranque, sin una pantalla de espera extra ni un parpadeo despues.
+      const [routines, exercises, welcomeSeen] = await Promise.all([
+        loadRoutines(),
+        loadExercises(),
+        hasSeenWelcome(),
+      ]);
 
       // Clear yesterday's checkmarks before anything renders.
       const today = todayIso();
@@ -127,7 +140,13 @@ export const useRoutineStore = create<RoutineState>((set, get) => {
         activeRoutineId: first?.id ?? null,
         activeDayId: first?.days[0]?.id ?? null,
         isLoaded: true,
+        needsWelcome: !welcomeSeen,
       });
+    },
+
+    dismissWelcome: () => {
+      set({ needsWelcome: false });
+      void markWelcomeSeen().catch(() => undefined);
     },
 
     setActiveRoutine: (routineId) => {

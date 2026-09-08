@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { Welcome } from '@/components/Welcome';
 import { CellEditor } from '@/components/routine/CellEditor';
 import { DayTabs } from '@/components/routine/DayTabs';
 import { ExercisePicker } from '@/components/routine/ExercisePicker';
@@ -56,6 +57,8 @@ export default function TodayScreen() {
   const removeRow = useRoutineStore((s) => s.removeRow);
   const moveRow = useRoutineStore((s) => s.moveRow);
   const resetDay = useRoutineStore((s) => s.resetDay);
+  const needsWelcome = useRoutineStore((s) => s.needsWelcome);
+  const dismissWelcome = useRoutineStore((s) => s.dismissWelcome);
 
   const rest = useRestTimer();
   const [editing, setEditing] = useState(false);
@@ -90,15 +93,19 @@ export default function TodayScreen() {
             No hay ninguna rutina
           </Text>
           <Text className="text-sm text-center" style={{ color: t.onSurfaceVariant }}>
-            Crea una en la pestaña Rutinas para empezar a entrenar.
+            Pega la tuya tal cual esté escrita, o créala a mano en Rutinas.
           </Text>
+          {/* Pegar va primero porque es el camino corto: la rutina ya existe
+              escrita en algun sitio y teclearla nunca merece la pena. */}
           <Pressable
-            onPress={() => router.push('/routines')}
+            onPress={() => router.push('/import')}
+            accessibilityRole="button"
+            accessibilityLabel="Pegar una rutina escrita"
             className="rounded-xl px-6 items-center justify-center mt-2"
             style={{ backgroundColor: t.primaryContainer, minHeight: 48 }}
           >
             <Text className="font-bold" style={{ color: t.onPrimaryContainer }}>
-              Ir a Rutinas
+              Pegar una rutina
             </Text>
           </Pressable>
         </View>
@@ -362,6 +369,17 @@ export default function TodayScreen() {
         routine={routine}
         day={day}
         onClose={() => setShareOpen(false)}
+      />
+
+      {/* Solo en el primer arranque. Vive aqui, y no en una ruta propia, para
+          que el arranque siga siendo directo a la tabla. */}
+      <Welcome
+        visible={needsWelcome}
+        onPaste={() => {
+          dismissWelcome();
+          router.push('/import');
+        }}
+        onExample={dismissWelcome}
       />
     </SafeAreaView>
   );
