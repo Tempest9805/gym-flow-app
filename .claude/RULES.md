@@ -26,6 +26,14 @@ tomada, no de buenas intenciones.
 - **Cualquier cosa pegada abajo usa `useSafeAreaInsets()`, nunca un relleno
   fijo.** La app dibuja bajo la barra de navegación: con gestos son ~24dp, con
   los tres botones ~48. Un número a ojo deja la tab bar intocable.
+- **Nada anclado al pie de una pantalla con teclado.** Con `edgeToEdgeEnabled`
+  la ventana **no se encoge** al abrir el teclado, así que un botón abajo queda
+  debajo de las teclas e inalcanzable, y `KeyboardAvoidingView` no lo arregla en
+  Android. La acción va en la cabecera. Fue un bug real en el importador.
+- **Un ejercicio nuevo necesita su entrada en `exercise-text-es.json`.** El CSV
+  de origen está en inglés y la traducción se aplica encima al generar. El seed
+  no falla por ello, pero `seeds.test.ts` sí: busca palabras funcionales
+  inglesas en descripción, consejos y grupo muscular.
 - **Subir `LIBRARY_VERSION` al tocar `lib/data/`.** La biblioteca es dato de
   referencia y nadie la edita desde la app, así que se refresca sola cuando la
   versión empaquetada es más nueva. Sin subirla, lo que añadas solo lo ven las
@@ -92,6 +100,9 @@ Si un síntoma se parece a uno de estos, probar primero esta hipótesis.
 | Texto invisible en una pantalla concreta | Fondo hardcodeado + tinta del tema. Solo era seguro mientras todos los temas eran oscuros; con el claro da 1,1:1 | 2026-09-08 |
 | Un token de borde usado como color de texto | `outlineVariant` existe para separar, no para leerse: 1,4:1 en los dos temas | 2026-09-08 |
 | Las pestañas no se dejan tocar | `edgeToEdgeEnabled` dibuja bajo la barra del sistema; con relleno fijo en vez del inset real, los tres botones tapan la tab bar | 2026-09-08 |
+| Un botón del pie no se deja pulsar con el teclado abierto | `edgeToEdgeEnabled` hace que la ventana ya no se redimensione con el teclado; la acción tiene que ir en la cabecera | 2026-09-08 |
+| Un texto se ve lavado sobre un color de fase | Tinta negra con opacidad: a 0,4 sobre el rojo da 2,27:1. La opacidad rebaja el contraste y no aparece en ninguna revisión de tokens | 2026-09-08 |
+| Un cambio en `lib/data/` se ve a medias | Se subió `LIBRARY_VERSION` una vez y luego se tocó `lib/data/` otra vez sin volver a subirla | 2026-09-08 |
 | El aviso del descanso llega minutos tarde o no llega | Sin permiso de alarma exacta, `expo-notifications` cae a `setAndAllowWhileIdle`, que Android estrangula a ~1 disparo cada 9 min | 2026-09-02 |
 | DESHACER restaura la fila en el día equivocado | El handler usaba el día en pantalla, no el día de origen de la acción | 2026-09-02 |
 | Suena un aviso de descanso que ya se canceló | El `await` del permiso de notificaciones deja una ventana en la que el estado cambia; sin token de generación el programado stale sobrevive | 2026-09-02 |

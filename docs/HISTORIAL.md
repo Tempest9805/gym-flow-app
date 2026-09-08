@@ -10,6 +10,96 @@ Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
 
 ---
 
+## 2026-09-08 — La biblioteca en español, pegar rutinas y la bienvenida
+
+Cuatro pendientes cerrados en orden de prioridad, todos verificados en el
+emulador. tsc ✅ · jest 242 ✅ · lint ✅
+
+### Los 169 ejercicios, en español de verdad — `728f099`
+
+161 tenían descripción, consejos y errores comunes en inglés, y los grupos
+musculares también. Era el fallo más visible que le quedaba a la app: la ficha
+del ejercicio se abre **para leerla**.
+
+El CSV de origen se queda en inglés. Traducirlo perdería el original y rompería
+cualquier actualización futura de la fuente, así que la versión española va en
+`exercise-text-es.json` y `muscle-groups-es.json` y `npm run seed` la aplica
+encima — el mismo patrón de los videos fijados y las progresiones.
+
+Los grupos se traducen **palabra a palabra** (48 piezas) y se recomponen, en vez
+de mapear las 67 combinaciones: así una combinación nueva del CSV no vuelve a
+colar inglés. Arregla además la búsqueda — «pecho» pasa de no encontrar nada a
+devolver 20 ejercicios.
+
+`LIBRARY_VERSION` → 3, que es lo que hace que lo vea quien ya tiene la app.
+
+**Falso positivo que conviene recordar:** el guard marcaba `hollow-body-hold`
+por la palabra *hold*. Es el nombre propio del ejercicio; los nombres prestados
+que ya se dicen así en el gimnasio quedan fuera de la lista de delatoras.
+
+### Pegar una rutina — `8a78503`
+
+El parser estaba desde el checkpoint anterior y no tenía UI. Ahora la pantalla
+enseña **lo que ha entendido mientras escribes**: días con icono, ejercicios por
+día, cuántos con ficha, cuántas líneas sin series.
+
+`matchExercise` ata cada línea con la biblioteca; al acertar, la fila hereda
+ilustración, video y progresión. Estricto a propósito y `null` ante empate.
+**Medido contra la rutina real de cuatro días: 19 de 26, ninguno mal.** Los
+fallos son huecos de la biblioteca o falta de contexto, no errores.
+
+**Bug encontrado probándolo:** con `edgeToEdgeEnabled` la ventana ya **no se
+redimensiona** al abrir el teclado, así que el botón «Crear rutina» anclado al
+pie quedaba debajo de las teclas, inalcanzable, y `KeyboardAvoidingView` no lo
+arregla en Android. Las acciones subieron a la cabecera. Regla nueva.
+
+### La bienvenida — `17c839e`
+
+Una pantalla, dos caminos: pegar la tuya o empezar con la de ejemplo. Sin
+nombre, sin objetivo, sin nivel. Es un `Modal` dentro de Hoy y no una ruta con
+guarda: se decide en la misma lectura del arranque, así que el arranque sigue
+siendo directo a la tabla.
+
+De paso, «1 rutinas»: el ternario estaba repetido en cinco sitios y ahora es
+`pluralize` en el dominio.
+
+### Tabata: las dos pantallas que faltaban — `db2911a`
+
+Eran las únicas con cero tokens (44 colores a mano). Dos fallos medidos:
+
+- **El botón TERMINAR del resumen era invisible.** `#ffffff` de fondo con
+  `text-white` encima: 1:1.
+- **La etiqueta TOTAL daba 2,27:1** sobre el rojo — tinta negra al 40 % de
+  opacidad. *La opacidad rebaja el contraste y no aparece en ninguna revisión
+  de tokens.* Ahora hay una constante con el número medido al lado.
+
+Los tokens `tabataPrepare/Work/Rest` existían y no los usaba nadie, por el fallo
+de siempre: **relleno contra tinta**. El color de fase llena el 70 % de la
+pantalla con texto negro encima —relleno, y un relleno no puede cambiar con el
+tema— y además se escribe sobre los mandos, que sí siguen al tema. `TABATA_FILL`
+queda fuera de los dos temas. Los valores claros de los tokens tinta se
+oscurecieron: daban 4,17:1 y 4,23:1.
+
+### El release sigue sin compilar — causa raíz encontrada
+
+El bundle de producción **sí** se genera (`npx expo export`: 5,09 MB de bytecode
+Hermes), así que el problema no es el JS. El APK falla a los 4 min:
+
+```
+ninja: error: '.../react-native-worklets/android/build/intermediates/cmake/
+release/obj/arm64-v8a/libworklets.so', needed by '.../libreanimated.so',
+missing and no known rule to make it
+```
+
+**Un workaround rompe el otro.** El parche de MAX_PATH
+(`subprojects { buildDir = "C:/b/..." }`) redirige también el `buildDir` de
+`react-native-worklets`, pero el CMake de `reanimated` busca `libworklets.so` en
+la ruta original. Candidatos: excluir del redirect solo a esos dos módulos
+(vuelve MAX_PATH), o mover el proyecto fuera de OneDrive a una ruta corta de
+verdad. **La fluidez sigue sin medir.**
+
+---
+
 ## 2026-09-08 — Contraste en los timers, insets, e imágenes de vuelta
 
 ### Los bugs de contraste, medidos

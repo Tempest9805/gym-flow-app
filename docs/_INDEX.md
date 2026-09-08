@@ -26,11 +26,13 @@ dispositivo.
 | Archivo | Para qué |
 |---|---|
 | `app/(app)/index.tsx` | Hoy — la pantalla que importa |
+| `app/(app)/import.tsx` | Pegar una rutina escrita |
 | `components/routine/RoutineTable.tsx` | La tabla |
 | `lib/domain/` | Toda la lógica, sin I/O ni React |
 | `lib/storage/repository.ts` | AsyncStorage: la única persistencia |
 | `lib/store/routineStore.ts` | Estado en memoria + escritura diferida |
 | `lib/data/*.seed.json` | Semillas generadas por `npm run seed` |
+| `lib/data/*-es.json` | La biblioteca en español, encima del CSV inglés |
 
 ## Comandos de Claude Code
 

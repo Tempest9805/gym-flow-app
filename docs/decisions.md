@@ -28,7 +28,7 @@ El criterio para cada decisión fue uno solo: *¿ayuda a entrenar más rápido?*
 | `workout` → `workout-session` → `routine-detail` | Tres pantallas para llegar a entrenar, colapsadas en una |
 | i18n (EN/ES) | Ver abajo |
 
-**Resultado: 31 rutas → 11, 221 MB → 9,4 MB de assets, −15 dependencias.**
+**Resultado: 31 rutas → 12, 221 MB → 9,4 MB de assets, −15 dependencias.**
 
 ## Decisiones que conviene poder revertir
 
@@ -89,11 +89,59 @@ La paleta vive en `lib/domain/`, no en el store, porque es dato puro y así
 temas de neón es volver a `git`, pero habría que devolverles también los dos
 fallos medidos.
 
-**Las pantallas de tabata siguen siendo oscuras en los dos temas.** Son
-inmersivas y a pantalla completa, y sus colores de fase (ámbar, verde, rojo)
-son señales funcionales que se leen de reojo a mitad de serie: ahí el color
-carga significado y sobrevive al monocromo. Si se quiere que sigan al tema,
-es un cambio aparte.
+**En el tabata, el color de fase es relleno y no depende del tema; los mandos
+sí.** Los colores de fase (ámbar, verde, rojo) son señales funcionales que se
+leen de reojo, sudando, desde un metro: ahí el color carga significado y
+sobrevive al monocromo. Como llenan el 70 % de la pantalla con texto negro
+encima, son **relleno**, y un relleno no puede cambiar con el tema sin dejar de
+contrastar. Viven en `TABATA_FILL`, fuera de los dos temas.
+
+La barra de mandos sí sigue al tema, y ahí la misma fase se escribe con su
+token **tinta** (`t.tabataWork`), que es otro color a propósito — es la regla
+de relleno/tinta aplicada al único sitio donde queda color.
+
+Los valores claros de esos tokens se oscurecieron al registrarlos como pares:
+`#a16207` daba 4,17:1 y `#4d7c0f` 4,23:1 sobre el fondo claro, los dos por
+debajo de AA.
+
+**La biblioteca se traduce encima del CSV, no en el CSV.** El origen
+(`assets/exercises_final_updated.csv`) viene en inglés y se queda así:
+traducirlo perdería el original y rompería cualquier actualización futura de la
+fuente. La versión española vive en `lib/data/exercise-text-es.json` y
+`lib/data/muscle-groups-es.json`, y `npm run seed` la aplica encima — el mismo
+patrón que ya usaban los videos fijados y las progresiones.
+
+Los grupos musculares se traducen **palabra a palabra** y se recomponen: son 48
+piezas frente a 67 combinaciones, y una combinación nueva del CSV no vuelve a
+colar inglés. Un slug o una pieza sin traducir revientan el seed, que es donde
+se quiere ver. `seeds.test.ts` remata: si una descripción, un consejo o un grupo
+muscular tiene palabras funcionales inglesas, falla.
+
+De la lista de delatoras quedan fuera a propósito los nombres prestados que ya
+se dicen así en el gimnasio —*hollow hold*, *hip thrust*, *face pull*, *bird
+dog*—: traducirlos sería más confuso, no menos.
+
+**El emparejador de rutinas pegadas prefiere no acertar a acertar mal.**
+`findExercise` solo une una línea pegada con la biblioteca por juego exacto de
+palabras o por contención completa, y ante un empate devuelve `null`. Medido
+contra la rutina real de cuatro días: **19 de 26, y ninguno mal**. Los fallos
+son huecos de la biblioteca («curl de muñeca» no está) o falta de contexto
+(«búlgara» a secas), no errores. Una foto equivocada enseña el movimiento que
+no es, y eso cuesta más que la foto que falta.
+
+**La bienvenida es un `Modal`, no una ruta.** Aparece una vez y ofrece dos
+caminos: pegar la rutina propia o empezar con la de ejemplo. Va en un modal
+dentro de Hoy para que el arranque siga siendo directo a la tabla —sin guardas
+ni cadenas de redirección— y para que tape también la barra de pestañas. No
+pregunta nombre, ni objetivo, ni nivel: cada pregunta de más es gente que
+cierra la app antes de entrenar una vez.
+
+**Las acciones del importador van en la cabecera, no al pie.** Con
+`edgeToEdgeEnabled` la ventana ya no se encoge al abrir el teclado, así que un
+botón anclado abajo queda debajo de las teclas e inalcanzable. Subirlas arriba
+resuelve el caso sin pelearse con la altura del teclado ni añadir dependencias.
+Manda la que toca en cada momento: *Pegar* mientras está vacío, *Crear* en
+cuanto hay algo que leer.
 
 ## Deuda conocida
 

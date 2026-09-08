@@ -15,8 +15,9 @@ Marcas lo que haces, el descanso cuenta atrás solo, el ▶ lleva al video.
 ### Capas
 
 ```
-app/ (Expo Router — 4 tabs + 6 pantallas ocultas)
-  └── components/routine/  RoutineTable · DayTabs · CellEditor
+app/ (Expo Router — 4 tabs + 7 pantallas ocultas)
+  └── components/          Welcome (bienvenida, solo la 1ª vez)
+        │  routine/        RoutineTable · DayTabs · CellEditor
         │                  ExercisePicker · TipsStrip · ShareSheet
         ▼
       lib/store/           Zustand (routineStore · themeStore · tabataStore)
@@ -28,7 +29,12 @@ app/ (Expo Router — 4 tabs + 6 pantallas ocultas)
 ```
 
 **La regla de dependencia apunta hacia dentro.** `lib/domain/` no importa nada
-de fuera; ahí viven los 174 tests.
+de fuera; ahí viven los 242 tests.
+
+**La biblioteca es española, pero su CSV de origen está en inglés.** La
+traducción vive en `lib/data/exercise-text-es.json` y `muscle-groups-es.json` y
+`npm run seed` la aplica encima. Un ejercicio nuevo sin traducir lo caza
+`seeds.test.ts`.
 
 **El tema son dos: claro y oscuro**, monocromos. La paleta vive en
 `lib/domain/theme.ts` porque es dato puro, y por eso `theme.test.ts` puede
@@ -62,8 +68,12 @@ Exercise (biblioteca de 169, enlazada por RoutineRow.exerciseId)
 | Ejercicios | `(app)/exercises` | Biblioteca + búsqueda |
 | Ajustes | `(app)/settings` | Tema, timers, restaurar datos |
 
-Ocultas: `exercise/[id]`, `stopwatch`, `timer`, `timer-active`, `tabata`,
-`tabata-active`, `tabata-summary`.
+Ocultas: `import` (pegar una rutina), `exercise/[id]`, `stopwatch`, `timer`,
+`timer-active`, `tabata`, `tabata-active`, `tabata-summary`.
+
+**Pegar es el camino corto para meter una rutina** y por eso manda sobre
+«Nueva» en Rutinas: la rutina ya existe escrita en algún sitio y teclearla
+nunca merece la pena.
 
 ### Arranque
 
@@ -71,7 +81,8 @@ Ocultas: `exercise/[id]`, `stopwatch`, `timer`, `timer-active`, `tabata`,
 RootLayout → loadTheme() + load()  →  (app)/index
 ```
 
-Sin AuthGuard, sin onboarding, sin redirecciones.
+Sin AuthGuard y sin redirecciones. La bienvenida del primer arranque es un
+`Modal` dentro de Hoy, decidido en la misma lectura del arranque.
 
 ### Comandos útiles
 
