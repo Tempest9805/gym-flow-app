@@ -22,6 +22,7 @@ import {
 export const ROUTINES_KEY = 'gymflow_routines';
 export const EXERCISES_KEY = 'gymflow_exercises';
 export const LIBRARY_VERSION_KEY = 'gymflow_library_version';
+export const WELCOME_KEY = 'gymflow_welcome_seen';
 
 /**
  * Version de la biblioteca empaquetada. **Subir al tocar `lib/data/`.**
@@ -33,8 +34,9 @@ export const LIBRARY_VERSION_KEY = 'gymflow_library_version';
  *
  * 1 → semilla original
  * 2 → escaleras de progresion (`progressesTo`)
+ * 3 → descripciones, consejos y errores comunes en espanol
  */
-export const LIBRARY_VERSION = 2;
+export const LIBRARY_VERSION = 3;
 
 /** The bundled library, validated through the same parser as stored data. */
 function seedExercises(): Exercise[] {
@@ -106,7 +108,28 @@ export async function saveRoutines(routines: Routine[]): Promise<void> {
   await AsyncStorage.setItem(ROUTINES_KEY, serializeRoutines(routines));
 }
 
+/**
+ * Si ya se ha visto la bienvenida.
+ *
+ * Es un booleano y no una fecha ni un contador a proposito: lo unico que hay
+ * que saber es si esta persona ya ha pasado por ahi. Un fallo de lectura
+ * responde `true`, porque colar una bienvenida a quien ya la vio molesta mas
+ * que saltarsela a quien no.
+ */
+export async function hasSeenWelcome(): Promise<boolean> {
+  try {
+    return (await AsyncStorage.getItem(WELCOME_KEY)) !== null;
+  } catch {
+    return true;
+  }
+}
+
+/** Marca la bienvenida como vista. No vuelve a salir. */
+export async function markWelcomeSeen(): Promise<void> {
+  await AsyncStorage.setItem(WELCOME_KEY, '1');
+}
+
 /** Wipe stored data so the next load re-seeds. Used by the reset in Ajustes. */
 export async function resetToSeed(): Promise<void> {
-  await AsyncStorage.multiRemove([ROUTINES_KEY, EXERCISES_KEY, LIBRARY_VERSION_KEY]);
+  await AsyncStorage.multiRemove([ROUTINES_KEY, EXERCISES_KEY, LIBRARY_VERSION_KEY, WELCOME_KEY]);
 }

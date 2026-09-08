@@ -15,6 +15,8 @@ const SOURCE = path.join(root, 'assets', 'exercises_final_updated.csv');
 const EXTRAS = path.join(root, 'lib', 'data', 'extra-exercises.json');
 const VIDEOS = path.join(root, 'lib', 'data', 'video-links.json');
 const PROGRESIONES = path.join(root, 'lib', 'data', 'progressions.json');
+const TEXTOS_ES = path.join(root, 'lib', 'data', 'exercise-text-es.json');
+const MUSCULOS_ES = path.join(root, 'lib', 'data', 'muscle-groups-es.json');
 const TARGET = path.join(root, 'lib', 'data', 'exercises.seed.json');
 
 /** Minimal RFC-4180 reader: handles quoted fields with commas and newlines. */
@@ -128,6 +130,55 @@ for (const exercise of exercises) {
   exercise.progressesTo = progresiones[exercise.id] ?? null;
 }
 
+// El CSV de origen viene en ingles. Traducirlo entero seria perder el original
+// y romper cualquier futura actualizacion de la fuente, asi que la version
+// espanola vive aparte y se aplica encima, igual que los videos y las
+// progresiones. Un slug desconocido es un error: si el CSV renombra algo, la
+// traduccion huerfana se ve aqui y no en la pantalla del usuario.
+const textosEs = JSON.parse(fs.readFileSync(TEXTOS_ES, 'utf8'));
+const CAMPOS_TRADUCIBLES = ['description', 'tips', 'commonMistakes'];
+
+for (const id of Object.keys(textosEs)) {
+  if (id.startsWith('_')) continue;
+  if (!known.has(id)) throw new Error(`exercise-text-es.json traduce un ejercicio inexistente: "${id}"`);
+  for (const campo of Object.keys(textosEs[id])) {
+    if (!CAMPOS_TRADUCIBLES.includes(campo)) {
+      throw new Error(`exercise-text-es.json: "${id}" trae un campo que no se traduce: "${campo}"`);
+    }
+  }
+}
+
+for (const exercise of exercises) {
+  const es = textosEs[exercise.id];
+  if (!es) continue;
+  for (const campo of CAMPOS_TRADUCIBLES) {
+    if (es[campo]) exercise[campo] = es[campo];
+  }
+}
+
+// Los grupos musculares del CSV vienen en ingles y compuestos con "/". Se
+// traducen PIEZA A PIEZA y se recomponen: son 48 palabras frente a 67
+// combinaciones, y una combinacion nueva del CSV no vuelve a colar ingles.
+// Una pieza sin traducir revienta el seed, que es donde se quiere ver.
+const musculosEs = JSON.parse(fs.readFileSync(MUSCULOS_ES, 'utf8'));
+
+function traducirMusculos(grupo) {
+  return grupo
+    .split('/')
+    .map((pieza) => {
+      const limpia = pieza.trim();
+      if (limpia === '') return limpia;
+      const es = musculosEs[limpia.toLowerCase()];
+      if (!es) throw new Error(`muscle-groups-es.json no traduce "${limpia}" (de "${grupo}")`);
+      return es;
+    })
+    .join(' / ');
+}
+
+for (const exercise of exercises) {
+  exercise.muscleGroup = traducirMusculos(exercise.muscleGroup);
+}
+
 exercises.sort((a, b) => a.nameEs.localeCompare(b.nameEs, 'es'));
 
 fs.mkdirSync(path.dirname(TARGET), { recursive: true });
@@ -138,3 +189,4 @@ console.log(`${exercises.length} ejercicios (${exercises.length - extras.length}
 const conProgresion = exercises.filter((e) => e.progressesTo).length;
 console.log(`  con progresion: ${conProgresion}`);
 console.log(`  con video fijado: ${withVideo} | con descripcion: ${exercises.filter((e) => e.description).length} | con tips: ${exercises.filter((e) => e.tips).length}`);
+console.log(`  traducidos al espanol: ${Object.keys(textosEs).filter((k) => !k.startsWith('_')).length}`);

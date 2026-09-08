@@ -117,3 +117,55 @@ describe('starter routine seed', () => {
     }
   });
 });
+
+/**
+ * La biblioteca se lee, no se ejecuta: si la descripcion esta en ingles, el
+ * ejercicio no sirve para lo unico que se abre esa pantalla.
+ *
+ * El CSV de origen viene en ingles y `lib/data/exercise-text-es.json` lo tapa.
+ * Este test es lo que impide que un ejercicio nuevo entre sin su traduccion.
+ *
+ * Solo se buscan palabras funcionales inglesas que en espanol no existen. Los
+ * nombres prestados que ya se dicen asi en el gimnasio ("hollow hold", "hip
+ * thrust", "face pull", "bird dog") se quedan fuera de la lista a proposito:
+ * traducirlos seria mas confuso, no menos.
+ */
+describe('la biblioteca esta en espanol', () => {
+  const DELATORAS =
+    /(the|your|you|with|and|from|into|until|while|keep|squeeze|lower|repeat|desired|reps|shoulder-width)/i;
+
+  const DELATORAS_MUSCULO =
+    /(abs|abdominals|back|calves|chest|delts|glutes|grip|hamstrings|lats|legs|obliques|pectorals|power|quads|quadriceps|shoulders|spine|traps|full|lower|upper|middle|rear|side|front|deep|flexors|rotators|posterior|serratus|anterior|cuff|neck|thoracic|forearms|adductors|wrist|hip)/i;
+
+  const CAMPOS = ['description', 'tips', 'commonMistakes'] as const;
+
+  it('ninguna descripcion, consejo ni error comun queda en ingles', () => {
+    const enIngles: string[] = [];
+
+    for (const exercise of exercises!) {
+      for (const campo of CAMPOS) {
+        const texto = exercise[campo];
+        if (texto && DELATORAS.test(texto)) {
+          enIngles.push(`${exercise.id}.${campo}`);
+        }
+      }
+    }
+
+    expect(enIngles).toEqual([]);
+  });
+
+  // Se ven en la lista de Ejercicios y ademas son lo que se busca al escribir
+  // "pecho" en el buscador, asi que en ingles rompen dos cosas a la vez.
+  it('ningun grupo muscular queda en ingles', () => {
+    const enIngles = exercises!
+      .filter((e) => DELATORAS_MUSCULO.test(e.muscleGroup))
+      .map((e) => `${e.id}: ${e.muscleGroup}`);
+
+    expect(enIngles).toEqual([]);
+  });
+
+  it('todos tienen descripcion y consejos', () => {
+    const incompletos = exercises!.filter((e) => !e.description || !e.tips);
+    expect(incompletos.map((e) => e.id)).toEqual([]);
+  });
+});
