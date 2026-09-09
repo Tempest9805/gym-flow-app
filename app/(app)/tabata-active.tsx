@@ -14,7 +14,7 @@
  * La tinta sobre el relleno no baja de 0.8 de opacidad: a 0.4, que es como
  * estaba, la etiqueta TOTAL daba 2,27:1 sobre el rojo. Medido, no estimado.
  */
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -29,19 +29,19 @@ import Svg, { Circle } from 'react-native-svg';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import {
+  cyclesLeft,
+  initialProgress,
+  nextPhase,
+  phaseDuration,
+  roundsLeft,
+  tick,
+  totalSeconds,
+  type TabataPhase,
+} from '@/lib/domain/tabata';
 import { TABATA_FILL, TABATA_ON_FILL, type TabataFillId } from '@/lib/domain/theme';
 import { useTheme } from '@/lib/hooks/useTheme';
-import { useTabataStore, type TabataConfig } from '@/lib/store/tabataStore';
-
-type TabataPhase = 'prepare' | 'work' | 'rest' | 'cycle-rest' | 'cooldown' | 'done';
-
-type TabataState = {
-  phase: TabataPhase;
-  timeLeft: number;
-  currentRound: number;
-  currentCycle: number;
-  isPaused: boolean;
-};
+import { useTabataStore } from '@/lib/store/tabataStore';
 
 /** Que relleno le toca a cada fase. Los dos descansos largos comparten neutro. */
 const PHASE_FILL: Record<TabataPhase, TabataFillId> = {
@@ -74,162 +74,70 @@ function formatTime(seconds: number): string {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-function getPhaseDuration(phase: TabataPhase, config: TabataConfig): number {
-  switch (phase) {
-    case 'prepare':    return config.prepSeconds;
-    case 'work':       return config.workSeconds;
-    case 'rest':       return config.restSeconds;
-    case 'cycle-rest': return config.cycleRestSeconds;
-    case 'cooldown':   return config.cooldownSeconds;
-    default:           return 0;
-  }
-}
-
-function getNextPhaseInfo(
-  phase: TabataPhase,
-  round: number,
-  cycle: number,
-  config: TabataConfig,
-): { phase: TabataPhase; duration: number } {
-  switch (phase) {
-    case 'prepare':
-      return { phase: 'work', duration: config.workSeconds };
-    case 'work':
-      if (round < config.rounds) {
-        return { phase: 'rest', duration: config.restSeconds };
-      }
-      if (cycle < config.cycles) {
-        return { phase: 'cycle-rest', duration: config.cycleRestSeconds };
-      }
-      if (config.cooldownSeconds > 0) {
-        return { phase: 'cooldown', duration: config.cooldownSeconds };
-      }
-      return { phase: 'done', duration: 0 };
-    case 'rest':
-      return { phase: 'work', duration: config.workSeconds };
-    case 'cycle-rest':
-      return { phase: 'work', duration: config.workSeconds };
-    case 'cooldown':
-      return { phase: 'done', duration: 0 };
-    default:
-      return { phase: 'done', duration: 0 };
-  }
-}
-
-function advanceState(prev: TabataState, config: TabataConfig): TabataState {
-  switch (prev.phase) {
-    case 'prepare':
-      return { ...prev, phase: 'work', timeLeft: config.workSeconds };
-
-    case 'work':
-      if (prev.currentRound < config.rounds) {
-        return { ...prev, phase: 'rest', timeLeft: config.restSeconds };
-      }
-      if (prev.currentCycle < config.cycles) {
-        return {
-          ...prev,
-          phase: 'cycle-rest',
-          timeLeft: config.cycleRestSeconds,
-          currentRound: 1,
-          currentCycle: prev.currentCycle + 1,
-        };
-      }
-      if (config.cooldownSeconds > 0) {
-        return { ...prev, phase: 'cooldown', timeLeft: config.cooldownSeconds };
-      }
-      return { ...prev, phase: 'done', timeLeft: 0 };
-
-    case 'rest':
-      return {
-        ...prev,
-        phase: 'work',
-        timeLeft: config.workSeconds,
-        currentRound: prev.currentRound + 1,
-      };
-
-    case 'cycle-rest':
-      return { ...prev, phase: 'work', timeLeft: config.workSeconds };
-
-    case 'cooldown':
-      return { ...prev, phase: 'done', timeLeft: 0 };
-
-    default:
-      return prev;
-  }
-}
-
 export default function TabataActiveScreen() {
   const t = useTheme();
   const router = useRouter();
   const { config } = useTabataStore();
   const insets = useSafeAreaInsets();
 
-  const totalWorkoutSeconds = useMemo(() => {
-    const timePerCycle = (config.workSeconds + config.restSeconds) * config.rounds;
-    const cyclePadding = config.cycleRestSeconds * (config.cycles - 1);
-    return (
-      config.prepSeconds +
-      timePerCycle * config.cycles +
-      cyclePadding +
-      config.cooldownSeconds
-    );
-  }, [config]);
+  const totalWorkoutSeconds = useMemo(() => totalSeconds(config), [config]);
 
-  const initialPhase: TabataPhase = config.prepSeconds > 0 ? 'prepare' : 'work';
-  const initialTime = config.prepSeconds > 0 ? config.prepSeconds : config.workSeconds;
-
-  const [state, setState] = useState<TabataState>({
-    phase: initialPhase,
-    timeLeft: initialTime,
-    currentRound: 1,
-    currentCycle: 1,
-    isPaused: true,
-  });
-
+  // El progreso es del dominio; la pausa es solo de esta pantalla, asi que no
+  // se mezclan. `lib/domain/tabata.ts` tiene los tests de las transiciones.
+  const [progress, setProgress] = useState(() => initialProgress(config));
+  const [isPaused, setIsPaused] = useState(true);
   const [totalTimeLeft, setTotalTimeLeft] = useState(totalWorkoutSeconds);
 
-  // Un parpadeo al cambiar de fase: se ve aunque el movil este en el suelo.
   const flashAnim = useRef(new Animated.Value(1)).current;
 
-  const triggerFlash = useCallback(() => {
-    Animated.sequence([
-      Animated.timing(flashAnim, { toValue: 0.15, duration: 80, useNativeDriver: true }),
-      Animated.timing(flashAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
-    ]).start();
-  }, [flashAnim]);
-
+  // El reloj: un tic por segundo, y nada mas. Vibrar, parpadear y navegar son
+  // efectos de que la fase HAYA cambiado, y por eso viven en su propio efecto y
+  // no dentro del actualizador de estado, que debe ser puro.
   useEffect(() => {
-    if (state.isPaused || state.phase === 'done') return;
+    if (isPaused || progress.phase === 'done') return;
 
     const interval = setInterval(() => {
-      setState((prev) => {
-        if (prev.timeLeft <= 1) {
-          Vibration.vibrate([0, 100, 50, 100]);
-          triggerFlash();
-          const next = advanceState(prev, config);
-          if (next.phase === 'done') {
-            setTimeout(() => {
-              router.replace({
-                pathname: '/tabata-summary',
-                params: {
-                  totalSeconds: String(totalWorkoutSeconds),
-                  roundsCompleted: String(prev.currentRound),
-                  totalRounds: String(config.rounds),
-                  cyclesCompleted: String(prev.currentCycle),
-                  totalCycles: String(config.cycles),
-                },
-              });
-            }, 800);
-          }
-          return next;
-        }
-        return { ...prev, timeLeft: prev.timeLeft - 1 };
-      });
+      setProgress((prev) => tick(prev, config));
       setTotalTimeLeft((prev) => Math.max(0, prev - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [state.isPaused, state.phase, config, router, triggerFlash, totalWorkoutSeconds]);
+  }, [isPaused, progress.phase, config]);
+
+  // Un parpadeo y una vibracion al cambiar de fase: se notan aunque el movil
+  // este en el suelo. La primera fase no cuenta, que aun no ha cambiado nada.
+  const fasePrevia = useRef(progress.phase);
+
+  useEffect(() => {
+    if (fasePrevia.current === progress.phase) return;
+    fasePrevia.current = progress.phase;
+
+    Vibration.vibrate([0, 100, 50, 100]);
+    Animated.sequence([
+      Animated.timing(flashAnim, { toValue: 0.15, duration: 80, useNativeDriver: true }),
+      Animated.timing(flashAnim, { toValue: 1, duration: 150, useNativeDriver: true }),
+    ]).start();
+  }, [progress.phase, flashAnim]);
+
+  // Al terminar, el resumen. Los 800 ms son para que de tiempo a ver el HECHO.
+  useEffect(() => {
+    if (progress.phase !== 'done') return;
+
+    const id = setTimeout(() => {
+      router.replace({
+        pathname: '/tabata-summary',
+        params: {
+          totalSeconds: String(totalWorkoutSeconds),
+          roundsCompleted: String(progress.currentRound),
+          totalRounds: String(config.rounds),
+          cyclesCompleted: String(progress.currentCycle),
+          totalCycles: String(config.cycles),
+        },
+      });
+    }, 800);
+
+    return () => clearTimeout(id);
+  }, [progress, config, router, totalWorkoutSeconds]);
 
   // Al volver de segundo plano se adelanta el reloj lo que estuvo fuera, en vez
   // de reanudar donde se quedo: si no, el tabata se alarga solo.
@@ -239,37 +147,31 @@ export default function TabataActiveScreen() {
     const sub = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       if (nextAppState === 'background') {
         bgTimestampRef.current = Date.now();
-      } else if (nextAppState === 'active' && bgTimestampRef.current) {
-        const elapsed = Math.floor((Date.now() - bgTimestampRef.current) / 1000);
-        bgTimestampRef.current = 0;
-        if (elapsed > 0) {
-          setState((prev) => {
-            if (prev.isPaused || prev.phase === 'done') return prev;
-            let remaining = elapsed;
-            let cur = { ...prev };
-            while (remaining > 0 && cur.phase !== 'done') {
-              if (cur.timeLeft > remaining) {
-                cur = { ...cur, timeLeft: cur.timeLeft - remaining };
-                remaining = 0;
-              } else {
-                remaining -= cur.timeLeft;
-                cur = advanceState(cur, config);
-              }
-            }
-            return cur;
-          });
-          setTotalTimeLeft((totalPrev) => Math.max(0, totalPrev - elapsed));
-        }
+        return;
       }
+      if (nextAppState !== 'active' || !bgTimestampRef.current) return;
+
+      const elapsed = Math.floor((Date.now() - bgTimestampRef.current) / 1000);
+      bgTimestampRef.current = 0;
+      if (elapsed <= 0) return;
+
+      setProgress((prev) => {
+        let cur = prev;
+        for (let i = 0; i < elapsed && cur.phase !== 'done'; i += 1) {
+          cur = tick(cur, config);
+        }
+        return cur;
+      });
+      setTotalTimeLeft((prev) => Math.max(0, prev - elapsed));
     });
 
     return () => sub.remove();
   }, [config]);
 
-  const { phase, timeLeft, currentRound, currentCycle, isPaused } = state;
+  const { phase, timeLeft } = progress;
 
   const fill = TABATA_FILL[PHASE_FILL[phase]];
-  const nextPhaseData = getNextPhaseInfo(phase, currentRound, currentCycle, config);
+  const nextPhaseData = nextPhase(progress, config);
   const nextFill = TABATA_FILL[PHASE_FILL[nextPhaseData.phase]];
 
   // La misma fase, escrita sobre los mandos, que si siguen el tema: ahi el
@@ -283,24 +185,21 @@ export default function TabataActiveScreen() {
           ? t.tabataPrepare
           : t.onSurfaceVariant;
 
-  const totalPhaseTime = getPhaseDuration(phase, config);
-  const progress = totalPhaseTime > 0 ? 1 - timeLeft / totalPhaseTime : 0;
-  const strokeOffset = RING_CIRCUMFERENCE * (1 - progress);
+  // Cuanto lleva recorrido el anillo de la fase actual, de 0 a 1.
+  const totalPhaseTime = phaseDuration(phase, config);
+  const recorrido = totalPhaseTime > 0 ? 1 - timeLeft / totalPhaseTime : 0;
+  const strokeOffset = RING_CIRCUMFERENCE * (1 - recorrido);
 
-  const roundsLeft = config.rounds - currentRound + (phase === 'work' ? 1 : 0);
-  const cyclesLeft = config.cycles - currentCycle + 1;
+  const rondas = roundsLeft(progress, config);
+  const ciclos = cyclesLeft(progress, config);
 
-  const handleStopGo = () => setState((prev) => ({ ...prev, isPaused: !prev.isPaused }));
+  const handleStopGo = () => setIsPaused((prev) => !prev);
 
   const handleReset = () => {
-    setState({
-      phase: initialPhase,
-      timeLeft: initialTime,
-      currentRound: 1,
-      currentCycle: 1,
-      isPaused: true,
-    });
+    setProgress(initialProgress(config));
+    setIsPaused(true);
     setTotalTimeLeft(totalWorkoutSeconds);
+    fasePrevia.current = initialProgress(config).phase;
   };
 
   return (
@@ -435,7 +334,7 @@ export default function TabataActiveScreen() {
             className="font-black leading-none"
             style={{ fontSize: 64, color: t.onSurface, fontVariant: ['tabular-nums'] }}
           >
-            {Math.max(0, roundsLeft)}
+            {rondas}
           </Text>
           <Text
             className="text-[10px] font-bold uppercase text-center mt-1"
@@ -558,7 +457,7 @@ export default function TabataActiveScreen() {
             className="font-black leading-none"
             style={{ fontSize: 64, color: t.onSurface, fontVariant: ['tabular-nums'] }}
           >
-            {Math.max(0, cyclesLeft)}
+            {ciclos}
           </Text>
           <Text
             className="text-[10px] font-bold uppercase text-center mt-1"

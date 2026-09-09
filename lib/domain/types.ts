@@ -85,3 +85,33 @@ export interface Routine {
   days: RoutineDay[];
   updatedAt: string;
 }
+
+/**
+ * Los tiempos y la estructura de un tabata.
+ *
+ * Vive aqui y no en el store porque es dato puro: `lib/domain/tabata.ts` lo
+ * necesita para decidir las fases, y el dominio no importa nada de fuera. El
+ * store lo reexporta, asi que nadie mas ha tenido que cambiar de sitio.
+ */
+export interface TabataConfig {
+  prepSeconds: number;
+  workSeconds: number;
+  restSeconds: number;
+  cooldownSeconds: number;
+  cycleRestSeconds: number;
+  rounds: number;
+  cycles: number;
+  soundEnabled: boolean;
+}
+
+/** Un tabata clasico: 3 rondas de 40/20, 5 ciclos. */
+export const DEFAULT_TABATA_CONFIG: TabataConfig = {
+  prepSeconds: 5,
+  workSeconds: 40,
+  restSeconds: 20,
+  cooldownSeconds: 30,
+  cycleRestSeconds: 15,
+  rounds: 3,
+  cycles: 5,
+  soundEnabled: true,
+};
