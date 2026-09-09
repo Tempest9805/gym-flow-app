@@ -6,7 +6,7 @@
  * up when it appears.
  */
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, Modal, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, TextInput, Pressable, Modal, Keyboard } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { formatDuration, parseDuration } from '@/lib/domain/time';
@@ -45,6 +45,30 @@ export function CellEditor({ visible, field, initialValue, onCancel, onSave }: C
     if (visible) setValue(initialValue);
   }, [visible, initialValue]);
 
+  /**
+   * Cuanto ocupa el teclado, para levantar la hoja por encima.
+   *
+   * Aqui habia un `KeyboardAvoidingView` con `behavior` solo en iOS, o sea que
+   * en Android no hacia nada: daba por hecho que la ventana se encogeria sola,
+   * y con `edgeToEdgeEnabled` ya no se encoge. Como el input lleva `autoFocus`,
+   * el teclado sube siempre y tapaba la hoja entera —titulo, campo, atajos y
+   * los dos botones—: se escribia a ciegas y solo se salia con la tecla ✓.
+   * Es la misma causa raiz que obligo a subir las acciones del importador a la
+   * cabecera.
+   */
+  const [alturaTeclado, setAlturaTeclado] = useState(0);
+
+  useEffect(() => {
+    const sube = Keyboard.addListener('keyboardDidShow', (e) =>
+      setAlturaTeclado(e.endCoordinates.height),
+    );
+    const baja = Keyboard.addListener('keyboardDidHide', () => setAlturaTeclado(0));
+    return () => {
+      sube.remove();
+      baja.remove();
+    };
+  }, []);
+
   const error = useMemo(() => validate(field, value), [field, value]);
 
   if (!field) return null;
@@ -54,13 +78,19 @@ export function CellEditor({ visible, field, initialValue, onCancel, onSave }: C
   return (
     <Modal visible={visible} transparent animationType="slide" onRequestClose={onCancel}>
       <Pressable className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0,0,0,0.6)' }} onPress={onCancel}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        {/* Con `edgeToEdgeEnabled`, la altura que reporta el teclado se mide
+            desde el borde de la barra de navegacion y no desde el borde de la
+            pantalla, asi que hay que sumarle el inset o los botones quedan
+            mordidos por arriba del teclado. */}
+        <View style={{ paddingBottom: alturaTeclado > 0 ? alturaTeclado + insets.bottom : 0 }}>
           <Pressable
             className="rounded-t-3xl border-t px-5 pt-5 gap-4"
             style={{
               backgroundColor: t.surfaceContainerLow,
               borderTopColor: t.outlineVariant,
-              paddingBottom: Math.max(insets.bottom, 24) + 16,
+              // Con el teclado arriba, el hueco de abajo ya lo pone el propio
+              // teclado: sumar tambien el inset dejaria una franja muerta.
+              paddingBottom: alturaTeclado > 0 ? 16 : Math.max(insets.bottom, 24) + 16,
             }}
             onPress={(event) => event.stopPropagation()}
           >
@@ -148,7 +178,7 @@ export function CellEditor({ visible, field, initialValue, onCancel, onSave }: C
               </Pressable>
             </View>
           </Pressable>
-        </KeyboardAvoidingView>
+        </View>
       </Pressable>
     </Modal>
   );

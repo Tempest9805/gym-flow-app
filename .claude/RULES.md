@@ -87,6 +87,10 @@ tomada, no de buenas intenciones.
   `SCHEDULE_EXACT_ALARM` llegue a Android 13+, donde exigiría pasar por los
   ajustes del sistema. Sin ese plugin el aviso del descanso vuelve a llegar
   minutos tarde. Ver `docs/decisions.md`.
+- **Dar por probado el teclado en un emulador con teclado fisico.** Con uno
+  conectado el IME no sube y las pantallas con teclado parecen sanas. Para
+  que suba: `adb shell settings put secure show_ime_with_hard_keyboard 1`.
+  Asi salio el bug del `CellEditor`, que llevaba meses ahi.
 - **Dar por probada una notificación en Expo Go.** Expo Go corre con **su**
   AndroidManifest, no con el nuestro: los permisos que declaramos no existen
   ahí. Todo lo que dependa del manifest se verifica en un dev build.
@@ -99,6 +103,7 @@ Si un síntoma se parece a uno de estos, probar primero esta hipótesis.
 
 | Síntoma | Causa raíz | Sesión |
 |---|---|---|
+| Una hoja con teclado se ve a medias o no se deja pulsar | `KeyboardAvoidingView` con `behavior` solo en iOS no hace **nada** en Android, y con `edgeToEdgeEnabled` la ventana ya no se encoge. Hay que sumar la altura del teclado a mano, y ademas el `insets.bottom`: lo que reporta `keyboardDidShow` se mide desde la barra de navegacion, no desde el borde de la pantalla | 2026-09-09 |
 | Un temporizador abre ya terminado la segunda vez | Las pantallas «ocultas» son `Tabs.Screen` con `href: null`: un `Tabs` monta una vez y no desmonta, así que el `useState` inicial no se repite y queda el estado de la visita anterior. `unmountOnBlur` ya no existe en React Navigation 7 | 2026-09-08 |
 | Un botón del pie no responde **en dev build** | El aviso de LogBox («Open debugger to view warnings») se come los toques de su franja, más alta que el propio aviso. Cerrarlo antes de diagnosticar nada | 2026-09-08 |
 | Una pantalla entera en inglés en una app española | El valor del estado se pintaba tal cual (`{phase}` con `'WORK'`). Traducir en el borde del render, nunca reutilizar el estado como texto | 2026-09-08 |

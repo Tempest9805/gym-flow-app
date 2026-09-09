@@ -166,12 +166,14 @@ export function RoutineTable({
               onPress={onEdit ? () => onEdit(row.id, 'sets') : undefined}
             />
 
-            {/* Reps */}
+            {/* Reps — el unico campo de texto libre: «fallo», «1 min», «al
+                fallo tecnico». Dos lineas, como el nombre del ejercicio. */}
             <Cell
               width={col.reps}
               value={row.reps}
               dimmed={row.done}
               fontSize={col.fontSize}
+              lines={2}
               onPress={onEdit ? () => onEdit(row.id, 'reps') : undefined}
             />
 
@@ -280,12 +282,15 @@ function Cell({
   dimmed,
   fontSize,
   onPress,
+  lines = 1,
 }: {
   width: number;
   value: string;
   dimmed: boolean;
   fontSize: number;
   onPress?: () => void;
+  /** Series y descanso caben siempre en una; las reps admiten texto libre. */
+  lines?: number;
 }) {
   const t = useTheme();
   return (
@@ -296,8 +301,8 @@ function Cell({
       onPress={onPress}
     >
       <Text
-        numberOfLines={1}
-        className="font-medium"
+        numberOfLines={lines}
+        className="font-medium text-center"
         style={{ fontSize, color: dimmed ? t.outline : t.onSurface }}
       >
         {value}

@@ -10,6 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+import { SectionPill, StepperRow } from '@/components/timers/SetupControls';
 import { useTheme } from '@/lib/hooks/useTheme';
 import { useTabataStore, type TabataConfig } from '@/lib/store/tabataStore';
 
@@ -20,88 +21,6 @@ function formatSetupTime(seconds: number): string {
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
   return `:${seconds.toString().padStart(2, '0')}`;
-}
-
-function SectionPill({ label }: { label: string }) {
-  const t = useTheme();
-  return (
-    <View className="flex-row items-center gap-2 mb-4">
-      <View
-        className="flex-row items-center px-3 py-1 rounded-full"
-        style={{ backgroundColor: t.surfaceContainerHigh }}
-      >
-        <Text
-          className="text-[10px] font-bold uppercase tracking-wider"
-          style={{ color: t.onSurfaceVariant }}
-        >
-          {label}
-        </Text>
-      </View>
-      <View className="flex-1 h-px" style={{ backgroundColor: t.outlineVariant }} />
-    </View>
-  );
-}
-
-interface StepperProps {
-  label: string;
-  display: string;
-  onDecrement: () => void;
-  onIncrement: () => void;
-  isHighlight?: boolean;
-}
-
-/** Una fila con etiqueta, valor y los dos botones de ajuste. */
-function StepperRow({ label, display, onDecrement, onIncrement, isHighlight }: StepperProps) {
-  const t = useTheme();
-  return (
-    <View
-      className="flex-row items-center justify-between p-4 rounded-2xl"
-      style={{
-        backgroundColor: t.surfaceContainer,
-        borderWidth: 1,
-        borderColor: isHighlight ? t.primary : t.outlineVariant,
-      }}
-    >
-      <Text
-        className="text-lg"
-        style={{ color: isHighlight ? t.onSurface : t.onSurfaceVariant }}
-      >
-        {label}
-      </Text>
-      <View className="flex-row items-center gap-6">
-        <TouchableOpacity
-          onPress={onDecrement}
-          accessibilityRole="button"
-          accessibilityLabel={`Bajar ${label}`}
-          className="w-11 h-11 rounded-full items-center justify-center"
-          style={{ backgroundColor: t.surfaceContainerHigh }}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Text className="text-2xl font-bold leading-none" style={{ color: t.onSurface }}>
-            −
-          </Text>
-        </TouchableOpacity>
-        <Text
-          className="text-3xl font-bold w-16 text-center"
-          style={{ color: t.onSurface, fontVariant: ['tabular-nums'] }}
-        >
-          {display}
-        </Text>
-        <TouchableOpacity
-          onPress={onIncrement}
-          accessibilityRole="button"
-          accessibilityLabel={`Subir ${label}`}
-          className="w-11 h-11 rounded-full items-center justify-center"
-          style={{ backgroundColor: t.surfaceContainerHigh }}
-          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-        >
-          <Text className="text-2xl font-bold leading-none" style={{ color: t.onSurface }}>
-            +
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
 }
 
 export default function TabataSetupScreen() {

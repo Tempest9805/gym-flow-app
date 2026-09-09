@@ -10,6 +10,89 @@ Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
 
 ---
 
+## 2026-09-09 — QA ADB completo (2ª pasada): los cuatro arreglos aguantan, y sale un P1 nuevo
+
+tsc ✅ · jest 276 ✅ · lint ✅ · cero crashes — emulador Pixel 9 Pro, 1280×2856.
+
+### Verificado en dispositivo
+
+Los cuatro arreglos de estas dos sesiones, confirmados uno a uno:
+
+- **El importador lee lo que exporta la app**: copiar la rutina entera y
+  pegarla da **6 días · 47 ejercicios · 29 con ficha**, y crea un duplicado
+  exacto. Antes: 2 días · 16 ejercicios.
+- **«Día A» sobrevive** al borrado de «Día B». Antes se convertía en «Día 1».
+- **Segunda entrada a los timers**: el de intervalos abre en TRABAJO contando y
+  el tabata en PREPARA. Y con 2 rondas el contador avanza de RONDA 1/2 a 2/2 y
+  termina en COMPLETADO — el caso que ayer abría muerto.
+- **El fin del temporizador se lee** en oscuro.
+
+Y lo de siempre: descanso completo (arranca, se para al tocar la celda, avisa
+en segundo plano nombrando el ejercicio, sobrevive a la pantalla apagada con el
+tiempo real 2:00 → 1:20, sin contador zombi ni aviso fantasma tras matar la
+app), persistencia tras `force-stop`, y `Restaurar datos` dejándote en Ajustes.
+
+### P1 nuevo: el editor de celda, detrás del teclado
+
+**Síntoma.** Con el teclado software arriba, la hoja del `CellEditor` queda
+**entera** por debajo: título, campo, atajos y los dos botones. Se escribe a
+ciegas y «Guardar» no responde —comprobado tocando sus coordenadas exactas—.
+La única salida era la tecla ✓ del teclado, que sí guarda, y por eso el bug
+llevaba ahí sin verse.
+
+**Causa raíz.** `KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}`:
+en Android el `behavior` es `undefined`, o sea que el componente **no hace
+nada**. Estaba escrito dando por hecho que la ventana se encogería sola, y con
+`edgeToEdgeEnabled` ya no se encoge. Como el input lleva `autoFocus`, en un
+móvil de verdad el teclado sube siempre. Es la misma causa raíz que obligó a
+subir las acciones del importador a la cabecera.
+
+**Por qué no salió antes.** El emulador tiene teclado físico y el IME no sube:
+la pantalla parece sana. Sale con
+`adb shell settings put secure show_ime_with_hard_keyboard 1`, y eso queda en
+las reglas.
+
+**Arreglo.** La altura real del teclado desde `keyboardDidShow`, **más
+`insets.bottom`**: con edge-to-edge esa altura se mide desde la barra de
+navegación y no desde el borde de la pantalla, y sin sumarlo los botones salen
+mordidos —se vio y se corrigió—. Verificado: la hoja sube entera y Guardar
+responde con el teclado abierto; sin teclado no queda hueco muerto.
+
+### El ajuste de intervalos ya habla el idioma de la casa
+
+Era la pantalla que no se parecía a ninguna otra. `SectionPill` y `StepperRow`
+salen de `tabata.tsx` a `components/timers/SetupControls.tsx` y ahora las usan
+las dos, así que no vuelven a separarse. La cabecera es de chevron, las
+secciones son TIEMPOS / ESTRUCTURA / OPCIONES y el botón dice EMPEZAR.
+
+Lo que **no** se unifica: minutos y segundos siguen por separado. Un
+`StepperRow` mueve un solo valor y aquí hacen falta dos — poner cinco minutos a
+saltos de cinco segundos son sesenta toques.
+
+De paso, dos defectos reales de esa pantalla: `ControlRow` estaba **definida
+dentro del componente**, así que React la veía nueva en cada render y
+desmontaba el subárbol entero; y el botón del pie llevaba relleno fijo en vez
+de `useSafeAreaInsets()`, que es un Must Always.
+
+### P3: el `reps` largo ya no se corta
+
+`al fallo tecnico` se quedaba en «al fallo …». La celda de reps admite dos
+líneas, como el nombre del ejercicio; series y descanso siguen en una, que
+siempre caben.
+
+### Sigue abierto
+
+La tipografía no crece en tablet: las columnas se estiran y el texto se queda
+en 14 px. Es una escala tipográfica responsive, decisión de diseño aparte.
+
+### Archivos
+
+`components/timers/SetupControls.tsx` (nuevo) · `app/(app)/timer.tsx` ·
+`app/(app)/tabata.tsx` · `components/routine/CellEditor.tsx` ·
+`components/routine/RoutineTable.tsx`
+
+---
+
 ## 2026-09-09 — Los dos P2 del QA: el nombre del día y el viaje de vuelta
 
 tsc ✅ · jest 276 ✅ · lint ✅ — los dos son dominio puro, con test primero.
