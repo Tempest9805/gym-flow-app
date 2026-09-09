@@ -12,6 +12,7 @@
  */
 
 import { findExercise } from './matchExercise';
+import { parseDuration } from './time';
 import { blankDay, blankRow } from './routine';
 import type { Exercise, Routine } from './types';
 
@@ -61,6 +62,87 @@ const VINETA = /^\s*(?:\d{1,2}\s*[.)\-]|[-–—•*·])\s*/;
 
 /** Emojis y simbolos decorativos sueltos al principio de una linea. */
 const ADORNO_INICIAL = /^[\s\p{Extended_Pictographic}☀-➿️]+/u;
+
+/**
+ * Lo que exporta la propia app, de vuelta.
+ *
+ * «Copiar» en Hoy y «Pegar» en Rutinas estan a un toque, asi que duplicar la
+ * rutina es el gesto obvio — y sin esto el markdown volvia como 16 ejercicios
+ * donde habia 7: la cabecera de la tabla, la fila de guiones y la leyenda
+ * entraban como filas.
+ */
+
+/** Una fila de tabla markdown: `| a | b | c |`. */
+const FILA_TABLA = /^\|(.+)\|\s*$/;
+
+/** La linea de metadatos que abre el export. No es un ejercicio. */
+const CABECERA_RUTINA = /^\s*rutina\s*:/i;
+
+/** A partir de aqui solo hay explicaciones de las columnas. */
+const LEYENDA = /^\s*leyenda\s*:/i;
+
+/** «(8 ejercicios)» al cierre de una cabecera es el conteo, no el enfoque. */
+const CONTEO_EJERCICIOS = /\s*\(\s*\d+\s*ejercicios?\s*\)\s*$/i;
+
+/** El sufijo con el que el export marca las filas por intervalos. */
+const SUFIJO_TABATA = /\s*\(tabata\)\s*$/i;
+
+/** Las columnas de la tabla, aprendidas de su cabecera. */
+interface Columnas {
+  nombre: number;
+  series: number;
+  reps: number;
+  descanso: number;
+}
+
+function celdas(linea: string): string[] | null {
+  const match = FILA_TABLA.exec(linea.trim());
+  return match ? match[1].split('|').map((celda) => celda.trim()) : null;
+}
+
+/** `|---|---|`: separa la cabecera del cuerpo y no dice nada. */
+function esSeparadorDeTabla(cs: readonly string[]): boolean {
+  return cs.every((celda) => celda === '' || /^:?-{2,}:?$/.test(celda));
+}
+
+/**
+ * Aprende que columna es cual leyendo la cabecera, en vez de dar por hecho el
+ * orden: asi una tabla escrita a mano con las columnas en otro orden tambien
+ * entra. Sin columna de ejercicio no hay tabla que valga la pena.
+ */
+function leerCabeceraTabla(cs: readonly string[]): Columnas | null {
+  const columnas: Columnas = { nombre: -1, series: -1, reps: -1, descanso: -1 };
+
+  cs.forEach((celda, i) => {
+    const texto = celda.toLowerCase();
+    if (/ejercicio|movimiento/.test(texto)) columnas.nombre = i;
+    else if (/series|sets/.test(texto)) columnas.series = i;
+    else if (/repeticion|reps/.test(texto)) columnas.reps = i;
+    else if (/descanso|rest/.test(texto)) columnas.descanso = i;
+  });
+
+  return columnas.nombre === -1 ? null : columnas;
+}
+
+/** Una fila de datos, ya sabiendo donde esta cada cosa. */
+function filaDeTabla(cs: readonly string[], columnas: Columnas): ParsedRow | null {
+  const bruto = cs[columnas.nombre] ?? '';
+  const esTabata = SUFIJO_TABATA.test(bruto);
+  const name = limpiar(bruto.replace(SUFIJO_TABATA, ''));
+  if (name === '') return null;
+
+  const series = Number(cs[columnas.series]);
+  const descanso = parseDuration(cs[columnas.descanso] ?? '');
+  const reps = limpiar(cs[columnas.reps] ?? '');
+
+  return {
+    name,
+    sets: Number.isInteger(series) && series > 0 ? series : 3,
+    reps: esTabata ? 'tabata' : reps === '' ? '10' : reps,
+    restSeconds: esTabata ? 0 : (descanso ?? DEFAULT_REST_SECONDS),
+    mode: esTabata ? 'tabata' : 'reps',
+  };
+}
 
 function limpiar(texto: string): string {
   return texto.replace(/\s+/g, ' ').trim();
@@ -130,7 +212,7 @@ function leerCabecera(linea: string): { label: string; focus: string } | null {
 
   const token = match[1];
   const parentesis = match[2] ?? '';
-  const focus = nombreLimpio(match[3] ?? '');
+  const focus = nombreLimpio((match[3] ?? '').replace(CONTEO_EJERCICIOS, ''));
 
   return {
     label: limpiar(`Día ${token} ${parentesis}`),
@@ -148,10 +230,16 @@ export function parseRoutineText(text: string): ParsedRoutine {
   const days: ParsedDay[] = [];
   let actual: ParsedDay | null = null;
   let unparsedLines = 0;
+  let columnas: Columnas | null = null;
 
   for (const cruda of text.split(/\r?\n/)) {
     const linea = cruda.trim();
     if (linea === '' || SEPARADOR.test(linea)) continue;
+
+    // Lo que hay bajo «Leyenda:» explica las columnas; no son ejercicios.
+    if (LEYENDA.test(linea)) break;
+    // «RUTINA: … — Atleta: …» son metadatos, y sin esto abrian un dia extra.
+    if (CABECERA_RUTINA.test(linea)) continue;
 
     const cabecera = leerCabecera(linea);
     if (cabecera) {
@@ -160,7 +248,31 @@ export function parseRoutineText(text: string): ParsedRoutine {
       continue;
     }
 
-    const leida = leerFila(linea);
+    const cs = celdas(linea);
+    if (cs) {
+      if (esSeparadorDeTabla(cs)) continue;
+
+      const nuevasColumnas = leerCabeceraTabla(cs);
+      if (nuevasColumnas) {
+        columnas = nuevasColumnas;
+        continue;
+      }
+
+      if (columnas) {
+        const fila = filaDeTabla(cs, columnas);
+        if (!fila) continue;
+        if (!actual) {
+          actual = { label: 'Día 1', focus: '', rows: [] };
+          days.push(actual);
+        }
+        actual.rows.push(fila);
+        continue;
+      }
+      // Una tabla sin cabecera reconocible: se lee como texto suelto antes que
+      // perder la linea.
+    }
+
+    const leida = leerFila(cs ? cs.join(' ') : linea);
     if (!leida) continue;
     if (!leida.leida) unparsedLines += 1;
 

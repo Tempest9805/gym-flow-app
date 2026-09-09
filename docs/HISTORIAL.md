@@ -10,6 +10,55 @@ Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
 
 ---
 
+## 2026-09-09 — Los dos P2 del QA: el nombre del día y el viaje de vuelta
+
+tsc ✅ · jest 276 ✅ · lint ✅ — los dos son dominio puro, con test primero.
+**Sin confirmar en dispositivo**: el emulador está apagado.
+
+### Quitar un día se llevaba por delante los nombres
+
+**Síntoma.** Una rutina pegada con «Día A» y «Día B» pasaba a «Día 1» y «Día 2»
+en cuanto borrabas un tercer día.
+
+**Causa raíz.** `removeDay` renumeraba **todas** las etiquetas para que no
+quedaran huecos, sin mirar cuáles las había puesto la app. El importador guarda
+el nombre que escribió el coach a propósito —«Día A», «Lunes», «Push»— y esto
+se lo comía en silencio.
+
+**Arreglo.** `esEtiquetaAutomatica()`: solo se renumera lo que encaja en
+`Día N`, y por su posición. Lo demás es del usuario y se queda.
+
+### El importador ahora lee lo que exporta la propia app
+
+**Síntoma.** Copiar un día y pegarlo en «Pegar rutina» leía **16 ejercicios
+donde había 7**, en dos días llamados los dos «Día 1».
+
+**Causa raíz.** El parser trata cada línea como ejercicio salvo que sea
+cabecera de día. La fila de columnas, la de guiones, las seis líneas de la
+leyenda y la línea `RUTINA: …` entraban todas como filas — 1 + 1 + 7 + 6 = 15,
+más la de metadatos abriendo un día extra. La cuenta cuadra exactamente con lo
+que se vio en el QA.
+
+**Por qué importa.** «Copiar» está en Hoy y «Pegar» en Rutinas, a un toque el
+uno del otro: duplicar la rutina es el gesto obvio y daba basura.
+
+**Arreglo.** El parser entiende tablas markdown: aprende qué columna es cuál
+**leyendo la cabecera** en vez de dar por hecho el orden, se salta la fila de
+guiones, corta en «Leyenda:» y descarta la línea `RUTINA:`. Una tabla sin
+cabecera reconocible sigue leyéndose como texto suelto, que la regla de no
+perder nunca una línea manda sobre todo lo demás. También quita el
+`(8 ejercicios)` del final del título, que es conteo y no enfoque.
+
+**El test es el viaje entero**: exporta con `routineToMarkdown`, vuelve a
+pegar, y compara días, filas, nombre, series, reps y descanso. Si el formato de
+export cambia, el test lo sigue.
+
+### Archivos
+
+`lib/domain/routine.ts` · `lib/domain/importRoutine.ts` y sus dos tests
+
+---
+
 ## 2026-09-08 — Los dos P1 del QA: el estado que sobrevive y el token que no se lee
 
 tsc ✅ · jest 266 ✅ · lint ✅ — los dos verificados en el emulador, no solo

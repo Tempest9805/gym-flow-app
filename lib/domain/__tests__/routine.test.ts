@@ -170,6 +170,37 @@ describe('removeDay', () => {
   it('is a no-op for an unknown day', () => {
     expect(removeDay(three, 'nope', 'x')).toBe(three);
   });
+
+  // El importador guarda el nombre que escribio el coach —«Dia A», «Lunes»,
+  // «Push»— a proposito. Renumerar todo se lo llevaba por delante al borrar
+  // cualquier otro dia.
+  it('respeta los nombres que no son «Dia N»', () => {
+    const conNombres: Routine = {
+      ...three,
+      days: [
+        { ...three.days[0], label: 'Día A' },
+        { ...three.days[1], label: 'Lunes' },
+        { ...three.days[2], label: 'Día 3' },
+      ],
+    };
+
+    const r = removeDay(conNombres, conNombres.days[1].id, 'x');
+    expect(r.days.map((d) => d.label)).toEqual(['Día A', 'Día 2']);
+  });
+
+  it('renumera solo los automaticos, por su posicion', () => {
+    const mezcla: Routine = {
+      ...three,
+      days: [
+        { ...three.days[0], label: 'Push' },
+        { ...three.days[1], label: 'Día 2' },
+        { ...three.days[2], label: 'Día 3' },
+      ],
+    };
+
+    const r = removeDay(mezcla, mezcla.days[1].id, 'x');
+    expect(r.days.map((d) => d.label)).toEqual(['Push', 'Día 2']);
+  });
 });
 
 describe('setDayFocus', () => {

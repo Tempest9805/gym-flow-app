@@ -122,6 +122,18 @@ export function addDay(routine: Routine, focus: string, nowIso: string): Routine
 }
 
 /**
+ * Una etiqueta que puso la app, no el usuario.
+ *
+ * Es lo unico que distingue «Día 3» —que hay que renumerar para que no queden
+ * huecos— de «Día A», «Lunes» o «Push», que los escribio el coach y son suyos.
+ * El importador guarda el nombre literal a proposito; renumerar sin mirar se lo
+ * llevaba por delante al borrar cualquier otro dia.
+ */
+function esEtiquetaAutomatica(label: string): boolean {
+  return /^Día \d+$/.test(label);
+}
+
+/**
  * Drop a day and renumber the rest, so labels never show a gap.
  * Removing the last remaining day is refused: a routine with no days
  * cannot be trained and has no way back.
@@ -132,7 +144,9 @@ export function removeDay(routine: Routine, dayId: string, nowIso: string): Rout
 
   const days = routine.days
     .filter((d) => d.id !== dayId)
-    .map((day, index) => ({ ...day, label: `Día ${index + 1}` }));
+    .map((day, index) =>
+      esEtiquetaAutomatica(day.label) ? { ...day, label: `Día ${index + 1}` } : day,
+    );
 
   return { ...routine, days, updatedAt: nowIso };
 }

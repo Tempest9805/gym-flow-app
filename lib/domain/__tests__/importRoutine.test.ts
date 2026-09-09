@@ -1,4 +1,5 @@
 import seed from '@/lib/data/exercises.seed.json';
+import { dayToMarkdown, routineToMarkdown } from '../export';
 import { countLinked, parseRoutineText, routineFromParsed } from '../importRoutine';
 import type { Exercise } from '../types';
 
@@ -272,5 +273,79 @@ describe('routineFromParsed', () => {
     expect(routineFromParsed(parseRoutineText('Sentadilla 4x8'), '  ', BIBLIOTECA, 'x').name).toBe(
       'Mi rutina',
     );
+  });
+});
+
+/**
+ * El viaje de ida y vuelta: copiar una rutina y volver a pegarla.
+ *
+ * Los dos botones estan a un toque el uno del otro —«Copiar» en Hoy, «Pegar»
+ * en Rutinas— asi que duplicar la propia rutina es el gesto obvio. Antes de
+ * esto, pegar el markdown de vuelta leia 16 ejercicios donde habia 7: la fila
+ * de cabecera, la de guiones y las seis lineas de la leyenda entraban como
+ * ejercicios, y la linea «RUTINA: …» inventaba un dia extra.
+ */
+describe('pegar lo que exporta la propia app', () => {
+  const original = routineFromParsed(parseRoutineText(RUTINA_DANIEL), 'Ida', BIBLIOTECA, 'x');
+
+  describe('la rutina entera', () => {
+    const devuelta = parseRoutineText(routineToMarkdown(original));
+
+    it('devuelve los mismos dias, sin uno de mas', () => {
+      expect(devuelta.days).toHaveLength(original.days.length);
+    });
+
+    it('devuelve los mismos ejercicios, sin la cabecera ni la leyenda', () => {
+      expect(devuelta.days.map((d) => d.rows.length)).toEqual(
+        original.days.map((d) => d.rows.length),
+      );
+    });
+
+    it('conserva nombre, series, repeticiones y descanso de cada fila', () => {
+      const ida = original.days[0].rows[0];
+      const vuelta = devuelta.days[0].rows[0];
+
+      expect(vuelta.name).toBe(ida.name);
+      expect(vuelta.sets).toBe(ida.sets);
+      expect(vuelta.reps).toBe(ida.reps);
+      expect(vuelta.restSeconds).toBe(ida.restSeconds);
+    });
+
+    it('mantiene el foco del dia', () => {
+      expect(devuelta.days[0].focus).toBe(original.days[0].focus);
+    });
+
+    it('la cuerda sigue siendo tabata', () => {
+      const cuerda = devuelta.days[0].rows.find((r) => r.mode === 'tabata');
+      expect(cuerda).toBeDefined();
+      expect(cuerda?.name).not.toMatch(/\(tabata\)/);
+    });
+
+    it('no deja lineas sin leer', () => {
+      expect(devuelta.unparsedLines).toBe(0);
+    });
+  });
+
+  it('un solo dia tambien vuelve entero', () => {
+    const dia = original.days[1];
+    const devuelta = parseRoutineText(dayToMarkdown(original, dia));
+
+    expect(devuelta.days).toHaveLength(1);
+    expect(devuelta.days[0].rows).toHaveLength(dia.rows.length);
+  });
+
+  it('lo marcado no viaja: una rutina pegada empieza limpia', () => {
+    const hecha = {
+      ...original,
+      days: [{ ...original.days[0], rows: original.days[0].rows.map((r) => ({ ...r, done: true })) }],
+    };
+    const devuelta = routineFromParsed(
+      parseRoutineText(routineToMarkdown(hecha)),
+      'Vuelta',
+      BIBLIOTECA,
+      'x',
+    );
+
+    expect(devuelta.days.flatMap((d) => d.rows).filter((r) => r.done)).toHaveLength(0);
   });
 });
