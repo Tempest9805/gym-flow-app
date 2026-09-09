@@ -10,6 +10,66 @@ Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
 
 ---
 
+## 2026-09-08 — QA en dispositivo: el tabata al dominio y dos cuentas mal
+
+tsc ✅ · jest 264 ✅ · lint ✅ — `6d1990c`
+
+### La maquina de estados sale de la pantalla
+
+La logica de fases vivía dentro de `tabata-active.tsx`, 584 líneas con
+`setInterval`, animaciones y navegación. Comprobar si la última ronda terminaba
+pedía correr un tabata entero en un emulador — por eso seguía en la lista de
+«nunca probado». Ahora es `lib/domain/tabata.ts` con 22 tests, uno de los cuales
+corre el reloj entero y cuenta los tics.
+
+Los tests destaparon **dos errores reales, los dos visibles en pantalla**:
+
+- **El total sobraba un descanso por ciclo.** La última ronda de cada ciclo no
+  lleva descanso detrás. Con la config por defecto anunciaba **16:35 para un
+  tabata de 14:55**: el contador llegaba al final marcando 1:40 restantes.
+- **«RONDAS RESTANTES» marcaba 0** antes de empezar un tabata de una ronda,
+  porque restaba sin mirar la fase.
+
+Los dos confirmados arreglados en el emulador (14:55 y 3).
+
+De paso, los efectos salen del actualizador de `useState`: vibrar, parpadear y
+navegar son consecuencias de que la fase **haya** cambiado, no parte de
+calcularla.
+
+### Lo que el QA descartó
+
+- **Crear y borrar rutinas** funciona y persiste tras reiniciar.
+- **La config del tabata sí persiste.** Parecía que no, pero mis deep links a
+  `gymflow://tabata-active` se saltaban la pantalla de ajustes, que es la única
+  que llama a `loadConfig()`. Por el flujo real —el único que existe— se carga
+  y se guarda bien.
+- **El botón de play no está roto.** Llegué a «arreglarlo» con
+  `pointerEvents="none"` en el anillo SVG y a escribir el bug en un comentario.
+  Era falso: `adb shell input tap` es demasiado rápido para `TouchableOpacity`.
+  Revertido.
+
+### Sigue sin verificarse
+
+El salto final al resumen en dispositivo. `adb` no consigue pulsar ese botón de
+forma fiable (ni `tap`, ni `swipe` mantenido, ni `motionevent`). Que la fase
+llega a `done` está cubierto por tests; la navegación en sí es un `useEffect` de
+doce líneas.
+
+### El release, un blocker menos
+
+El fallo de `libworklets.so` **está resuelto**: el CMake de reanimated apunta al
+`buildDir` por defecto de worklets, así que basta con excluir ese módulo del
+redirect de MAX_PATH en `android/build.gradle`.
+
+Detrás aparece el siguiente, y este es de fondo: CMake **espeja la ruta del
+fuente dentro del nombre del objeto**, así que la ruta del proyecto en OneDrive
+(62 caracteres) se suma a cada `.o` y pasa de 260. Medido: 320 con la ruta real,
+259 por el junction `C:\g` — un carácter de margen, que no es margen. **La
+salida de verdad es mover el repo fuera de OneDrive**, a algo como `C:\dev\`.
+La fluidez sigue sin medir.
+
+---
+
 ## 2026-09-08 — La biblioteca en español, pegar rutinas y la bienvenida
 
 Cuatro pendientes cerrados en orden de prioridad, todos verificados en el

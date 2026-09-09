@@ -102,6 +102,12 @@ npm run seed                  # regenerar semillas desde el CSV y el parte
 >
 > `android/` está gitignored: se regenera con `npx expo prebuild`.
 
+**El APK de release aún no compila en esta máquina.** El debug sí. CMake espeja
+la ruta del fuente dentro del nombre de cada `.o`, así que la ruta del proyecto
+en OneDrive lo empuja por encima de los 260 caracteres de ninja. El junction
+`C:\g` deja 259 —un carácter— y no basta: **la salida es mover el repo fuera de
+OneDrive**. Por eso la fluidez sigue sin medir.
+
 **Compilar en Windows tiene dos trampas conocidas** (ver `docs/HISTORIAL.md`):
 
 1. `npx expo run:android` se cuelga eligiendo dispositivo si no hay stdin.
@@ -117,6 +123,10 @@ npm run seed                  # regenerar semillas desde el CSV y el parte
    - `android/gradle.properties` lleva
      `android.packagingOptions.pickFirsts=**/libworklets.so`, porque reanimated
      y worklets emiten los dos el mismo `.so`
+   - **`react-native-worklets` va excluido del redirect de `buildDir`**: el
+     CMake de reanimated apunta a `${REACT_NATIVE_WORKLETS_DIR}/android/build/`
+     a pelo, o sea al buildDir por defecto. Si se le mueve, ninja falla con
+     *«libworklets.so … missing and no known rule to make it»*
    Los tres parches viven en `android/`, que se regenera: **al siguiente
    prebuild hay que volver a ponerlos.** Para deshacerlos: `rmdir C:\g` y
    borrar `C:\b`.

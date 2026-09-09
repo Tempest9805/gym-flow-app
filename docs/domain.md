@@ -52,6 +52,7 @@ representar la rutina real que originó este MVP**.
 | `importRoutine.ts` | Leer una rutina pegada como texto y construirla, sin IA |
 | `matchExercise.ts` | Unir un nombre escrito a mano con la biblioteca |
 | `plural.ts` | Contar en español sin que salga «1 rutinas» |
+| `tabata.ts` | Las fases del tabata: avanzar, contar rondas y ciclos |
 
 ## Dos detalles que costaron un test
 
