@@ -69,6 +69,9 @@ tomada, no de buenas intenciones.
   Usar el contador de generación de `useRestTimer`.
 - **Usar el día en pantalla para una acción que pertenece a otro día.** Guardar
   el `dayId` con la acción. Fue el bug de DESHACER.
+- **Dar por probada una pantalla con estado local sin volver a entrar en ella.**
+  Las pantallas de acción viven en el `Tabs` y no se desmontan: la primera
+  visita siempre funciona. El caso que rompe es la **segunda**.
 - **Usar `as any` en un nombre de ruta.** Oculta errores reales de ruta, que es
   justo lo que se rompe al reorganizar la navegación.
 - **`git add .` sin mirar `git status`.** `.env` está gitignored; que siga así.
@@ -96,6 +99,9 @@ Si un síntoma se parece a uno de estos, probar primero esta hipótesis.
 
 | Síntoma | Causa raíz | Sesión |
 |---|---|---|
+| Un temporizador abre ya terminado la segunda vez | Las pantallas «ocultas» son `Tabs.Screen` con `href: null`: un `Tabs` monta una vez y no desmonta, así que el `useState` inicial no se repite y queda el estado de la visita anterior. `unmountOnBlur` ya no existe en React Navigation 7 | 2026-09-08 |
+| Un botón del pie no responde **en dev build** | El aviso de LogBox («Open debugger to view warnings») se come los toques de su franja, más alta que el propio aviso. Cerrarlo antes de diagnosticar nada | 2026-09-08 |
+| Una pantalla entera en inglés en una app española | El valor del estado se pintaba tal cual (`{phase}` con `'WORK'`). Traducir en el borde del render, nunca reutilizar el estado como texto | 2026-09-08 |
 | Un cambio en `lib/data/` no se ve en la app | El almacenamiento manda tras la primera siembra; hay que subir `LIBRARY_VERSION` | 2026-09-08 |
 | Texto invisible en una pantalla concreta | Fondo hardcodeado + tinta del tema. Solo era seguro mientras todos los temas eran oscuros; con el claro da 1,1:1 | 2026-09-08 |
 | Un token de borde usado como color de texto | `outlineVariant` existe para separar, no para leerse: 1,4:1 en los dos temas | 2026-09-08 |

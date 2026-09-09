@@ -127,6 +127,7 @@ export const CRITICAL_PAIRS: ContrastPair[] = [
   { label: 'Fase preparar como TINTA', fg: 'tabataPrepare', bg: 'background', min: 4.5, where: 'tabata-active.tsx' },
   { label: 'Fase trabajo como TINTA', fg: 'tabataWork', bg: 'background', min: 4.5, where: 'tabata-active.tsx' },
   { label: 'Fase descanso como TINTA', fg: 'tabataRest', bg: 'background', min: 4.5, where: 'tabata-active.tsx' },
+  { label: 'Fin del temporizador de intervalos', fg: 'onSurface', bg: 'surfaceContainer', min: 4.5, where: 'timer-active.tsx (COMPLETADO y LISTO)' },
 ];
 
 export const DARK_THEME: Theme = {

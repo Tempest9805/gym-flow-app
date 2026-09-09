@@ -73,6 +73,11 @@ export default function ImportScreen() {
     );
     saveRoutine(rutina);
     setActiveRoutine(rutina.id);
+    // La pantalla es una pestana y no se desmonta: sin vaciar, al volver a
+    // «Pegar» sigue ahi el texto de la rutina que ya se creo, y darle a Crear
+    // otra vez la duplica.
+    setTexto('');
+    setNombre('');
     router.replace('/');
   };
 

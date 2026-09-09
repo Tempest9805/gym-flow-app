@@ -10,6 +10,170 @@ Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
 
 ---
 
+## 2026-09-08 — Los dos P1 del QA: el estado que sobrevive y el token que no se lee
+
+tsc ✅ · jest 266 ✅ · lint ✅ — los dos verificados en el emulador, no solo
+compilando.
+
+### El estado que sobrevivía a la sesión
+
+**Síntoma.** La segunda vez que entrabas en el tabata o en el temporizador de
+intervalos dentro de la misma apertura, la pantalla abría **ya terminada**
+—HECHO · 00:00 · 0 rondas, y COMPLETADO · 0:00— y no contaba ni un segundo. El
+importador, por lo mismo, conservaba el texto de una rutina que ya habías
+creado.
+
+**Causa raíz.** Las ocho pantallas «ocultas» son `Tabs.Screen` con `href: null`
+y un `Tabs` **monta una vez y no desmonta nunca**: `router.push` solo cambia el
+foco, así que el inicializador de `useState` no se vuelve a ejecutar y queda el
+estado de la visita anterior. En `timer-active` se veía especialmente claro:
+«RONDA 1/2» —los params sí llegan— junto a COMPLETADO, que es estado viejo.
+
+**Por qué no se detectó antes.** Todo el QA anterior probaba cada pantalla
+**una vez**, y desde una app recién abierta siempre funciona. El caso que rompe
+es la segunda entrada, y no había ningún paso que la ejerciera. Es cableado de
+navegación: no hay forma de expresarlo en `lib/domain/`, así que la cobertura
+que falta es de recorrido, no de dominio.
+
+**Arreglo.** `useFocusEffect` reiniciando el estado al enfocar, que es lo que
+haría el desmontaje, en `tabata-active.tsx` y `timer-active.tsx`; y vaciar el
+borrador dentro de `crear` en `import.tsx`. En el tabata también se reinicia
+`fasePrevia`, o el efecto de vibrar ve un cambio de fase que no ha ocurrido y
+vibra al entrar.
+
+**Lo que NO se hizo, a propósito.** La salida estructural es sacar esas
+pantallas del `Tabs` a un `Stack` —les quitaría además la tab bar, que en un
+tabata a pantalla completa no pinta nada—. Cambia el comportamiento del botón
+atrás en ocho pantallas y obliga a repetir el QA entero, así que queda como
+decisión aparte. `unmountOnBlur` no vale: no existe en React Navigation 7
+(7.15.10 aquí), solo queda `popToTopOnBlur`, que es para pilas.
+
+**Auditoría del patrón.** Seis pantallas guardan estado local. En `stopwatch`
+conservarlo es lo que uno espera de un cronómetro, en `timer` (ajuste) también,
+y `tabata` (ajuste) se resincroniza al arrancar. `exercise/[id]` y
+`tabata-summary` no tienen estado propio.
+
+### El token de borde usado como texto, otra vez
+
+**Síntoma.** La pantalla de fin del temporizador de intervalos, en oscuro:
+«COMPLETADO» y el botón «LISTO» —la única acción— casi invisibles.
+
+**Causa raíz.** `accentColor` valía `t.outlineVariant` cuando `isDone`. Es el
+token de separar, no el de leer: **1,34:1 en oscuro y 1,45:1 en claro** sobre
+`surfaceContainer`. Ya estaba en el Hall of Fame desde la revisión de color,
+vivo en este archivo.
+
+**Arreglo.** `t.onSurface`: 16,31:1 y 15,88:1. Y el par entra en
+`CRITICAL_PAIRS` con su `where`, que es el test que habría cazado esto —los dos
+tests nuevos son los que suben el total a 266.
+
+### Archivos
+
+`app/(app)/tabata-active.tsx` · `app/(app)/timer-active.tsx` ·
+`app/(app)/import.tsx` · `lib/domain/theme.ts`
+
+---
+
+## 2026-09-08 — QA ADB completo: RECHAZADO por una pantalla que no se desmonta
+
+tsc ✅ · jest 264 ✅ · lint ✅ — recorrido entero contra el emulador
+(Pixel 9 Pro, 1280×2856), tema claro y oscuro.
+
+### Lo que quedó verificado en dispositivo
+
+Lo grande primero: **el tabata llega al resumen solo**. Era el pendiente de la
+sesión anterior, el que `adb` no conseguía pulsar. Con la configuración mínima
+(1 ronda, 1 ciclo, 5+5) corre entero y salta a «¡SESIÓN COMPLETA! · 10s ·
+1/1 · 1/1» — el mismo número que dice `totalSeconds`. Las dos cuentas que se
+arreglaron en el dominio se ven bien en pantalla: TOTAL 00:10 y RONDAS
+RESTANTES 1.
+
+El descanso, que es la zona de más riesgo, pasa entera: cuenta atrás en la
+celda, se detiene al tocarla y al desmarcar, se muestra al marcar otra fila,
+**avisa con la app en segundo plano** (canal `rest-timer`, importancia 4,
+patrón de vibración, y el texto nombra el ejercicio), sobrevive a la pantalla
+apagada con el tiempo real (2:00 → 1:11 tras 49 s fuera), aparece ya terminado
+si venció mientras no mirabas, y matando la app no queda contador zombi **ni
+suena un aviso fantasma**.
+
+También: persistencia tras `force-stop`, DESHACER restaurando en su posición
+exacta, el aviso de DESHACER desapareciendo al cambiar de día, `Restaurar
+datos originales` dejándote en Ajustes, búsqueda sin acentos, el ▶ abriendo
+video fijado o búsqueda de YouTube según toque, modo avión, tablet sin scroll
+horizontal, y doble toque en Guardar sin duplicar.
+
+### La causa raíz que sostiene tres síntomas
+
+**Las pantallas «ocultas» son pestañas, no rutas de pila.** En
+`app/(app)/_layout.tsx` las ocho van como `<Tabs.Screen … href: null>`, y un
+`Tabs` **monta cada pantalla una vez y no la desmonta nunca**. `router.push`
+solo cambia el foco, así que el `useState` inicial no se vuelve a ejecutar y
+el estado local de la visita anterior sigue ahí.
+
+Se ve en tres sitios, con la misma firma:
+
+- **`tabata-active`**: la segunda vez que entras en la misma sesión abre en
+  **HECHO · 00:00 · 0 rondas · 0 ciclos** y no arranca.
+- **`timer-active`**: la segunda vez abre en **COMPLETADO · 0:00**, y la
+  cabecera dice «RONDA 1/2» porque `totalRounds` sí llega por params mientras
+  la ronda en curso se quedó atrás.
+- **`import`**: conserva el texto pegado después de haber creado la rutina, y
+  sobrevive incluso a `Restaurar datos originales`.
+
+Arrancando la app de cero funciona: por eso no había salido antes.
+
+`unmountOnBlur` ya no existe en React Navigation 7 (7.15.10 aquí); solo queda
+`popToTopOnBlur`, que es para pilas. Las dos salidas son sacar esas pantallas
+del `Tabs` a un `Stack` —que además les quita la tab bar, que ahí no pinta
+nada— o reiniciar el estado en `useFocusEffect` pantalla por pantalla.
+
+### Lo demás que salió
+
+- **El temporizador de intervalos estaba entero en inglés** —«INTERVAL TIMER»,
+  «WORK», «REST», «RESET», «COMPLETED», «DONE»— en una app que es española por
+  regla. Era la única pantalla así. **Arreglado**: `ETIQUETA_FASE` traduce en
+  el borde del render y la fase sigue siendo estado interno, que es lo que
+  evita que vuelva a pasar. Verificado en dispositivo: INTERVALOS · TRABAJO ·
+  REINICIAR · COMPLETADO · LISTO · RONDA 1/2.
+- **La pantalla de fin de ese temporizador es ilegible en oscuro**: usa
+  `outlineVariant` como color de texto, el token de borde que ya está en el
+  Hall of Fame por dar 1,4:1. «COMPLETADO» y sobre todo el botón «LISTO» —la
+  única acción— apenas se ven.
+- **Quitar un día renumera *todos* los días** (`lib/domain/routine.ts:129`),
+  así que una rutina pegada con «Día A» y «Día B» pasa a «Día 1» y «Día 2» al
+  borrar un tercero. El importador guarda el nombre que escribió el usuario a
+  propósito; esto se lo lleva por delante sin avisar.
+- **El importador no entiende lo que exporta la propia app.** Pegar el
+  markdown de «Copiar» lee 16 ejercicios donde hay 7 y dos días llamados los
+  dos «Día 1». La vista previa lo enseña antes de crear nada, que es la red de
+  seguridad, pero el resultado es basura.
+- Menor: el temporizador de intervalos es la pantalla que no se parece a
+  ninguna otra («← Volver» en texto, ± apilados, «Empezar ▶»); en tablet la
+  tipografía no crece aunque las columnas sí; un `reps` largo se corta con
+  puntos suspensivos.
+
+### Trampa de QA nueva
+
+**El aviso de LogBox del dev build se come los toques de una franja del pie.**
+Con «Open debugger to view warnings» en pantalla, ni DESHACER ni la ✕ de su
+barra respondían —tres métodos de toque distintos, cero respuesta— y el
+control de la misma pantalla sí. Cerrando el aviso, DESHACER funcionó a la
+primera. Estuve a un paso de reportar un P1 que no existe. En release no hay
+LogBox.
+
+### Lo que no se pudo probar
+
+El **reinicio diario**: el emulador no deja cambiar la fecha sin root, y
+parchear `RKStorage` a mano corrompió el almacenamiento —la app respondió bien,
+resembrando en vez de reventar—. Queda el cableado sí visto: marcar una fila
+escribe `lastResetOn: "2026-09-08"` **solo en ese día**, y la comparación al
+cargar es pura y está en `day.test.ts`.
+
+También sin probar: el teclado software tapando un botón (el emulador tiene
+teclado físico y no lo levanta) y la vibración real.
+
+---
+
 ## 2026-09-08 — QA en dispositivo: el tabata al dominio y dos cuentas mal
 
 tsc ✅ · jest 264 ✅ · lint ✅ — `6d1990c`

@@ -14,7 +14,7 @@
  * La tinta sobre el relleno no baja de 0.8 de opacidad: a 0.4, que es como
  * estaba, la etiqueta TOTAL daba 2,27:1 sobre el rojo. Medido, no estimado.
  */
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   View,
   Text,
@@ -24,7 +24,7 @@ import {
   AppState,
   type AppStateStatus,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import Svg, { Circle } from 'react-native-svg';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -107,6 +107,23 @@ export default function TabataActiveScreen() {
   // Un parpadeo y una vibracion al cambiar de fase: se notan aunque el movil
   // este en el suelo. La primera fase no cuenta, que aun no ha cambiado nada.
   const fasePrevia = useRef(progress.phase);
+
+  // Esta pantalla es una pestana (`href: null` en `_layout.tsx`) y un `Tabs`
+  // monta una vez y no desmonta nunca: `router.push` solo cambia el foco, asi
+  // que el inicializador de `useState` no se vuelve a ejecutar. Sin esto, la
+  // segunda sesion de la misma apertura abre en HECHO con el progreso de la
+  // primera y no arranca. Reiniciar al enfocar es lo que haria el desmontaje.
+  useFocusEffect(
+    useCallback(() => {
+      const inicio = initialProgress(config);
+      setProgress(inicio);
+      setTotalTimeLeft(totalSeconds(config));
+      setIsPaused(true);
+      // Si no, el efecto de abajo ve un cambio de fase que no ha ocurrido y
+      // vibra nada mas entrar.
+      fasePrevia.current = inicio.phase;
+    }, [config]),
+  );
 
   useEffect(() => {
     if (fasePrevia.current === progress.phase) return;
