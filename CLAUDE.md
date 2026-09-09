@@ -29,7 +29,7 @@ app/ (Expo Router — 4 tabs + 7 pantallas ocultas)
 ```
 
 **La regla de dependencia apunta hacia dentro.** `lib/domain/` no importa nada
-de fuera; ahí viven los 242 tests.
+de fuera; ahí viven los 264 tests.
 
 **La biblioteca es española, pero su CSV de origen está en inglés.** La
 traducción vive en `lib/data/exercise-text-es.json` y `muscle-groups-es.json` y

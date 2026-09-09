@@ -24,7 +24,7 @@ app/                      Expo Router — 4 tabs + 8 pantallas ocultas
 
 **La regla de dependencia apunta hacia dentro.** `lib/domain/` no importa nada
 de las capas de fuera; por eso es la única parte con tests unitarios de verdad
-(242 de ellos) y la que sobreviviría intacta si algún día vuelve un backend.
+(264 de ellos) y la que sobreviviría intacta si algún día vuelve un backend.
 
 ## Arranque
 
