@@ -10,7 +10,7 @@
  * uncluttered and nothing is ever deleted by a mis-tap mid-workout.
  */
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, ScrollView, Pressable, Linking, Alert } from 'react-native';
+import { View, Text, ScrollView, Pressable, Linking, Alert, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -29,6 +29,9 @@ import type { Exercise, RoutineRow } from '@/lib/domain/types';
 import { videoUrlFor, youtubeSearchUrl } from '@/lib/domain/video';
 import { useRestTimer } from '@/lib/hooks/useRestTimer';
 import { useTheme } from '@/lib/hooks/useTheme';
+import { TemplatePicker } from '@/components/TemplatePicker';
+import { ROUTINE_TEMPLATES } from '@/lib/data/routine-templates';
+import { routineFromTemplate, type RoutineTemplate } from '@/lib/domain/templates';
 import { useActiveDay, useActiveRoutine, useRoutineStore } from '@/lib/store/routineStore';
 
 /**
@@ -59,12 +62,15 @@ export default function TodayScreen() {
   const resetDay = useRoutineStore((s) => s.resetDay);
   const needsWelcome = useRoutineStore((s) => s.needsWelcome);
   const dismissWelcome = useRoutineStore((s) => s.dismissWelcome);
+  const saveRoutine = useRoutineStore((s) => s.saveRoutine);
+  const setActiveRoutine = useRoutineStore((s) => s.setActiveRoutine);
 
   const rest = useRestTimer();
   const [editing, setEditing] = useState(false);
   const [editTarget, setEditTarget] = useState<{ rowId: string; field: EditableField } | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [removed, setRemoved] = useState<RemovedRow | null>(null);
+  const [plantillasAbiertas, setPlantillasAbiertas] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
 
   const openVideo = useCallback(
@@ -83,6 +89,58 @@ export default function TodayScreen() {
   useEffect(() => {
     setRemoved(null);
   }, [day?.id]);
+
+  /**
+   * Crear desde plantilla. La rutina la arma el dominio; el store solo guarda.
+   *
+   * Vive aqui y no en el `Welcome` porque hace falta en dos sitios: la primera
+   * vez, y cuando alguien se queda sin ninguna rutina. Sin lo segundo al
+   * catalogo no se volvia a llegar nunca.
+   */
+  const elegirPlantilla = (plantilla: RoutineTemplate) => {
+    const nueva = routineFromTemplate(plantilla, exercises, new Date().toISOString());
+    saveRoutine(nueva);
+    setActiveRoutine(nueva.id);
+    setPlantillasAbiertas(false);
+    dismissWelcome();
+  };
+
+  /* Solo en el primer arranque. Va en un `Modal` y no en una ruta propia para
+     que el arranque siga siendo directo a la tabla. */
+  const bienvenida = (
+    <Welcome
+      visible={needsWelcome}
+      templates={ROUTINE_TEMPLATES}
+      exercises={exercises}
+      onPaste={() => {
+        dismissWelcome();
+        router.push('/import');
+      }}
+      onChoose={elegirPlantilla}
+    />
+  );
+
+  const modalDePlantillas = (
+    <Modal
+      visible={plantillasAbiertas}
+      animationType="slide"
+      statusBarTranslucent
+      onRequestClose={() => setPlantillasAbiertas(false)}
+    >
+      <SafeAreaView
+        className="flex-1 px-5"
+        style={{ backgroundColor: t.background }}
+        edges={['top', 'bottom']}
+      >
+        <TemplatePicker
+          templates={ROUTINE_TEMPLATES}
+          exercises={exercises}
+          onChoose={elegirPlantilla}
+          onBack={() => setPlantillasAbiertas(false)}
+        />
+      </SafeAreaView>
+    </Modal>
+  );
 
   if (!routine || !day) {
     return (
@@ -108,7 +166,24 @@ export default function TodayScreen() {
               Pegar una rutina
             </Text>
           </Pressable>
+
+          <Pressable
+            onPress={() => setPlantillasAbiertas(true)}
+            accessibilityRole="button"
+            accessibilityLabel="Elegir una plantilla"
+            className="rounded-xl px-6 items-center justify-center border"
+            style={{ borderColor: t.outline, minHeight: 48 }}
+          >
+            <Text className="font-bold" style={{ color: t.onSurface }}>
+              Elegir una plantilla
+            </Text>
+          </Pressable>
         </View>
+
+        {/* La bienvenida tambien va aqui: sin rutina sembrada, este retorno
+            temprano es justo el que se lleva el primer arranque. */}
+        {bienvenida}
+        {modalDePlantillas}
       </SafeAreaView>
     );
   }
@@ -371,16 +446,8 @@ export default function TodayScreen() {
         onClose={() => setShareOpen(false)}
       />
 
-      {/* Solo en el primer arranque. Vive aqui, y no en una ruta propia, para
-          que el arranque siga siendo directo a la tabla. */}
-      <Welcome
-        visible={needsWelcome}
-        onPaste={() => {
-          dismissWelcome();
-          router.push('/import');
-        }}
-        onExample={dismissWelcome}
-      />
+      {bienvenida}
+      {modalDePlantillas}
     </SafeAreaView>
   );
 }

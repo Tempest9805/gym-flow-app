@@ -81,6 +81,12 @@ export interface Routine {
   athleteName: string | null;
   goal: string | null;
   coachName: string | null;
+  /**
+   * Lo que hace falta para hacerla, en palabras: «mancuerna y cuerda de
+   * saltar», «gimnasio completo». Se decide al elegir plantilla y viaja con la
+   * rutina, para saber si toca salir de casa sin abrir la tabla entera.
+   */
+  equipment: string | null;
   /** 1..7 days in practice; the model does not enforce a count. */
   days: RoutineDay[];
   updatedAt: string;

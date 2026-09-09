@@ -14,7 +14,7 @@ const day: RoutineDay = {
 };
 
 const routine: Routine = {
-  id: 'r1', name: 'R', athleteName: null, goal: null, coachName: null,
+  id: 'r1', name: 'R', athleteName: null, goal: null, coachName: null, equipment: null,
   days: [day], updatedAt: '2026-09-01T00:00:00.000Z',
 };
 

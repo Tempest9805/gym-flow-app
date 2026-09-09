@@ -51,6 +51,11 @@ tomada, no de buenas intenciones.
 
 ## Must Never
 
+- **Sembrar una rutina de arranque.** La app arranca **sin ninguna**: la
+  bienvenida ofrece el catálogo de `lib/data/routine-templates.ts` y ahí se
+  elige. Sembrar la de gimnasio hacía que quien entrena en casa aterrizara
+  en la rutina de otro, y lo primero que tuviera que hacer fuera borrarla.
+  La **biblioteca** sí se siembra: es dato de referencia, no del usuario.
 - **Volver a meter red, cuenta, servidor o sincronización** sin una decisión de
   producto explícita. AsyncStorage es la única persistencia. Ese es el MVP.
 - **Poner lógica de negocio en un componente o en el store.** El store solo
@@ -103,6 +108,7 @@ Si un síntoma se parece a uno de estos, probar primero esta hipótesis.
 
 | Síntoma | Causa raíz | Sesión |
 |---|---|---|
+| Un modal del final del render no aparece nunca | Hoy tiene un retorno temprano para «no hay ninguna rutina», y lo que va al final del `return` principal —la bienvenida, los sheets— se queda fuera de esa rama. Mientras siempre hubo rutina sembrada no se notaba | 2026-09-09 |
 | Una hoja con teclado se ve a medias o no se deja pulsar | `KeyboardAvoidingView` con `behavior` solo en iOS no hace **nada** en Android, y con `edgeToEdgeEnabled` la ventana ya no se encoge. Hay que sumar la altura del teclado a mano, y ademas el `insets.bottom`: lo que reporta `keyboardDidShow` se mide desde la barra de navegacion, no desde el borde de la pantalla | 2026-09-09 |
 | Un temporizador abre ya terminado la segunda vez | Las pantallas «ocultas» son `Tabs.Screen` con `href: null`: un `Tabs` monta una vez y no desmonta, así que el `useState` inicial no se repite y queda el estado de la visita anterior. `unmountOnBlur` ya no existe en React Navigation 7 | 2026-09-08 |
 | Un botón del pie no responde **en dev build** | El aviso de LogBox («Open debugger to view warnings») se come los toques de su franja, más alta que el propio aviso. Cerrarlo antes de diagnosticar nada | 2026-09-08 |

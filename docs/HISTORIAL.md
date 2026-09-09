@@ -10,6 +10,71 @@ Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
 
 ---
 
+## 2026-09-09 — La app arranca vacía y te pregunta dónde entrenas
+
+tsc ✅ · jest 301 ✅ · lint ✅ · verificado en el emulador.
+
+### Por qué
+
+La app sembraba la rutina de Pablo, que es de gimnasio. Quien entrena en casa
+aterrizaba en la rutina de otro y lo primero que tenía que hacer era borrarla —
+justo al revés de lo que promete la app. Ahora se arranca **sin ninguna rutina**
+y la bienvenida ofrece elegir, agrupado por dónde se entrena y diciendo qué
+hace falta para cada una.
+
+### Qué se decidió
+
+- **Nada de sembrar rutinas.** `loadRoutines()` devuelve `[]` y no escribe. La
+  biblioteca sí se sigue sembrando: es dato de referencia, no del usuario.
+- **Una plantilla es un parte escrito.** Su campo `text` lo lee el mismo
+  `parseRoutineText` del importador. Añadir una plantilla es pegar texto, no
+  inventarse una estructura nueva ni mantener dos formatos sincronizados.
+- **`Routine.equipment`**, nullable. Se pone al elegir plantilla y se ve en la
+  tarjeta de Rutinas. `parseRoutine` lo lee con `nullableString`, así que quien
+  actualice conserva sus rutinas — hay dos tests que lo prueban, porque
+  `parseRoutines` es todo-o-nada y un rechazo significa resembrar.
+- **El equipamiento no revive el onboarding retirado.** Aquel *preguntaba*;
+  esto lo *dice*. Anotado en `decisions.md` para que no parezca lo contrario.
+
+### El catálogo
+
+Dos plantillas para empezar: la de casa —la del dueño, 3 días de trabajo y un
+cuarto opcional de core, con mancuerna o kettlebell y cuerda— y la de Pablo, de
+gimnasio, generada desde `routine-pablo.seed.json` para no teclear 47 filas. Un
+test compara la plantilla con esa semilla y avisa si alguien toca una sin la
+otra.
+
+Las 14 del manual (`assets/gym_flow_master_routines_guide.md`) **quedan
+pendientes**: sus secciones son regulares —título, objetivos, nivel y una línea
+de equipo por rutina— así que salen con un generador, pero es trabajo aparte.
+
+### El bug que solo se veía en el emulador
+
+Hoy tiene un retorno temprano para «no hay ninguna rutina». Al dejar de sembrar,
+esa rama pasó a ser **la del primer arranque** — y la bienvenida, que se pinta
+al final del `return` principal, dejó de aparecer: almacenamiento limpio, sin
+`gymflow_welcome_seen`, y aun así la pantalla vacía. Los 301 tests estaban
+verdes. Queda en el Hall of Fame.
+
+Detrás había un agujero mayor: si borrabas todas tus rutinas acababas en esa
+misma pantalla, con «Pegar» como única salida. **Al catálogo no se volvía a
+llegar nunca.** El estado vacío ofrece ahora también elegir plantilla.
+
+### De paso
+
+`abdomen` y `core` apuntaban a `ab-testing` — el glifo de las pruebas A/B, un
+juego de palabras con «ab» que en pantalla se lee «A/B» y no dice nada de
+abdomen. Lo destapó el Día D de la rutina de casa. Ahora es `stomach`.
+
+### Archivos
+
+Nuevos: `lib/domain/templates.ts` · `lib/data/routine-templates.ts` ·
+`components/TemplatePicker.tsx` y sus dos tests.
+Tocados: `types.ts` · `routine.ts` · `importRoutine.ts` · `icons.ts` ·
+`serialize.ts` · `repository.ts` · `index.tsx` · `routines.tsx` · `Welcome.tsx`
+
+---
+
 ## 2026-09-09 — QA ADB completo (2ª pasada): los cuatro arreglos aguantan, y sale un P1 nuevo
 
 tsc ✅ · jest 276 ✅ · lint ✅ · cero crashes — emulador Pixel 9 Pro, 1280×2856.

@@ -51,6 +51,7 @@ representar la rutina real que originó este MVP**.
 | `progression.ts` | A qué ejercicio pasar cuando este deje de costar |
 | `importRoutine.ts` | Leer una rutina pegada como texto y construirla, sin IA |
 | `matchExercise.ts` | Unir un nombre escrito a mano con la biblioteca |
+| `templates.ts` | Las plantillas del arranque: tipo, agrupar por entorno y convertir en rutina |
 | `plural.ts` | Contar en español sin que salga «1 rutinas» |
 | `tabata.ts` | Las fases del tabata: avanzar, contar rondas y ciclos |
 
@@ -86,6 +87,25 @@ vistazo.
 `findExercise` es deliberadamente estricto —juego exacto de palabras, o
 contención completa, y `null` ante un empate—. Mide 19 de 26 sobre la rutina
 real de cuatro días, sin ningún emparejamiento incorrecto. Ver [[decisions]].
+
+## Plantillas
+
+Una plantilla **no es una estructura aparte**: es un parte escrito, en el mismo
+formato que se pega desde WhatsApp. `routineFromTemplate` la pasa por
+`parseRoutineText` y `routineFromParsed`, así que hereda gratis todo lo que el
+importador ya sabe hacer — atar cada fila a su ficha, entender «40/20 x12
+rondas» como tabata, no perder una línea. Añadir una plantilla es pegar texto en
+`lib/data/routine-templates.ts`.
+
+Lo único que la plantilla añade sobre el texto es **el contexto para elegir**:
+dónde se entrena (`environment`) y qué hace falta (`equipment`). Esa es la
+decisión real de alguien que abre la app por primera vez, y por eso el catálogo
+va agrupado por entorno y cada tarjeta lleva su línea de equipo.
+
+`lib/data/__tests__/routine-templates.test.ts` es lo que impide publicar una
+plantilla que no se lee: comprueba que cada una da al menos un día con filas, y
+que la de gimnasio sigue cuadrando con `routine-pablo.seed.json`, de la que
+salió.
 
 ## Semillas
 

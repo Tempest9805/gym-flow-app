@@ -12,6 +12,7 @@ const routine: Routine = {
   athleteName: 'Pablo',
   goal: 'brazos',
   coachName: 'Coaching Nach',
+  equipment: 'Gimnasio completo',
   updatedAt: '2026-09-01T00:00:00.000Z',
   days: [
     {
@@ -55,6 +56,27 @@ describe('routines round-trip', () => {
 
   it('handles an empty list', () => {
     expect(parseRoutines(serializeRoutines([]))).toEqual([]);
+  });
+});
+
+/**
+ * Lo guardado por una version anterior tiene que seguir entrando.
+ *
+ * `parseRoutines` es todo-o-nada a proposito: si rechaza el payload, el
+ * repositorio resiembra y **el usuario pierde sus rutinas**. Cada campo nuevo
+ * necesita su prueba de que faltar no es motivo de rechazo.
+ */
+describe('compatibilidad con lo guardado antes', () => {
+  const sinEquipamiento = JSON.stringify([{ ...routine, equipment: undefined }]);
+
+  it('una rutina sin `equipment` se lee, con el campo a null', () => {
+    const leidas = parseRoutines(sinEquipamiento);
+    expect(leidas).toHaveLength(1);
+    expect(leidas?.[0].equipment).toBeNull();
+  });
+
+  it('y no pierde nada de lo demas', () => {
+    expect(parseRoutines(sinEquipamiento)?.[0].days).toEqual(routine.days);
   });
 });
 

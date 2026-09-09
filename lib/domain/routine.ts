@@ -110,6 +110,7 @@ export function blankRoutine(name: string, nowIso: string): Routine {
     athleteName: null,
     goal: null,
     coachName: null,
+    equipment: null,
     days: [blankDay('Día 1', '')],
     updatedAt: nowIso,
   };

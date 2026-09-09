@@ -160,6 +160,18 @@ export default function RoutinesScreen() {
                   {pluralize(routine.days.length, 'día', 'días')} ·{' '}
                     {pluralize(totalRows, 'ejercicio', 'ejercicios')} · {doneRows} hechos
                 </Text>
+
+                {/* Lo que hace falta para hacerla. Se guarda al elegir plantilla
+                    y se ve aqui: saber si hay que salir de casa no deberia
+                    obligar a abrir la tabla entera. */}
+                {routine.equipment !== null && (
+                  <View className="flex-row items-start gap-1.5 pt-0.5">
+                    <MaterialCommunityIcons name="wrench-outline" size={13} color={t.outline} />
+                    <Text className="flex-1 text-[12px]" style={{ color: t.outline }} numberOfLines={2}>
+                      {routine.equipment}
+                    </Text>
+                  </View>
+                )}
               </Pressable>
 
               {isOpen && (

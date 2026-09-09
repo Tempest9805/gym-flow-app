@@ -20,6 +20,7 @@ const routine: Routine = {
   athleteName: 'Pablo',
   goal: 'brazos',
   coachName: 'Coaching Nach',
+  equipment: null,
   days: [day],
   updatedAt: '2026-09-01T10:00:00.000Z',
 };

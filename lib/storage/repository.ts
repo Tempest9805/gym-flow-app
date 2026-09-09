@@ -10,7 +10,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import exerciseSeed from '@/lib/data/exercises.seed.json';
-import routineSeed from '@/lib/data/routine-pablo.seed.json';
 import type { Exercise, Routine } from '@/lib/domain/types';
 import {
   parseExercises,
@@ -41,11 +40,6 @@ export const LIBRARY_VERSION = 3;
 /** The bundled library, validated through the same parser as stored data. */
 function seedExercises(): Exercise[] {
   return parseExercises(JSON.stringify(exerciseSeed)) ?? [];
-}
-
-/** The bundled starter routine, validated the same way. */
-function seedRoutines(): Routine[] {
-  return parseRoutines(JSON.stringify([routineSeed])) ?? [];
 }
 
 /** Que version de la biblioteca hay guardada. 0 si no hay o es ilegible. */
@@ -90,18 +84,25 @@ export async function saveExercises(exercises: Exercise[]): Promise<void> {
   ]);
 }
 
-/** Load every routine, seeding the starter routine on first run. */
+/**
+ * Todas las rutinas guardadas. **Sin rutina de arranque.**
+ *
+ * Antes se sembraba la de Pablo, que es de gimnasio: quien entrena en casa
+ * aterrizaba en la rutina de otro y lo primero que tenia que hacer era
+ * borrarla. Ahora se arranca vacio y la bienvenida ofrece elegir plantilla,
+ * que es donde esta la decision de verdad —casa o gimnasio, y con que.
+ *
+ * Devolver `[]` no escribe nada: sin la clave, la bienvenida sigue saliendo.
+ */
 export async function loadRoutines(): Promise<Routine[]> {
   try {
     const stored = parseRoutines(await AsyncStorage.getItem(ROUTINES_KEY));
     if (stored !== null) return stored;
   } catch {
-    // Fall through to seeding.
+    // Ilegible: se trata como si no hubiera nada.
   }
 
-  const seed = seedRoutines();
-  await saveRoutines(seed);
-  return seed;
+  return [];
 }
 
 export async function saveRoutines(routines: Routine[]): Promise<void> {

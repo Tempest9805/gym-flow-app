@@ -83,6 +83,9 @@ function parseRoutine(raw: unknown): Routine | null {
     athleteName: nullableString(raw.athleteName),
     goal: nullableString(raw.goal),
     coachName: nullableString(raw.coachName),
+    // `nullableString` es lo que hace que una rutina guardada antes de que
+    // existiera este campo siga entrando: falta -> null, no -> rechazo.
+    equipment: nullableString(raw.equipment),
     days,
     updatedAt: isString(raw.updatedAt) ? raw.updatedAt : new Date(0).toISOString(),
   };

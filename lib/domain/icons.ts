@@ -12,8 +12,10 @@
 const BY_KEYWORD: [string, string][] = [
   ['movilidad', 'yoga'],
   ['estiramiento', 'yoga'],
-  ['abdomen', 'ab-testing'],
-  ['core', 'ab-testing'],
+  // `ab-testing` es el glifo de las pruebas A/B: un juego de palabras con
+  // «ab» que en pantalla se lee como «A/B» y no dice nada de abdomen.
+  ['abdomen', 'stomach'],
+  ['core', 'stomach'],
   ['espalda', 'weight-lifter'],
   ['dorsal', 'weight-lifter'],
   // Un parte partido por patron de movimiento en vez de por musculo: es como

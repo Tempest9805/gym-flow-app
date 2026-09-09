@@ -330,6 +330,7 @@ export function routineFromParsed(
     athleteName: null,
     goal: null,
     coachName: null,
+    equipment: null,
     days,
     updatedAt: nowIso,
   };

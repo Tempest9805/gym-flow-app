@@ -46,15 +46,29 @@ Mezclarlas fue un fallo medido de 4,12:1.
 ### Principio central
 
 **Sin cuenta, sin servidor, sin sincronización, sin pagos.** AsyncStorage es la
-única persistencia. En el primer arranque se copian las semillas de `lib/data/`;
-después manda el almacenamiento, así que actualizar la app nunca pisa lo editado.
+única persistencia. En el primer arranque se copia la **biblioteca** de
+`lib/data/`; después manda el almacenamiento, así que actualizar la app nunca
+pisa lo editado.
+
+**No se siembra ninguna rutina.** Se arranca vacío y la bienvenida ofrece el
+catálogo de `lib/data/routine-templates.ts`, agrupado por entorno y con el
+equipamiento de cada una. Una plantilla **es un parte escrito**: su campo `text`
+lo lee el mismo `parseRoutineText` del importador, así que añadir una es pegar
+texto. Antes se sembraba la de gimnasio, y quien entrena en casa aterrizaba en
+la rutina de otro.
 
 ### Modelo
 
 ```
 Routine → RoutineDay[] (1..7, cíclicos) → RoutineRow[]
 Exercise (biblioteca de 169, enlazada por RoutineRow.exerciseId)
+RoutineTemplate → texto que se lee con parseRoutineText → Routine
 ```
+
+`Routine.equipment` dice **qué hace falta** para hacerla («Mancuerna o
+kettlebell, cuerda de saltar…», «Gimnasio completo»). Se pone al elegir
+plantilla y se ve en la tarjeta de Rutinas: saber si hay que salir de casa no
+debería obligar a abrir la tabla entera.
 
 `reps` es **string**, no number: un parte de coach escribe `6-8`, `fallo` o
 `1 min`. Se guarda literal y se interpreta solo al usarlo (`lib/domain/reps.ts`).
@@ -83,6 +97,11 @@ RootLayout → loadTheme() + load()  →  (app)/index
 
 Sin AuthGuard y sin redirecciones. La bienvenida del primer arranque es un
 `Modal` dentro de Hoy, decidido en la misma lectura del arranque.
+
+**Hoy tiene un retorno temprano** para «no hay ninguna rutina», y ahora esa
+rama es la del primer arranque. Lo que se pinte al final del `return` principal
+—bienvenida, selector de plantillas— **tiene que ir también ahí**, o no aparece
+nunca.
 
 ### Comandos útiles
 

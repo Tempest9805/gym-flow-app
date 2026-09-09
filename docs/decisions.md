@@ -22,7 +22,7 @@ El criterio para cada decisión fue uno solo: *¿ayuda a entrenar más rápido?*
 | Compartir por QR e importar | Las dos pantallas eran huérfanas: cero navegación entrante |
 | Agenda semanal y day-detail | También huérfanas. Las rutinas son cíclicas, no de calendario |
 | Presets remotos | Catálogo en la nube que ya no hay |
-| Onboarding (objetivo + equipamiento) | Fricción antes de entrenar |
+| Onboarding (objetivo + equipamiento) | Fricción antes de entrenar. **Matiz del 2026-09-09**: no se ha revivido. Lo que hay ahora no *pregunta* por el equipamiento — lo *dice* en cada plantilla, para que elegir sea un toque en vez de un formulario |
 | React Query | Es caché de estado *de servidor*. Sin red, Zustand basta |
 | 200 MB de imágenes + `mediaMap` (441 `require`) | Sustituidas por un ▶ a YouTube: más ligero y más útil que un fotograma |
 | `workout` → `workout-session` → `routine-detail` | Tres pantallas para llegar a entrenar, colapsadas en una |
