@@ -10,6 +10,64 @@ Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
 
 ---
 
+## 2026-09-09 — QA ADB completo: aprobado como app, **no** como publicación
+
+tsc ✅ · jest 301 ✅ · lint ✅ · cero crashes y cero ANR.
+
+Recorrido entero contra el emulador tras la feature de plantillas. **Ningún P0
+ni P1**: el veredicto del QA es ✅. Lo que no está listo es *publicar*, que es
+otra cosa y está abajo.
+
+### Verificado
+
+Arranque limpio → bienvenida → selector → rutina creada, en claro y en oscuro.
+La rutina de casa entra con sus 4 días, la cuerda como tabata en los cuatro y
+los «10 por lado» y «60seg» literales. Ajustes dice «1 rutina · 169 ejercicios».
+
+El descanso entero: arranca al marcar, se para al tocar la celda, **avisa en
+segundo plano** nombrando el ejercicio, sobrevive a la pantalla apagada con el
+tiempo real (2:00 → 1:20), y matar la app no deja contador zombi.
+
+El editor de celda **con el teclado software arriba**: Guardar quedó en 1721 y
+el toque llegó. Es el P1 de ayer, ahora en el flujo real.
+
+DESHACER restaura en su posición y el aviso se va al cambiar de día. Las
+flechas reordenan. Añadir desde la biblioteca funciona. `Nueva` crea y activa.
+Borrar la activa cae en la otra. Buscar sin acentos encuentra. El ▶ sin video
+fijado abre la búsqueda de YouTube.
+
+Los dos timers en su segunda entrada de la misma sesión: el tabata abre en
+PREPARA y el de intervalos en TRABAJO contando. El tabata completó dos sesiones
+seguidas hasta el resumen.
+
+Tablet: los 4 días caben, sin scroll horizontal, y el icono nuevo de core se ve
+bien.
+
+### Hallazgos
+
+- **P3 — copia obsoleta**: `Restaurar datos` decía «se volverá a la rutina y
+  biblioteca originales», y ya no hay rutina original. **Arreglado**: ahora dice
+  que la app queda como recién instalada, sin ninguna rutina.
+- **P3 — tipografía en tablet**: las columnas se estiran, el texto sigue en
+  14 px. Sigue abierto: es una escala responsive, decisión de diseño.
+- **P3 — título de Hoy**: los enfoques largos se cortan («Empuje
+  (pecho/hombr…»). Las pestañas de día sí lo enseñan entero.
+
+### Por qué no se puede publicar todavía
+
+El QA prueba que la app **funciona**. Publicar pide cosas que este QA no mira, y
+la que manda es esta: **el APK/AAB de release no compila en esta máquina**.
+Todo lo verificado aquí es un dev build servido por Metro. Sin release no hay
+nada que subir, y la fluidez sigue sin medir. La salida está escrita en
+`CLAUDE.md`: mover el repo fuera de OneDrive.
+
+Lo demás que falta está en el informe de la sesión: sin `eas.json` ni keystore,
+`versionCode` sin fijar, política de privacidad, y dos asuntos de contenido —los
+37 videos fijados elegidos por título y canal sin haberlos visto, y la licencia
+del CSV de ejercicios y de las 146 ilustraciones.
+
+---
+
 ## 2026-09-09 — La app arranca vacía y te pregunta dónde entrenas
 
 tsc ✅ · jest 301 ✅ · lint ✅ · verificado en el emulador.

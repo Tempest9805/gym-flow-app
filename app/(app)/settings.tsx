@@ -68,7 +68,7 @@ export default function SettingsScreen() {
   const confirmReset = () => {
     Alert.alert(
       'Restaurar datos',
-      'Se borrarán tus rutinas y ediciones, y se volverá a la rutina y biblioteca originales. No se puede deshacer.',
+      'Se borrarán tus rutinas y ediciones, y la app volverá a estar como recién instalada: sin ninguna rutina y con la biblioteca original. No se puede deshacer.',
       [
         { text: 'Cancelar', style: 'cancel' },
         { text: 'Restaurar', style: 'destructive', onPress: () => void resetEverything() },
