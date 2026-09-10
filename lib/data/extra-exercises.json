@@ -1,0 +1,82 @@
+[
+  {
+    "id": "pec-deck",
+    "nameEs": "Peck deck",
+    "nameEn": "Pec Deck",
+    "muscleGroup": "pectorals",
+    "videoUrl": null,
+    "description": "Aperturas de pecho en máquina guiada. Aísla el pectoral con la trayectoria fija de la máquina, sin exigir estabilización, por lo que permite buscar el fallo con seguridad.",
+    "tips": "Ajusta el asiento de forma que las empuñaduras queden a la altura del pecho. Apoya la espalda completa en el respaldo. Junta los brazos describiendo un arco y aprieta el pectoral 1 segundo en el punto de máxima contracción. Vuelve controlado sin dejar que el peso choque.",
+    "commonMistakes": "Subir el asiento de más y convertirlo en un ejercicio de hombro; separar la espalda del respaldo para empujar con el cuerpo; bloquear los codos; soltar el peso de golpe en la vuelta."
+  },
+  {
+    "id": "smith-machine-row",
+    "nameEs": "Remo en Smith",
+    "nameEn": "Smith Machine Row",
+    "muscleGroup": "middle back",
+    "videoUrl": null,
+    "description": "Remo horizontal con barra guiada en máquina Smith. La guía elimina la necesidad de estabilizar la barra, lo que permite concentrarse en la espalda y cargar más que en el remo libre.",
+    "tips": "Colócate con el tronco inclinado unos 45 grados y las rodillas ligeramente flexionadas. Agarre algo más ancho que los hombros. Lleva la barra hacia el abdomen bajo tirando con los codos, no con las manos. Aprieta las escápulas al final del recorrido.",
+    "commonMistakes": "Incorporar el tronco a cada repetición para dar impulso; tirar hacia el pecho en vez de hacia el abdomen; redondear la zona lumbar; usar recorrido corto por exceso de peso."
+  },
+  {
+    "id": "pallof-press",
+    "nameEs": "Press pallof",
+    "nameEn": "Pallof Press",
+    "muscleGroup": "abdominals",
+    "videoUrl": null,
+    "description": "Ejercicio antirrotación para el core. No se trata de mover el peso, sino de resistir el giro que la polea intenta provocar. Trabaja la estabilidad profunda del tronco.",
+    "tips": "Colócate de perfil a la polea con los pies a la anchura de los hombros. Sujeta el agarre con ambas manos a la altura del esternón. Extiende los brazos al frente y mantén 2-3 segundos resistiendo la rotación. Vuelve al pecho sin girar el tronco.",
+    "commonMistakes": "Dejar que el tronco rote hacia la polea; usar demasiado peso y compensar con los brazos; contener la respiración; separar los pies del suelo o mover la cadera."
+  },
+  {
+    "id": "arm-circles",
+    "nameEs": "Rotación de brazos",
+    "nameEn": "Arm Circles",
+    "muscleGroup": "delts",
+    "videoUrl": null,
+    "description": "Movilidad articular para el hombro. Calienta la articulación y prepara el manguito rotador antes de entrenar tren superior.",
+    "tips": "De pie, brazos extendidos en cruz. Describe círculos progresivamente más amplios, primero hacia delante y después hacia atrás. Mantén el tronco firme y los hombros lejos de las orejas.",
+    "commonMistakes": "Hacer círculos muy rápidos y pequeños en vez de amplios y controlados; encoger los hombros; arquear la zona lumbar para ganar amplitud."
+  },
+  {
+    "id": "scapular-push-up",
+    "nameEs": "Empuje de escápulas",
+    "nameEn": "Scapular Push-Up",
+    "muscleGroup": "traps",
+    "videoUrl": null,
+    "description": "Movimiento de protracción y retracción escapular en posición de plancha. Enseña a controlar las escápulas, base de todo empuje y tracción sanos.",
+    "tips": "En posición de plancha alta con los codos extendidos y bloqueados. Deja caer el pecho juntando las escápulas y después empuja el suelo separándolas al máximo. Todo el recorrido sale de la espalda alta: los codos no se doblan.",
+    "commonMistakes": "Flexionar los codos y convertirlo en una flexión; mover la cadera arriba y abajo; recorrido demasiado corto; perder la línea del cuerpo."
+  },
+  {
+    "id": "wall-shoulder-rotation",
+    "nameEs": "Rotación de hombros en pared",
+    "nameEn": "Wall Slide",
+    "muscleGroup": "delts",
+    "videoUrl": null,
+    "description": "Deslizamiento de brazos por la pared. Mejora la movilidad de hombro en flexión y la rotación externa, y corrige la postura de hombros adelantados.",
+    "tips": "Espalda, glúteos y cabeza apoyados en la pared. Antebrazos contra la pared formando una W. Desliza los brazos hacia arriba hasta la Y sin despegar muñecas ni codos, y baja controlado.",
+    "commonMistakes": "Despegar la zona lumbar de la pared arqueando la espalda; perder el contacto de las muñecas al subir; forzar el rango con dolor; encoger los hombros."
+  },
+  {
+    "id": "hip-rotation",
+    "nameEs": "Rotación interna y externa del fémur",
+    "nameEn": "Hip Internal and External Rotation",
+    "muscleGroup": "glutes",
+    "videoUrl": null,
+    "description": "Movilidad de cadera en rotación. Recupera el rango que se pierde al pasar muchas horas sentado y mejora la profundidad de la sentadilla.",
+    "tips": "Sentado en el suelo con las rodillas flexionadas y los pies separados más que la cadera. Deja caer ambas rodillas a un lado y luego al otro, manteniendo los pies apoyados. Movimiento lento, sin rebotes.",
+    "commonMistakes": "Hacerlo con impulso en vez de controlado; despegar los pies del suelo; forzar hasta el dolor; olvidar trabajar los dos lados por igual."
+  },
+  {
+    "id": "stick-overhead-squat",
+    "nameEs": "Sentadilla con palo",
+    "nameEn": "Overhead Stick Squat",
+    "muscleGroup": "quadriceps",
+    "videoUrl": null,
+    "description": "Sentadilla de movilidad con un palo sostenido sobre la cabeza. Expone las limitaciones de tobillo, cadera y hombro sin cargar peso, y sirve para pulir el patrón antes de cargar.",
+    "tips": "Sujeta el palo con agarre amplio y llévalo sobre la cabeza con los codos extendidos. Baja tan profundo como puedas manteniendo el palo alineado sobre el centro del pie y el pecho alto. Sube sin dejar que el palo se vaya adelante.",
+    "commonMistakes": "Dejar que el palo caiga hacia delante; levantar los talones; juntar las rodillas al subir; buscar profundidad redondeando la espalda baja."
+  }
+]

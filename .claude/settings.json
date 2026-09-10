@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npx jest *)",
+      "Bash(npx expo lint*)",
+      "Bash(npx expo export *)",
+      "Bash(npx expo config *)",
+      "Bash(npx expo-doctor *)",
+      "Bash(npm run seed*)",
+      "Bash(npm run typecheck*)",
+      "Bash(npm test*)",
+      "Bash(adb devices*)",
+      "Bash(adb shell wm size*)",
+      "Bash(adb shell dumpsys *)",
+      "Bash(adb shell pm list packages*)",
+      "Bash(adb shell uiautomator dump*)",
+      "Bash(adb shell input *)",
+      "Bash(adb shell am start *)",
+      "Bash(adb exec-out screencap*)",
+      "Bash(adb logcat -d*)",
+      "Bash(emulator -list-avds*)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)"
+    ]
+  }
+}

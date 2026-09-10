@@ -1,0 +1,893 @@
+---
+tags: [historial, sesiones, gym-flow-app]
+---
+
+# Historial
+
+Timeline de sesiones. **Más reciente primero.** Lo escribe `/checkpoint`.
+
+Ver también: [[_INDEX]], [[decisions]], `.claude/RULES.md`
+
+---
+
+## 2026-09-09 — QA ADB completo: aprobado como app, **no** como publicación
+
+tsc ✅ · jest 301 ✅ · lint ✅ · cero crashes y cero ANR.
+
+Recorrido entero contra el emulador tras la feature de plantillas. **Ningún P0
+ni P1**: el veredicto del QA es ✅. Lo que no está listo es *publicar*, que es
+otra cosa y está abajo.
+
+### Verificado
+
+Arranque limpio → bienvenida → selector → rutina creada, en claro y en oscuro.
+La rutina de casa entra con sus 4 días, la cuerda como tabata en los cuatro y
+los «10 por lado» y «60seg» literales. Ajustes dice «1 rutina · 169 ejercicios».
+
+El descanso entero: arranca al marcar, se para al tocar la celda, **avisa en
+segundo plano** nombrando el ejercicio, sobrevive a la pantalla apagada con el
+tiempo real (2:00 → 1:20), y matar la app no deja contador zombi.
+
+El editor de celda **con el teclado software arriba**: Guardar quedó en 1721 y
+el toque llegó. Es el P1 de ayer, ahora en el flujo real.
+
+DESHACER restaura en su posición y el aviso se va al cambiar de día. Las
+flechas reordenan. Añadir desde la biblioteca funciona. `Nueva` crea y activa.
+Borrar la activa cae en la otra. Buscar sin acentos encuentra. El ▶ sin video
+fijado abre la búsqueda de YouTube.
+
+Los dos timers en su segunda entrada de la misma sesión: el tabata abre en
+PREPARA y el de intervalos en TRABAJO contando. El tabata completó dos sesiones
+seguidas hasta el resumen.
+
+Tablet: los 4 días caben, sin scroll horizontal, y el icono nuevo de core se ve
+bien.
+
+### Hallazgos
+
+- **P3 — copia obsoleta**: `Restaurar datos` decía «se volverá a la rutina y
+  biblioteca originales», y ya no hay rutina original. **Arreglado**: ahora dice
+  que la app queda como recién instalada, sin ninguna rutina.
+- **P3 — tipografía en tablet**: las columnas se estiran, el texto sigue en
+  14 px. Sigue abierto: es una escala responsive, decisión de diseño.
+- **P3 — título de Hoy**: los enfoques largos se cortan («Empuje
+  (pecho/hombr…»). Las pestañas de día sí lo enseñan entero.
+
+### Por qué no se puede publicar todavía
+
+El QA prueba que la app **funciona**. Publicar pide cosas que este QA no mira, y
+la que manda es esta: **el APK/AAB de release no compila en esta máquina**.
+Todo lo verificado aquí es un dev build servido por Metro. Sin release no hay
+nada que subir, y la fluidez sigue sin medir. La salida está escrita en
+`CLAUDE.md`: mover el repo fuera de OneDrive.
+
+Lo demás que falta está en el informe de la sesión: sin `eas.json` ni keystore,
+`versionCode` sin fijar, política de privacidad, y dos asuntos de contenido —los
+37 videos fijados elegidos por título y canal sin haberlos visto, y la licencia
+del CSV de ejercicios y de las 146 ilustraciones.
+
+---
+
+## 2026-09-09 — La app arranca vacía y te pregunta dónde entrenas
+
+tsc ✅ · jest 301 ✅ · lint ✅ · verificado en el emulador.
+
+### Por qué
+
+La app sembraba la rutina de Pablo, que es de gimnasio. Quien entrena en casa
+aterrizaba en la rutina de otro y lo primero que tenía que hacer era borrarla —
+justo al revés de lo que promete la app. Ahora se arranca **sin ninguna rutina**
+y la bienvenida ofrece elegir, agrupado por dónde se entrena y diciendo qué
+hace falta para cada una.
+
+### Qué se decidió
+
+- **Nada de sembrar rutinas.** `loadRoutines()` devuelve `[]` y no escribe. La
+  biblioteca sí se sigue sembrando: es dato de referencia, no del usuario.
+- **Una plantilla es un parte escrito.** Su campo `text` lo lee el mismo
+  `parseRoutineText` del importador. Añadir una plantilla es pegar texto, no
+  inventarse una estructura nueva ni mantener dos formatos sincronizados.
+- **`Routine.equipment`**, nullable. Se pone al elegir plantilla y se ve en la
+  tarjeta de Rutinas. `parseRoutine` lo lee con `nullableString`, así que quien
+  actualice conserva sus rutinas — hay dos tests que lo prueban, porque
+  `parseRoutines` es todo-o-nada y un rechazo significa resembrar.
+- **El equipamiento no revive el onboarding retirado.** Aquel *preguntaba*;
+  esto lo *dice*. Anotado en `decisions.md` para que no parezca lo contrario.
+
+### El catálogo
+
+Dos plantillas para empezar: la de casa —la del dueño, 3 días de trabajo y un
+cuarto opcional de core, con mancuerna o kettlebell y cuerda— y la de Pablo, de
+gimnasio, generada desde `routine-pablo.seed.json` para no teclear 47 filas. Un
+test compara la plantilla con esa semilla y avisa si alguien toca una sin la
+otra.
+
+Las 14 del manual (`assets/gym_flow_master_routines_guide.md`) **quedan
+pendientes**: sus secciones son regulares —título, objetivos, nivel y una línea
+de equipo por rutina— así que salen con un generador, pero es trabajo aparte.
+
+### El bug que solo se veía en el emulador
+
+Hoy tiene un retorno temprano para «no hay ninguna rutina». Al dejar de sembrar,
+esa rama pasó a ser **la del primer arranque** — y la bienvenida, que se pinta
+al final del `return` principal, dejó de aparecer: almacenamiento limpio, sin
+`gymflow_welcome_seen`, y aun así la pantalla vacía. Los 301 tests estaban
+verdes. Queda en el Hall of Fame.
+
+Detrás había un agujero mayor: si borrabas todas tus rutinas acababas en esa
+misma pantalla, con «Pegar» como única salida. **Al catálogo no se volvía a
+llegar nunca.** El estado vacío ofrece ahora también elegir plantilla.
+
+### De paso
+
+`abdomen` y `core` apuntaban a `ab-testing` — el glifo de las pruebas A/B, un
+juego de palabras con «ab» que en pantalla se lee «A/B» y no dice nada de
+abdomen. Lo destapó el Día D de la rutina de casa. Ahora es `stomach`.
+
+### Archivos
+
+Nuevos: `lib/domain/templates.ts` · `lib/data/routine-templates.ts` ·
+`components/TemplatePicker.tsx` y sus dos tests.
+Tocados: `types.ts` · `routine.ts` · `importRoutine.ts` · `icons.ts` ·
+`serialize.ts` · `repository.ts` · `index.tsx` · `routines.tsx` · `Welcome.tsx`
+
+---
+
+## 2026-09-09 — QA ADB completo (2ª pasada): los cuatro arreglos aguantan, y sale un P1 nuevo
+
+tsc ✅ · jest 276 ✅ · lint ✅ · cero crashes — emulador Pixel 9 Pro, 1280×2856.
+
+### Verificado en dispositivo
+
+Los cuatro arreglos de estas dos sesiones, confirmados uno a uno:
+
+- **El importador lee lo que exporta la app**: copiar la rutina entera y
+  pegarla da **6 días · 47 ejercicios · 29 con ficha**, y crea un duplicado
+  exacto. Antes: 2 días · 16 ejercicios.
+- **«Día A» sobrevive** al borrado de «Día B». Antes se convertía en «Día 1».
+- **Segunda entrada a los timers**: el de intervalos abre en TRABAJO contando y
+  el tabata en PREPARA. Y con 2 rondas el contador avanza de RONDA 1/2 a 2/2 y
+  termina en COMPLETADO — el caso que ayer abría muerto.
+- **El fin del temporizador se lee** en oscuro.
+
+Y lo de siempre: descanso completo (arranca, se para al tocar la celda, avisa
+en segundo plano nombrando el ejercicio, sobrevive a la pantalla apagada con el
+tiempo real 2:00 → 1:20, sin contador zombi ni aviso fantasma tras matar la
+app), persistencia tras `force-stop`, y `Restaurar datos` dejándote en Ajustes.
+
+### P1 nuevo: el editor de celda, detrás del teclado
+
+**Síntoma.** Con el teclado software arriba, la hoja del `CellEditor` queda
+**entera** por debajo: título, campo, atajos y los dos botones. Se escribe a
+ciegas y «Guardar» no responde —comprobado tocando sus coordenadas exactas—.
+La única salida era la tecla ✓ del teclado, que sí guarda, y por eso el bug
+llevaba ahí sin verse.
+
+**Causa raíz.** `KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}`:
+en Android el `behavior` es `undefined`, o sea que el componente **no hace
+nada**. Estaba escrito dando por hecho que la ventana se encogería sola, y con
+`edgeToEdgeEnabled` ya no se encoge. Como el input lleva `autoFocus`, en un
+móvil de verdad el teclado sube siempre. Es la misma causa raíz que obligó a
+subir las acciones del importador a la cabecera.
+
+**Por qué no salió antes.** El emulador tiene teclado físico y el IME no sube:
+la pantalla parece sana. Sale con
+`adb shell settings put secure show_ime_with_hard_keyboard 1`, y eso queda en
+las reglas.
+
+**Arreglo.** La altura real del teclado desde `keyboardDidShow`, **más
+`insets.bottom`**: con edge-to-edge esa altura se mide desde la barra de
+navegación y no desde el borde de la pantalla, y sin sumarlo los botones salen
+mordidos —se vio y se corrigió—. Verificado: la hoja sube entera y Guardar
+responde con el teclado abierto; sin teclado no queda hueco muerto.
+
+### El ajuste de intervalos ya habla el idioma de la casa
+
+Era la pantalla que no se parecía a ninguna otra. `SectionPill` y `StepperRow`
+salen de `tabata.tsx` a `components/timers/SetupControls.tsx` y ahora las usan
+las dos, así que no vuelven a separarse. La cabecera es de chevron, las
+secciones son TIEMPOS / ESTRUCTURA / OPCIONES y el botón dice EMPEZAR.
+
+Lo que **no** se unifica: minutos y segundos siguen por separado. Un
+`StepperRow` mueve un solo valor y aquí hacen falta dos — poner cinco minutos a
+saltos de cinco segundos son sesenta toques.
+
+De paso, dos defectos reales de esa pantalla: `ControlRow` estaba **definida
+dentro del componente**, así que React la veía nueva en cada render y
+desmontaba el subárbol entero; y el botón del pie llevaba relleno fijo en vez
+de `useSafeAreaInsets()`, que es un Must Always.
+
+### P3: el `reps` largo ya no se corta
+
+`al fallo tecnico` se quedaba en «al fallo …». La celda de reps admite dos
+líneas, como el nombre del ejercicio; series y descanso siguen en una, que
+siempre caben.
+
+### Sigue abierto
+
+La tipografía no crece en tablet: las columnas se estiran y el texto se queda
+en 14 px. Es una escala tipográfica responsive, decisión de diseño aparte.
+
+### Archivos
+
+`components/timers/SetupControls.tsx` (nuevo) · `app/(app)/timer.tsx` ·
+`app/(app)/tabata.tsx` · `components/routine/CellEditor.tsx` ·
+`components/routine/RoutineTable.tsx`
+
+---
+
+## 2026-09-09 — Los dos P2 del QA: el nombre del día y el viaje de vuelta
+
+tsc ✅ · jest 276 ✅ · lint ✅ — los dos son dominio puro, con test primero.
+**Sin confirmar en dispositivo**: el emulador está apagado.
+
+### Quitar un día se llevaba por delante los nombres
+
+**Síntoma.** Una rutina pegada con «Día A» y «Día B» pasaba a «Día 1» y «Día 2»
+en cuanto borrabas un tercer día.
+
+**Causa raíz.** `removeDay` renumeraba **todas** las etiquetas para que no
+quedaran huecos, sin mirar cuáles las había puesto la app. El importador guarda
+el nombre que escribió el coach a propósito —«Día A», «Lunes», «Push»— y esto
+se lo comía en silencio.
+
+**Arreglo.** `esEtiquetaAutomatica()`: solo se renumera lo que encaja en
+`Día N`, y por su posición. Lo demás es del usuario y se queda.
+
+### El importador ahora lee lo que exporta la propia app
+
+**Síntoma.** Copiar un día y pegarlo en «Pegar rutina» leía **16 ejercicios
+donde había 7**, en dos días llamados los dos «Día 1».
+
+**Causa raíz.** El parser trata cada línea como ejercicio salvo que sea
+cabecera de día. La fila de columnas, la de guiones, las seis líneas de la
+leyenda y la línea `RUTINA: …` entraban todas como filas — 1 + 1 + 7 + 6 = 15,
+más la de metadatos abriendo un día extra. La cuenta cuadra exactamente con lo
+que se vio en el QA.
+
+**Por qué importa.** «Copiar» está en Hoy y «Pegar» en Rutinas, a un toque el
+uno del otro: duplicar la rutina es el gesto obvio y daba basura.
+
+**Arreglo.** El parser entiende tablas markdown: aprende qué columna es cuál
+**leyendo la cabecera** en vez de dar por hecho el orden, se salta la fila de
+guiones, corta en «Leyenda:» y descarta la línea `RUTINA:`. Una tabla sin
+cabecera reconocible sigue leyéndose como texto suelto, que la regla de no
+perder nunca una línea manda sobre todo lo demás. También quita el
+`(8 ejercicios)` del final del título, que es conteo y no enfoque.
+
+**El test es el viaje entero**: exporta con `routineToMarkdown`, vuelve a
+pegar, y compara días, filas, nombre, series, reps y descanso. Si el formato de
+export cambia, el test lo sigue.
+
+### Archivos
+
+`lib/domain/routine.ts` · `lib/domain/importRoutine.ts` y sus dos tests
+
+---
+
+## 2026-09-08 — Los dos P1 del QA: el estado que sobrevive y el token que no se lee
+
+tsc ✅ · jest 266 ✅ · lint ✅ — los dos verificados en el emulador, no solo
+compilando.
+
+### El estado que sobrevivía a la sesión
+
+**Síntoma.** La segunda vez que entrabas en el tabata o en el temporizador de
+intervalos dentro de la misma apertura, la pantalla abría **ya terminada**
+—HECHO · 00:00 · 0 rondas, y COMPLETADO · 0:00— y no contaba ni un segundo. El
+importador, por lo mismo, conservaba el texto de una rutina que ya habías
+creado.
+
+**Causa raíz.** Las ocho pantallas «ocultas» son `Tabs.Screen` con `href: null`
+y un `Tabs` **monta una vez y no desmonta nunca**: `router.push` solo cambia el
+foco, así que el inicializador de `useState` no se vuelve a ejecutar y queda el
+estado de la visita anterior. En `timer-active` se veía especialmente claro:
+«RONDA 1/2» —los params sí llegan— junto a COMPLETADO, que es estado viejo.
+
+**Por qué no se detectó antes.** Todo el QA anterior probaba cada pantalla
+**una vez**, y desde una app recién abierta siempre funciona. El caso que rompe
+es la segunda entrada, y no había ningún paso que la ejerciera. Es cableado de
+navegación: no hay forma de expresarlo en `lib/domain/`, así que la cobertura
+que falta es de recorrido, no de dominio.
+
+**Arreglo.** `useFocusEffect` reiniciando el estado al enfocar, que es lo que
+haría el desmontaje, en `tabata-active.tsx` y `timer-active.tsx`; y vaciar el
+borrador dentro de `crear` en `import.tsx`. En el tabata también se reinicia
+`fasePrevia`, o el efecto de vibrar ve un cambio de fase que no ha ocurrido y
+vibra al entrar.
+
+**Lo que NO se hizo, a propósito.** La salida estructural es sacar esas
+pantallas del `Tabs` a un `Stack` —les quitaría además la tab bar, que en un
+tabata a pantalla completa no pinta nada—. Cambia el comportamiento del botón
+atrás en ocho pantallas y obliga a repetir el QA entero, así que queda como
+decisión aparte. `unmountOnBlur` no vale: no existe en React Navigation 7
+(7.15.10 aquí), solo queda `popToTopOnBlur`, que es para pilas.
+
+**Auditoría del patrón.** Seis pantallas guardan estado local. En `stopwatch`
+conservarlo es lo que uno espera de un cronómetro, en `timer` (ajuste) también,
+y `tabata` (ajuste) se resincroniza al arrancar. `exercise/[id]` y
+`tabata-summary` no tienen estado propio.
+
+### El token de borde usado como texto, otra vez
+
+**Síntoma.** La pantalla de fin del temporizador de intervalos, en oscuro:
+«COMPLETADO» y el botón «LISTO» —la única acción— casi invisibles.
+
+**Causa raíz.** `accentColor` valía `t.outlineVariant` cuando `isDone`. Es el
+token de separar, no el de leer: **1,34:1 en oscuro y 1,45:1 en claro** sobre
+`surfaceContainer`. Ya estaba en el Hall of Fame desde la revisión de color,
+vivo en este archivo.
+
+**Arreglo.** `t.onSurface`: 16,31:1 y 15,88:1. Y el par entra en
+`CRITICAL_PAIRS` con su `where`, que es el test que habría cazado esto —los dos
+tests nuevos son los que suben el total a 266.
+
+### Archivos
+
+`app/(app)/tabata-active.tsx` · `app/(app)/timer-active.tsx` ·
+`app/(app)/import.tsx` · `lib/domain/theme.ts`
+
+---
+
+## 2026-09-08 — QA ADB completo: RECHAZADO por una pantalla que no se desmonta
+
+tsc ✅ · jest 264 ✅ · lint ✅ — recorrido entero contra el emulador
+(Pixel 9 Pro, 1280×2856), tema claro y oscuro.
+
+### Lo que quedó verificado en dispositivo
+
+Lo grande primero: **el tabata llega al resumen solo**. Era el pendiente de la
+sesión anterior, el que `adb` no conseguía pulsar. Con la configuración mínima
+(1 ronda, 1 ciclo, 5+5) corre entero y salta a «¡SESIÓN COMPLETA! · 10s ·
+1/1 · 1/1» — el mismo número que dice `totalSeconds`. Las dos cuentas que se
+arreglaron en el dominio se ven bien en pantalla: TOTAL 00:10 y RONDAS
+RESTANTES 1.
+
+El descanso, que es la zona de más riesgo, pasa entera: cuenta atrás en la
+celda, se detiene al tocarla y al desmarcar, se muestra al marcar otra fila,
+**avisa con la app en segundo plano** (canal `rest-timer`, importancia 4,
+patrón de vibración, y el texto nombra el ejercicio), sobrevive a la pantalla
+apagada con el tiempo real (2:00 → 1:11 tras 49 s fuera), aparece ya terminado
+si venció mientras no mirabas, y matando la app no queda contador zombi **ni
+suena un aviso fantasma**.
+
+También: persistencia tras `force-stop`, DESHACER restaurando en su posición
+exacta, el aviso de DESHACER desapareciendo al cambiar de día, `Restaurar
+datos originales` dejándote en Ajustes, búsqueda sin acentos, el ▶ abriendo
+video fijado o búsqueda de YouTube según toque, modo avión, tablet sin scroll
+horizontal, y doble toque en Guardar sin duplicar.
+
+### La causa raíz que sostiene tres síntomas
+
+**Las pantallas «ocultas» son pestañas, no rutas de pila.** En
+`app/(app)/_layout.tsx` las ocho van como `<Tabs.Screen … href: null>`, y un
+`Tabs` **monta cada pantalla una vez y no la desmonta nunca**. `router.push`
+solo cambia el foco, así que el `useState` inicial no se vuelve a ejecutar y
+el estado local de la visita anterior sigue ahí.
+
+Se ve en tres sitios, con la misma firma:
+
+- **`tabata-active`**: la segunda vez que entras en la misma sesión abre en
+  **HECHO · 00:00 · 0 rondas · 0 ciclos** y no arranca.
+- **`timer-active`**: la segunda vez abre en **COMPLETADO · 0:00**, y la
+  cabecera dice «RONDA 1/2» porque `totalRounds` sí llega por params mientras
+  la ronda en curso se quedó atrás.
+- **`import`**: conserva el texto pegado después de haber creado la rutina, y
+  sobrevive incluso a `Restaurar datos originales`.
+
+Arrancando la app de cero funciona: por eso no había salido antes.
+
+`unmountOnBlur` ya no existe en React Navigation 7 (7.15.10 aquí); solo queda
+`popToTopOnBlur`, que es para pilas. Las dos salidas son sacar esas pantallas
+del `Tabs` a un `Stack` —que además les quita la tab bar, que ahí no pinta
+nada— o reiniciar el estado en `useFocusEffect` pantalla por pantalla.
+
+### Lo demás que salió
+
+- **El temporizador de intervalos estaba entero en inglés** —«INTERVAL TIMER»,
+  «WORK», «REST», «RESET», «COMPLETED», «DONE»— en una app que es española por
+  regla. Era la única pantalla así. **Arreglado**: `ETIQUETA_FASE` traduce en
+  el borde del render y la fase sigue siendo estado interno, que es lo que
+  evita que vuelva a pasar. Verificado en dispositivo: INTERVALOS · TRABAJO ·
+  REINICIAR · COMPLETADO · LISTO · RONDA 1/2.
+- **La pantalla de fin de ese temporizador es ilegible en oscuro**: usa
+  `outlineVariant` como color de texto, el token de borde que ya está en el
+  Hall of Fame por dar 1,4:1. «COMPLETADO» y sobre todo el botón «LISTO» —la
+  única acción— apenas se ven.
+- **Quitar un día renumera *todos* los días** (`lib/domain/routine.ts:129`),
+  así que una rutina pegada con «Día A» y «Día B» pasa a «Día 1» y «Día 2» al
+  borrar un tercero. El importador guarda el nombre que escribió el usuario a
+  propósito; esto se lo lleva por delante sin avisar.
+- **El importador no entiende lo que exporta la propia app.** Pegar el
+  markdown de «Copiar» lee 16 ejercicios donde hay 7 y dos días llamados los
+  dos «Día 1». La vista previa lo enseña antes de crear nada, que es la red de
+  seguridad, pero el resultado es basura.
+- Menor: el temporizador de intervalos es la pantalla que no se parece a
+  ninguna otra («← Volver» en texto, ± apilados, «Empezar ▶»); en tablet la
+  tipografía no crece aunque las columnas sí; un `reps` largo se corta con
+  puntos suspensivos.
+
+### Trampa de QA nueva
+
+**El aviso de LogBox del dev build se come los toques de una franja del pie.**
+Con «Open debugger to view warnings» en pantalla, ni DESHACER ni la ✕ de su
+barra respondían —tres métodos de toque distintos, cero respuesta— y el
+control de la misma pantalla sí. Cerrando el aviso, DESHACER funcionó a la
+primera. Estuve a un paso de reportar un P1 que no existe. En release no hay
+LogBox.
+
+### Lo que no se pudo probar
+
+El **reinicio diario**: el emulador no deja cambiar la fecha sin root, y
+parchear `RKStorage` a mano corrompió el almacenamiento —la app respondió bien,
+resembrando en vez de reventar—. Queda el cableado sí visto: marcar una fila
+escribe `lastResetOn: "2026-09-08"` **solo en ese día**, y la comparación al
+cargar es pura y está en `day.test.ts`.
+
+También sin probar: el teclado software tapando un botón (el emulador tiene
+teclado físico y no lo levanta) y la vibración real.
+
+---
+
+## 2026-09-08 — QA en dispositivo: el tabata al dominio y dos cuentas mal
+
+tsc ✅ · jest 264 ✅ · lint ✅ — `6d1990c`
+
+### La maquina de estados sale de la pantalla
+
+La logica de fases vivía dentro de `tabata-active.tsx`, 584 líneas con
+`setInterval`, animaciones y navegación. Comprobar si la última ronda terminaba
+pedía correr un tabata entero en un emulador — por eso seguía en la lista de
+«nunca probado». Ahora es `lib/domain/tabata.ts` con 22 tests, uno de los cuales
+corre el reloj entero y cuenta los tics.
+
+Los tests destaparon **dos errores reales, los dos visibles en pantalla**:
+
+- **El total sobraba un descanso por ciclo.** La última ronda de cada ciclo no
+  lleva descanso detrás. Con la config por defecto anunciaba **16:35 para un
+  tabata de 14:55**: el contador llegaba al final marcando 1:40 restantes.
+- **«RONDAS RESTANTES» marcaba 0** antes de empezar un tabata de una ronda,
+  porque restaba sin mirar la fase.
+
+Los dos confirmados arreglados en el emulador (14:55 y 3).
+
+De paso, los efectos salen del actualizador de `useState`: vibrar, parpadear y
+navegar son consecuencias de que la fase **haya** cambiado, no parte de
+calcularla.
+
+### Lo que el QA descartó
+
+- **Crear y borrar rutinas** funciona y persiste tras reiniciar.
+- **La config del tabata sí persiste.** Parecía que no, pero mis deep links a
+  `gymflow://tabata-active` se saltaban la pantalla de ajustes, que es la única
+  que llama a `loadConfig()`. Por el flujo real —el único que existe— se carga
+  y se guarda bien.
+- **El botón de play no está roto.** Llegué a «arreglarlo» con
+  `pointerEvents="none"` en el anillo SVG y a escribir el bug en un comentario.
+  Era falso: `adb shell input tap` es demasiado rápido para `TouchableOpacity`.
+  Revertido.
+
+### Sigue sin verificarse
+
+El salto final al resumen en dispositivo. `adb` no consigue pulsar ese botón de
+forma fiable (ni `tap`, ni `swipe` mantenido, ni `motionevent`). Que la fase
+llega a `done` está cubierto por tests; la navegación en sí es un `useEffect` de
+doce líneas.
+
+### El release, un blocker menos
+
+El fallo de `libworklets.so` **está resuelto**: el CMake de reanimated apunta al
+`buildDir` por defecto de worklets, así que basta con excluir ese módulo del
+redirect de MAX_PATH en `android/build.gradle`.
+
+Detrás aparece el siguiente, y este es de fondo: CMake **espeja la ruta del
+fuente dentro del nombre del objeto**, así que la ruta del proyecto en OneDrive
+(62 caracteres) se suma a cada `.o` y pasa de 260. Medido: 320 con la ruta real,
+259 por el junction `C:\g` — un carácter de margen, que no es margen. **La
+salida de verdad es mover el repo fuera de OneDrive**, a algo como `C:\dev\`.
+La fluidez sigue sin medir.
+
+---
+
+## 2026-09-08 — La biblioteca en español, pegar rutinas y la bienvenida
+
+Cuatro pendientes cerrados en orden de prioridad, todos verificados en el
+emulador. tsc ✅ · jest 242 ✅ · lint ✅
+
+### Los 169 ejercicios, en español de verdad — `728f099`
+
+161 tenían descripción, consejos y errores comunes en inglés, y los grupos
+musculares también. Era el fallo más visible que le quedaba a la app: la ficha
+del ejercicio se abre **para leerla**.
+
+El CSV de origen se queda en inglés. Traducirlo perdería el original y rompería
+cualquier actualización futura de la fuente, así que la versión española va en
+`exercise-text-es.json` y `muscle-groups-es.json` y `npm run seed` la aplica
+encima — el mismo patrón de los videos fijados y las progresiones.
+
+Los grupos se traducen **palabra a palabra** (48 piezas) y se recomponen, en vez
+de mapear las 67 combinaciones: así una combinación nueva del CSV no vuelve a
+colar inglés. Arregla además la búsqueda — «pecho» pasa de no encontrar nada a
+devolver 20 ejercicios.
+
+`LIBRARY_VERSION` → 3, que es lo que hace que lo vea quien ya tiene la app.
+
+**Falso positivo que conviene recordar:** el guard marcaba `hollow-body-hold`
+por la palabra *hold*. Es el nombre propio del ejercicio; los nombres prestados
+que ya se dicen así en el gimnasio quedan fuera de la lista de delatoras.
+
+### Pegar una rutina — `8a78503`
+
+El parser estaba desde el checkpoint anterior y no tenía UI. Ahora la pantalla
+enseña **lo que ha entendido mientras escribes**: días con icono, ejercicios por
+día, cuántos con ficha, cuántas líneas sin series.
+
+`matchExercise` ata cada línea con la biblioteca; al acertar, la fila hereda
+ilustración, video y progresión. Estricto a propósito y `null` ante empate.
+**Medido contra la rutina real de cuatro días: 19 de 26, ninguno mal.** Los
+fallos son huecos de la biblioteca o falta de contexto, no errores.
+
+**Bug encontrado probándolo:** con `edgeToEdgeEnabled` la ventana ya **no se
+redimensiona** al abrir el teclado, así que el botón «Crear rutina» anclado al
+pie quedaba debajo de las teclas, inalcanzable, y `KeyboardAvoidingView` no lo
+arregla en Android. Las acciones subieron a la cabecera. Regla nueva.
+
+### La bienvenida — `17c839e`
+
+Una pantalla, dos caminos: pegar la tuya o empezar con la de ejemplo. Sin
+nombre, sin objetivo, sin nivel. Es un `Modal` dentro de Hoy y no una ruta con
+guarda: se decide en la misma lectura del arranque, así que el arranque sigue
+siendo directo a la tabla.
+
+De paso, «1 rutinas»: el ternario estaba repetido en cinco sitios y ahora es
+`pluralize` en el dominio.
+
+### Tabata: las dos pantallas que faltaban — `db2911a`
+
+Eran las únicas con cero tokens (44 colores a mano). Dos fallos medidos:
+
+- **El botón TERMINAR del resumen era invisible.** `#ffffff` de fondo con
+  `text-white` encima: 1:1.
+- **La etiqueta TOTAL daba 2,27:1** sobre el rojo — tinta negra al 40 % de
+  opacidad. *La opacidad rebaja el contraste y no aparece en ninguna revisión
+  de tokens.* Ahora hay una constante con el número medido al lado.
+
+Los tokens `tabataPrepare/Work/Rest` existían y no los usaba nadie, por el fallo
+de siempre: **relleno contra tinta**. El color de fase llena el 70 % de la
+pantalla con texto negro encima —relleno, y un relleno no puede cambiar con el
+tema— y además se escribe sobre los mandos, que sí siguen al tema. `TABATA_FILL`
+queda fuera de los dos temas. Los valores claros de los tokens tinta se
+oscurecieron: daban 4,17:1 y 4,23:1.
+
+### El release sigue sin compilar — causa raíz encontrada
+
+El bundle de producción **sí** se genera (`npx expo export`: 5,09 MB de bytecode
+Hermes), así que el problema no es el JS. El APK falla a los 4 min:
+
+```
+ninja: error: '.../react-native-worklets/android/build/intermediates/cmake/
+release/obj/arm64-v8a/libworklets.so', needed by '.../libreanimated.so',
+missing and no known rule to make it
+```
+
+**Un workaround rompe el otro.** El parche de MAX_PATH
+(`subprojects { buildDir = "C:/b/..." }`) redirige también el `buildDir` de
+`react-native-worklets`, pero el CMake de `reanimated` busca `libworklets.so` en
+la ruta original. Candidatos: excluir del redirect solo a esos dos módulos
+(vuelve MAX_PATH), o mover el proyecto fuera de OneDrive a una ruta corta de
+verdad. **La fluidez sigue sin medir.**
+
+---
+
+## 2026-09-08 — Contraste en los timers, insets, e imágenes de vuelta
+
+### Los bugs de contraste, medidos
+
+`AppTopBar` hardcodeaba fondo `#0A0A0A` y tomaba la tinta del tema: en claro
+daba **1,14:1**, invisible. Era la barra de Tabata y del Temporizador. Se borró
+—se titulaba «ELITE PERFORMANCE» y llevaba un selector de idioma muerto— y las
+dos pantallas pasaron a la misma cabecera con ‹ que ya usaban Cronómetro y el
+detalle de ejercicio.
+
+Además:
+
+- `outlineVariant` (token de **borde**) usado como color de texto en dos sitios:
+  **1,39:1** en claro, **1,55:1** en oscuro. Invisible en ambos, y anterior al
+  cambio de tema.
+- Temporizador: 6 fondos de botón en `rgba(255,255,255,0.05)`, invisibles sobre
+  claro.
+- **Un bug propio**: al despurpurar, el script cambió `#bc13fe` por blanco en el
+  botón de Tabata, cuyo texto ya era blanco. Botón blanco con letras blancas.
+- `tabata.tsx` reescrita contra el tema (tenía **0 tokens y 31 valores fijos**)
+  y traducida.
+
+### La barra de navegación tapaba las pestañas
+
+`edgeToEdgeEnabled` hace que la app dibuje bajo la barra del sistema, y la tab
+bar usaba `paddingBottom: 10` fijo. Con gestos (~24dp) casi colaba; **con los
+tres botones (~48dp) las cuatro pestañas quedaban detrás de ◀ ● ■ y no se
+podían tocar.** Verificado en el emulador antes y después. Ahora usa
+`useSafeAreaInsets()`, y las tres hojas ancladas abajo también.
+
+### Números cortados en el temporizador
+
+Un `<Text>` de 40px con otro de 16px anidado dentro y sin `lineHeight`: Android
+recortaba ascendentes y descendentes. La unidad pasa a ser `Text` hermano con
+`lineHeight` explícito. De paso, `ControlRow` se redefinía en cada render.
+
+### Imágenes de ejercicio
+
+Recuperadas de `git` (`2855fdc^`), juego `normalized` (900×536): **146 de 169
+ejercicios, 12,3 MB**. Van en el detalle encima del botón de video, sobre lámina
+blanca porque el dibujo tiene fondo blanco. Los 23 sin imagen simplemente no la
+muestran. El mapa de `require()` lo genera `scripts/build-exercise-images.mjs`
+dentro de `npm run seed`, y falla si sobra una imagen sin ejercicio.
+
+Se anotó la excepción en `.claude/RULES.md`: los 198 MB de PNG originales siguen
+prohibidos; los webp de 12,3 MB entran.
+
+### Hallazgo sin resolver: el contenido está en inglés
+
+**161 de los 169 ejercicios tienen `description` y `tips` en inglés.** El detalle
+muestra «EJECUCIÓN» y «RECOMENDACIONES» con el cuerpo en inglés. Solo los 8
+escritos a mano están en español. Esto cambia el encargo del bilingüe: no falta
+inglés, falta **español**. Pendiente de decidir.
+
+
+### Progresiones, y por qué la biblioteca no se actualizaba
+
+La progresión vive en la **biblioteca**, no en la tabla: es dato de referencia
+(«cuando las flexiones dejen de costar, pasa a las declinadas»), no algo que
+cambie de un día para otro. `Exercise.progressesTo` + `lib/data/progressions.json`
+con **39 escaleras** curadas, validadas en los dos sentidos por `npm run seed`.
+Solo hay entrada cuando cambia el movimiento: añadir peso no es otro ejercicio.
+
+Al probarlo salió algo más gordo: **la tarjeta no aparecía porque el
+almacenamiento manda tras la primera siembra.** La biblioteca es dato de
+referencia que nadie edita, así que congelarla en la instalación dejaba fuera
+todo lo que se le añadiera después — progresiones, videos, y las traducciones al
+español que están pendientes. Ahora `LIBRARY_VERSION` la refresca cuando la
+empaquetada es más nueva; las rutinas, que sí son del usuario, no se tocan.
+
+### Imagen del ejercicio anterior
+
+`expo-router` reutiliza la pantalla de detalle, y `expo-image` mantenía la
+imagen vieja mientras cargaba la nueva. `recyclingKey` — su documentación
+describe el síntoma literalmente.
+
+### Fluidez: el APK es de debug
+
+`DEBUGGABLE`, con el bundle de JS descargándose de Metro en cada arranque en vez
+de embebido. Revisados los selectores de Zustand: estables, ninguno crea objetos
+por render. El build de release para medirlo falló por el mismo problema de
+rutas largas de Windows. **Pendiente de medir de verdad.**
+
+
+### Importador: pegar la rutina como texto
+
+`lib/domain/importRoutine.ts` — parsing puro, sin IA y sin red. Entiende
+cabeceras, viñetas, `4x15`, `5×5`, `10 por lado`, `3x60seg`, separadores
+decorativos, y convierte una línea de cuerda en fila de tabata. Lo que va tras
+una flecha se descarta: es progresión, y esa vive en la biblioteca.
+
+Regla del parser: **no perder nunca una línea.** Lo que no sabe leer entra con
+su texto literal para corregirlo de un toque.
+
+Probado contra la rutina real de 4 días: filas 8/8/7/7, cada día terminando en
+la cuerda, **cero líneas sin leer**.
+
+tsc ✅ · jest 202 ✅ · lint ✅ · comprobado en emulador
+
+Commits: `71ba25c` tema · `2159e67` ejercicios · `65f10e8` importador
+
+---
+
+## 2026-09-03 — Tema en blanco y negro, con el contraste como test
+
+Neon Purple y Neon Orange desaparecen. El eje del ajuste deja de ser «qué
+acento» y pasa a ser **claro u oscuro**: el claro es la hoja de papel, el
+oscuro su negativo, que es literalmente lo que la app dice ser.
+
+### Dos bugs de contraste reales, medidos
+
+| | Antes | Ahora |
+|---|---|---|
+| Acento como texto (contador `0/7`, `+ Añadir`) — tema morado | **4,12:1** ❌ | 21:1 · 14,7:1 |
+| Botón «Copiado» — tema naranja | **2,48:1** ❌ | 14,2:1 · 8,5:1 |
+| Cabecera de tabla (margen sobre AA) | 4,50 y 4,55 — cero margen | 21:1 · 17,4:1 |
+
+La causa raíz era una sola: **`primaryContainer` hacía de relleno y de tinta a
+la vez** — 54 usos frente a 9 de `primary`. Un acento de tono medio no puede
+cumplir las dos cosas. Se separaron los roles en 33 sitios.
+
+### Dónde vive ahora
+
+`lib/domain/theme.ts` — la paleta es dato puro, así que baja al dominio. Eso
+permite que `theme.test.ts` compruebe los **15 pares fondo/texto que la app
+pinta de verdad**, en los dos temas: un retoque futuro que rompa la
+legibilidad falla en jest, no en una pantalla. El store se queda solo con
+elegir y persistir.
+
+`themeIdFromStored()` migra lo guardado: `purple` y `orange` eran los dos
+oscuros, así que ambos caen en `dark`. Nadie se encuentra la app en claro
+después de actualizar.
+
+### De paso
+
+- Se quitó el morado hardcodeado de las tres pantallas de tabata (27 valores).
+  Siguen siendo oscuras a propósito: son pantallas inmersivas de temporizador.
+- `LoadingScreen` importaba `PURPLE_THEME`, que ya no existe.
+
+tsc ✅ · jest 174 (133 + 41 del tema) ✅ · lint ✅
+
+Diseño y auditoría completa: artefacto «Tema blanco y negro».
+
+---
+
+## 2026-09-02 — P1 del descanso: arreglado y verificado en un dev build
+
+`plugins/withExactAlarm.js` declara `USE_EXACT_ALARM` (Android 13+, concedido al
+instalar) y `SCHEDULE_EXACT_ALARM` con `maxSdkVersion=32` para Android 12. Hace
+falta un plugin porque `android.permissions` de app.json sólo escribe
+`android:name` y el tope de versión es justo lo que evita que el segundo permiso
+llegue a Android 13+, donde exigiría pasar por los ajustes del sistema.
+
+**Medido de punta a punta**, con un dev build instalado en el emulador:
+
+| | Antes | Después |
+|---|---|---|
+| Desviación del aviso | 135.000 ms (2 min 15 s) | **816 ms** |
+
+Cadena de evidencia: el permiso aparece en el APK (`aapt2 dump permissions`) ·
+`dumpsys package com.gymflow.app` da `USE_EXACT_ALARM: granted=true` sin diálogo ·
+`SCHEDULE_EXACT_ALARM` no aparece en API 37, que es lo que debe pasar con el tope ·
+alarma programada 13:09:06.844, notificación posteada 13:09:07.660.
+
+### Dos bloqueos reales al compilar nativo (primera vez que se intenta)
+
+1. **Ninja revienta con rutas >260 caracteres.** Los long paths de Windows están
+   activados, pero ninja no los soporta. La ruta de objeto que falla mide 391
+   caracteres, y **más de 260 son intrínsecos**: ni con el proyecto en la raíz
+   del disco cabría. Se sorteó con un junction corto (`C:\g`) y redirigiendo el
+   directorio de build a `C:\b`.
+2. **`react-native-reanimated` y `react-native-worklets` emiten los dos
+   `libworklets.so`** y `mergeDebugNativeLibs` aborta. Las versiones son
+   coherentes (reanimated 4.1.7, worklets 0.5.1, dentro del peer `0.5 - 0.8`),
+   así que no es un desajuste. Se sorteó con
+   `android.packagingOptions.pickFirsts=**/libworklets.so`.
+
+Ambos parches viven en `android/`, que está **gitignored y se regenera**: al
+siguiente `expo prebuild` desaparecen. Hay que darles un sitio permanente antes
+de pensar en publicar.
+
+---
+
+## 2026-09-02 — Primer QA real en emulador: 1 P1
+
+Primera vez que la app se ejecuta en un dispositivo desde el refactor. Emulador
+`sdk_gphone16k_x86_64`, 1280x2856 @480dpi, Android 16, vía Expo Go + Metro.
+
+**Verdicto: RECHAZADO.** Un P1 abierto.
+
+### P1 — El aviso de descanso llega tarde o no llega en Android 12+
+
+Marcado un ejercicio con descanso 3:00 y app en segundo plano: la notificación
+«Descanso completo» se posteó **2 min 15 s tarde** (11:54:35 en vez de 11:52:20).
+Un segundo descanso de 0:15 no llegó dentro de la ventana observada.
+
+Causa raíz, leída en la implementación:
+
+    ExpoSchedulingDelegate.kt:106
+    if (SDK_INT < S || alarmManager.canScheduleExactAlarms())
+        setExactAndAllowWhileIdle(...)
+    else
+        setAndAllowWhileIdle(...)   // inexacta: Android la estrangula a ~1/9 min
+
+`canScheduleExactAlarms()` es falso porque **nadie declara el permiso**: ni el
+AndroidManifest de `expo-notifications`, ni su config plugin, ni nuestro
+`app.json` (`android.permissions` no existe). El propio CHANGELOG de la librería
+lo dice: *«If scheduleNotificationAsync needs a precise timer, the
+SCHEDULE_EXACT_ALARM should be explicitly added to AndroidManifest.xml»*.
+
+**No es una limitación de Expo Go**: una build de producción hereda la misma
+ausencia. Decisión pendiente: `USE_EXACT_ALARM` se auto-concede en Android 13+
+pero Google Play lo restringe a apps de alarma/reloj/calendario;
+`SCHEDULE_EXACT_ALARM` obliga a mandar al usuario a una pantalla de ajustes.
+
+### P2
+
+- **Grupos musculares en inglés** — 67 valores distintos (`pectorals`,
+  `abdominals`, `glutes medius`) visibles en Ejercicios y en el detalle. Rompe
+  la búsqueda por músculo en español: «pecho» da 7 resultados, todos por nombre,
+  y cuela «Jalón al pecho», que es de espalda. Origen: la columna `muscle_group`
+  del CSV pasa sin traducir por `scripts/build-exercise-seed.mjs`.
+- **Nombres truncados en modo edición** — `RoutineTable.tsx`: la columna de
+  nombre se estrecha para ↑ ↓ ✕ y deja «Curl de bíceps en …». Se borra a ciegas.
+
+### P3
+
+`Press de pecho en máquina` duplicado en la semilla · `expo-keep-awake` usado
+sin declarar en `package.json` (llega por ser dependencia de `expo`) · `fold()`
+copiado en tres archivos en vez de vivir en `lib/domain/` · «1 rutinas» ·
+Hombro y Pecho comparten glifo · teclado alfabético en campos numéricos · en
+tablet la cabecera EJERCICIO queda centrada sobre una columna muy ancha ·
+`.env` sigue exportando variables de Supabase y un GITHUB_TOKEN.
+
+### Verificado en verde
+
+Arranque directo en Hoy · semilla 6 días / 47 filas / 47 videos fijados ·
+cuenta atrás guardada como instante final (exacta tras background) · descanso
+vencido aparece terminado, sin contador zombi · edición inline con validación ·
+**DESHACER restaura en su posición y se retira al cambiar de día** ·
+**restaurar datos deja en Ajustes** (las dos regresiones del refactor,
+corregidas) · persistencia tras `force-stop` · reset diario (2/6 → 0/6, las
+ediciones sobreviven) · export con `3:00` y leyenda · ▶ abre el canal correcto ·
+búsqueda sin acentos · tema instantáneo y persistente · tablet sin scroll
+horizontal · cronómetro exacto en background (18,69 s medidos) · 0 crashes,
+0 ANR.
+
+### Sin probar todavía
+
+Tabata y temporizador de intervalos · añadir ejercicio desde la biblioteca ·
+reordenar con ↑ ↓ · crear y borrar rutinas · bajar a 1 día · modo avión ·
+háptica y Doze reales (requieren dispositivo físico).
+
+---
+
+## 2026-09-02 — Herramientas de trabajo
+
+Importados y adaptados los comandos de `DailyBudget` (mismo stack Expo + RN +
+ADB): `/qa-adb`, `/debug`, `/checkpoint`, `/ui-review`, `/feature`, más
+`.claude/RULES.md` con el Hall of Fame de este proyecto. De `ECC` no se importó
+nada: sus comandos son andamios autogenerados de otro repo.
+
+Las coordenadas ADB de DailyBudget **no** se copiaron: son de otra resolución.
+`/qa-adb` las deriva del `uiautomator dump`.
+
+---
+
+## 2026-09-02 — Revisión del refactor: 3 bugs
+
+Los 133 tests cubren `lib/domain/`, que es puro. Los tres bugs vivían en el
+cableado y la UI, donde no llega ningún test.
+
+- **DESHACER restauraba en el día equivocado** — el handler usaba el día en
+  pantalla, no el de origen de la acción. `RemovedRow` ahora lleva su `dayId`,
+  y el aviso se retira al cambiar de día. `8161552`
+- **El descanso podía programar un aviso ya cancelado** — pedir permiso de
+  notificaciones es asíncrono; sin token de generación el programado stale
+  sobrevivía y sonaba minutos después. Peor: su id pisaba el del temporizador
+  nuevo. El comentario decía que esto se comprobaba; el código no lo hacía.
+- **"Restaurar datos originales" expulsaba a Hoy** — `isLoaded: false` hace que
+  el layout raíz cambie el navegador entero por la pantalla de carga.
+
+Además: `removeRoutine` tenía una condición con una mitad lógicamente
+redundante, y se quitó un `as any` sobre `/tabata-summary` que ocultaba errores
+de ruta justo después de renumerarlas.
+
+tsc ✅ · jest 133 ✅ · lint ✅ · Metro empaqueta ✅
+
+---
+
+## 2026-09-01 — Refactor a MVP (F1–F6)
+
+Reducción de un sistema de gestión (31 pantallas, 14 tablas Supabase, 221 MB de
+assets) a una hoja de entrenamiento local. Disparador: `Rutina pablo.pdf`, un
+parte real de coach que además es **de gimnasio**, no de calistenia — lo que
+descartó el pivote anterior. El proyecto Supabase asociado ya no resolvía por
+DNS, así que quitar la nube pasó de opción a necesidad.
+
+| Fase | Qué | Commit |
+|---|---|---|
+| F1 | Demolición sin riesgo: árbol de skills, QR, agenda, presets, 158 MB de PNG | `2855fdc` |
+| F2 | Núcleo local: `lib/domain/` con TDD, `lib/storage/`, semillas (169 ejercicios, 47 filas) | `aa33d1f` |
+| F3 | Corte del cordón: sin auth, sin Supabase, sin React Query. 31 rutas → 11 | `3849240` |
+| F4 | Tabla editable, gestión de días y cabecera del parte | `da627c5` |
+| F5 | Descanso con aviso en segundo plano, cronómetro, tabata | `4740083` |
+| F6 | Exportar/copiar, eslint (llevaba roto todo el proyecto), poda de 15 deps, docs | `52acebd` |
+| — | 37 videos de YouTube fijados para la rutina | `12b726f` |
+
+Resultado: 31 rutas → 11 · assets 221 MB → 9,4 MB · −15 dependencias ·
+0 tests útiles → 133.
+
+Plan completo y decisiones en [[decisions]].

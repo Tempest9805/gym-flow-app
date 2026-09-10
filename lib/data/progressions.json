@@ -1,0 +1,48 @@
+{
+  "_comment": "Escaleras de dificultad: de que ejercicio se pasa a cual cuando el primero deja de costar. Solo se listan saltos REALES de dificultad entre dos movimientos distintos. Cuando progresar es solo anadir peso o repeticiones no hay entrada aqui, porque eso no es cambiar de ejercicio. Cada slug se valida contra la biblioteca: si uno no existe, npm run seed falla.",
+
+  "incline-push-up": "push-up",
+  "wide-push-up": "push-up",
+  "push-up": "decline-push-up",
+  "decline-push-up": "diamond-push-up",
+  "diamond-push-up": "archer-push-up",
+  "archer-push-up": "pseudo-planche-push-up",
+  "pike-push-up": "handstand-hold",
+  "handstand-hold": "handstand-push-up",
+
+  "bench-dip": "assisted-dips",
+  "assisted-dips": "dips",
+
+  "machine-chest-press": "dumbbell-bench-press",
+  "chest-press-machine": "dumbbell-bench-press",
+  "dumbbell-bench-press": "barbell-bench-press",
+  "shoulder-press-machine": "dumbbell-shoulder-press",
+  "dumbbell-shoulder-press": "overhead-press",
+  "seated-dumbbell-press": "overhead-press",
+
+  "inverted-row": "australian-pull-up",
+  "australian-pull-up": "assisted-pull-up-machine",
+  "assisted-pull-up-machine": "pull-up",
+  "seated-row-machine": "seated-cable-row",
+  "seated-cable-row": "barbell-row",
+  "chest-supported-row": "dumbbell-row",
+  "dumbbell-row": "barbell-row",
+
+  "squat": "goblet-squat",
+  "goblet-squat": "barbell-back-squat",
+  "box-squat": "barbell-back-squat",
+  "leg-press": "barbell-back-squat",
+  "lunge": "reverse-lunge",
+  "reverse-lunge": "walking-lunge",
+  "walking-lunge": "bulgarian-split-squat",
+  "bulgarian-split-squat": "pistol-squat",
+  "hip-thrust": "single-leg-hip-thrust",
+  "seated-leg-curl": "lying-leg-curl",
+  "lying-leg-curl": "nordic-curl",
+
+  "crunch": "bicycle-crunch",
+  "bicycle-crunch": "hollow-body-hold",
+  "plank": "plank-shoulder-tap",
+  "leg-raise": "hanging-knee-raise",
+  "hanging-knee-raise": "hanging-leg-raise"
+}

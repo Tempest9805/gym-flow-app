@@ -1,0 +1,534 @@
+{
+  "id": "pablo",
+  "name": "Rutina Pablo",
+  "athleteName": "Pablo",
+  "goal": "brazos",
+  "coachName": "Coaching Nach",
+  "days": [
+    {
+      "id": "pablo-d1",
+      "label": "Día 1",
+      "focus": "Espalda",
+      "icon": "weight-lifter",
+      "lastResetOn": null,
+      "rows": [
+        {
+          "id": "pablo-r1",
+          "exerciseId": "pull-up",
+          "name": "Dominadas",
+          "sets": 3,
+          "reps": "6-8",
+          "restSeconds": 180,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r2",
+          "exerciseId": "smith-machine-row",
+          "name": "Remo en Smith",
+          "sets": 3,
+          "reps": "8-10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r3",
+          "exerciseId": "single-arm-cable-row",
+          "name": "Remo horizontal unilateral",
+          "sets": 3,
+          "reps": "8-10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r4",
+          "exerciseId": "cable-curl",
+          "name": "Curl de bíceps en polea",
+          "sets": 3,
+          "reps": "10-12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r5",
+          "exerciseId": "lateral-raise",
+          "name": "Elevaciones laterales",
+          "sets": 3,
+          "reps": "12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r6",
+          "exerciseId": "incline-dumbbell-curl",
+          "name": "Curl inclinado en banco",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r7",
+          "exerciseId": "triceps-pushdown",
+          "name": "Extensión de tríceps",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "pablo-d2",
+      "label": "Día 2",
+      "focus": "Pierna",
+      "icon": "run",
+      "lastResetOn": null,
+      "rows": [
+        {
+          "id": "pablo-r8",
+          "exerciseId": "barbell-back-squat",
+          "name": "Sentadilla libre",
+          "sets": 3,
+          "reps": "6-8",
+          "restSeconds": 180,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r9",
+          "exerciseId": "deadlift",
+          "name": "Peso muerto convencional",
+          "sets": 3,
+          "reps": "6-8",
+          "restSeconds": 180,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r10",
+          "exerciseId": "leg-press",
+          "name": "Prensa inclinada",
+          "sets": 3,
+          "reps": "10-12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r11",
+          "exerciseId": "leg-extension",
+          "name": "Extensión de rodilla",
+          "sets": 3,
+          "reps": "10-12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r12",
+          "exerciseId": "hip-thrust",
+          "name": "Hip thrust en máquina",
+          "sets": 3,
+          "reps": "12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r13",
+          "exerciseId": "hip-abduction",
+          "name": "Abducción",
+          "sets": 3,
+          "reps": "15-20",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r14",
+          "exerciseId": "calf-raise",
+          "name": "Pantorrilla en prensa inclinada",
+          "sets": 3,
+          "reps": "15",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "pablo-d3",
+      "label": "Día 3",
+      "focus": "Pecho",
+      "icon": "human-handsup",
+      "lastResetOn": null,
+      "rows": [
+        {
+          "id": "pablo-r15",
+          "exerciseId": "pec-deck",
+          "name": "Peck deck",
+          "sets": 3,
+          "reps": "8-10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r16",
+          "exerciseId": "chest-press-machine",
+          "name": "Press hammer",
+          "sets": 3,
+          "reps": "6-8",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r17",
+          "exerciseId": "incline-barbell-bench-press",
+          "name": "Press inclinado",
+          "sets": 3,
+          "reps": "8-10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r18",
+          "exerciseId": "triceps-pushdown",
+          "name": "Extensión de tríceps",
+          "sets": 3,
+          "reps": "8-10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r19",
+          "exerciseId": "barbell-curl",
+          "name": "Curl de bíceps con barra",
+          "sets": 3,
+          "reps": "6-8",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r20",
+          "exerciseId": "lateral-raise",
+          "name": "Elevaciones laterales",
+          "sets": 4,
+          "reps": "12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r21",
+          "exerciseId": "hammer-curl",
+          "name": "Martillos",
+          "sets": 3,
+          "reps": "10-12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "pablo-d4",
+      "label": "Día 4",
+      "focus": "Espalda",
+      "icon": "weight-lifter",
+      "lastResetOn": null,
+      "rows": [
+        {
+          "id": "pablo-r22",
+          "exerciseId": "lat-pulldown",
+          "name": "Jalón al pecho",
+          "sets": 3,
+          "reps": "6-8",
+          "restSeconds": 180,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r23",
+          "exerciseId": "smith-machine-row",
+          "name": "Remo en Smith",
+          "sets": 3,
+          "reps": "8-10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r24",
+          "exerciseId": "face-pull",
+          "name": "Face pull con polea",
+          "sets": 3,
+          "reps": "8-10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r25",
+          "exerciseId": "cable-curl",
+          "name": "Curl de bíceps en polea",
+          "sets": 3,
+          "reps": "10-12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r26",
+          "exerciseId": "lateral-raise",
+          "name": "Elevaciones laterales",
+          "sets": 3,
+          "reps": "12",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r27",
+          "exerciseId": "incline-dumbbell-curl",
+          "name": "Curl inclinado en banco",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r28",
+          "exerciseId": "triceps-pushdown",
+          "name": "Extensión de tríceps",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r29",
+          "exerciseId": "reverse-pec-deck",
+          "name": "Posterior en peck deck",
+          "sets": 3,
+          "reps": "15",
+          "restSeconds": 90,
+          "mode": "reps",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "pablo-d5",
+      "label": "Día 5",
+      "focus": "Brazo",
+      "icon": "arm-flex",
+      "lastResetOn": null,
+      "rows": [
+        {
+          "id": "pablo-r30",
+          "exerciseId": "dumbbell-shoulder-press",
+          "name": "Press militar con mancuernas",
+          "sets": 4,
+          "reps": "6-8",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r31",
+          "exerciseId": "dumbbell-curl",
+          "name": "Curl de bíceps con mancuernas",
+          "sets": 3,
+          "reps": "6-8",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r32",
+          "exerciseId": "hammer-curl",
+          "name": "Martillos",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r33",
+          "exerciseId": "lateral-raise",
+          "name": "Laterales con mancuernas",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r34",
+          "exerciseId": "triceps-pushdown",
+          "name": "Extensión de tríceps",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r35",
+          "exerciseId": "overhead-triceps-extension",
+          "name": "Copa con mancuerna",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r36",
+          "exerciseId": "cable-lateral-raise",
+          "name": "Laterales con polea",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 120,
+          "mode": "reps",
+          "done": false
+        }
+      ]
+    },
+    {
+      "id": "pablo-d6",
+      "label": "Día 6",
+      "focus": "Movilidad y abdomen",
+      "icon": "yoga",
+      "lastResetOn": null,
+      "rows": [
+        {
+          "id": "pablo-r37",
+          "exerciseId": "arm-circles",
+          "name": "Rotación de brazos",
+          "sets": 2,
+          "reps": "12",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r38",
+          "exerciseId": "scapular-push-up",
+          "name": "Empuje de escápulas",
+          "sets": 2,
+          "reps": "15",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r39",
+          "exerciseId": "wall-shoulder-rotation",
+          "name": "Rotación de hombros en pared",
+          "sets": 2,
+          "reps": "12",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r40",
+          "exerciseId": "hip-rotation",
+          "name": "Rotación interna y externa del fémur",
+          "sets": 2,
+          "reps": "15",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r41",
+          "exerciseId": "stick-overhead-squat",
+          "name": "Sentadilla con palo",
+          "sets": 2,
+          "reps": "10",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r42",
+          "exerciseId": "glute-bridge",
+          "name": "Puente de glúteo en fitball",
+          "sets": 2,
+          "reps": "10",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r43",
+          "exerciseId": "ab-crunch-machine",
+          "name": "Crunch en máquina",
+          "sets": 3,
+          "reps": "12",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r44",
+          "exerciseId": "plank",
+          "name": "Plancha dinámica",
+          "sets": 3,
+          "reps": "fallo",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r45",
+          "exerciseId": "pallof-press",
+          "name": "Press pallof",
+          "sets": 3,
+          "reps": "15",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r46",
+          "exerciseId": "farmer-s-walk",
+          "name": "Caminata de granjero",
+          "sets": 3,
+          "reps": "1 min",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        },
+        {
+          "id": "pablo-r47",
+          "exerciseId": "leg-raise",
+          "name": "Elevación de piernas",
+          "sets": 3,
+          "reps": "10",
+          "restSeconds": 60,
+          "mode": "reps",
+          "done": false
+        }
+      ]
+    }
+  ],
+  "updatedAt": "2026-07-05T00:00:00.000Z"
+}

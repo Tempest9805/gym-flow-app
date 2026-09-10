@@ -1,94 +1,68 @@
-import React, { useEffect } from 'react';
+/**
+ * Tab navigator — four tabs, everything else hidden.
+ *
+ * Hoy is first and is where the app opens. The rest exist to feed it:
+ * routines to pick from, exercises to add, settings to tweak.
+ */
+import React from 'react';
 import { Tabs } from 'expo-router';
-import { View, Text, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useCurrentProfile } from '@/lib/hooks';
-import { LoadingScreen } from '@/components/ui';
-import { useAuthStore } from '@/lib/store/authStore';
-import { useThemeStore } from '@/lib/store/themeStore';
+
 import { useTheme } from '@/lib/hooks/useTheme';
-import { cn } from '@/lib/utils/cn';
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Tab icon definitions (matching Stitch bottom nav)
-// ──────────────────────────────────────────────────────────────────────────────
-const TAB_ICONS: Record<string, { outline: string; fill: string; label: string }> = {
-  index:           { outline: '⌂',  fill: '⌂',  label: 'Home' },
-  exercises:       { outline: '◈',  fill: '◈',  label: 'Exercises' },
-  agenda:          { outline: '▦',  fill: '▦',  label: 'Agenda' },
-  routines:        { outline: '≡',  fill: '≡',  label: 'Routines' },
-  profile:         { outline: '◯',  fill: '●',  label: 'Profile' },
-};
+type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
-// Custom tab bar that matches Stitch design exactly
-function StitchTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+/** Visible tabs, in footer order. */
+const TABS: { name: string; label: string; icon: IconName }[] = [
+  { name: 'index', label: 'Hoy', icon: 'clipboard-check-outline' },
+  { name: 'routines', label: 'Rutinas', icon: 'view-list-outline' },
+  { name: 'exercises', label: 'Ejercicios', icon: 'dumbbell' },
+  { name: 'settings', label: 'Ajustes', icon: 'cog-outline' },
+];
+
+function TabBar({ state, navigation }: BottomTabBarProps) {
   const t = useTheme();
-
-  // Only render the 5 primary tabs (hide hidden screens)
-  const visibleRoutes = state.routes.filter((r) =>
-    ['index', 'exercises', 'agenda', 'routines', 'profile'].includes(r.name)
-  );
+  const insets = useSafeAreaInsets();
+  const activeName = state.routes[state.index]?.name;
 
   return (
     <View
-      className="flex-row h-20 border-t shadow-2xl elevation-2xl"
+      className="flex-row border-t"
       style={{
-        backgroundColor: t.background + 'EE',
-        borderTopColor: t.surfaceContainerHighest,
-        shadowColor: '#000',
-        paddingBottom: Platform.OS === 'ios' ? 16 : 8,
+        backgroundColor: t.surfaceContainerLowest,
+        borderTopColor: t.outlineVariant,
+        // `edgeToEdgeEnabled` hace que la app dibuje por DEBAJO de la barra de
+        // navegacion. Con gestos son ~24dp y un relleno fijo casi colaba; con
+        // los tres botones son ~48 y las pestanas quedaban detras de ellos,
+        // intocables. El inset real es el unico numero que vale.
+        paddingBottom: Math.max(insets.bottom, 10),
+        paddingTop: 10,
       }}
     >
-      {visibleRoutes.map((route, index) => {
-        const isFocused = state.index === state.routes.findIndex(r => r.key === route.key);
-        const iconDef = TAB_ICONS[route.name] ?? { outline: '○', fill: '●', label: route.name };
-        const color = isFocused ? t.primaryContainer : 'rgba(255,255,255,0.4)';
-
-        const onPress = () => {
-          const event = navigation.emit({ type: 'tabPress', target: route.key, canPreventDefault: true });
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-        };
+      {TABS.map((tab) => {
+        const isActive = activeName === tab.name;
+        const color = isActive ? t.primary : t.onSurfaceVariant;
 
         return (
-          <TouchableOpacity
-            key={route.key}
-            onPress={onPress}
-            className="flex-1 items-center justify-center relative pt-1.5"
-            activeOpacity={0.7}
+          <Pressable
+            key={tab.name}
             accessibilityRole="button"
-            accessibilityLabel={iconDef.label}
+            accessibilityState={isActive ? { selected: true } : {}}
+            accessibilityLabel={tab.label}
+            className="flex-1 items-center justify-center gap-1"
+            style={{ minHeight: 48 }}
+            onPress={() => {
+              if (!isActive) navigation.navigate(tab.name);
+            }}
           >
-            {isFocused && (
-              <View
-                className="absolute -top-0.5 w-10 h-1 rounded-sm"
-                style={{ backgroundColor: t.primaryContainer }}
-              />
-            )}
-            <Text
-              className="text-[22px] mb-0.5"
-              style={[
-                { color },
-                isFocused && {
-                  textShadowColor: t.glowPrimary,
-                  textShadowOffset: { width: 0, height: 0 },
-                  textShadowRadius: 10,
-                },
-              ]}
-            >
-              {isFocused ? iconDef.fill : iconDef.outline}
+            <MaterialCommunityIcons name={tab.icon} size={24} color={color} />
+            <Text className="text-[11px] font-semibold" style={{ color }}>
+              {tab.label}
             </Text>
-            <Text
-              className={cn(
-                "text-[10px] uppercase tracking-widest",
-                isFocused ? "font-bold" : "font-medium"
-              )}
-              style={{ color }}
-            >
-              {iconDef.label}
-            </Text>
-          </TouchableOpacity>
+          </Pressable>
         );
       })}
     </View>
@@ -96,39 +70,17 @@ function StitchTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 }
 
 export default function AppLayout() {
-  const { isAuthenticated } = useAuthStore();
-  const { data: profile, isLoading } = useCurrentProfile();
-  const { loadTheme, isLoaded } = useThemeStore();
-
-  // Load persisted theme on mount
-  useEffect(() => {
-    loadTheme();
-  }, []);
-
-  if (isLoading || !isAuthenticated || !isLoaded) {
-    return <LoadingScreen />;
-  }
-
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
-      }}
-      tabBar={(props) => <StitchTabBar {...props} />}
-    >
+    <Tabs screenOptions={{ headerShown: false }} tabBar={(props) => <TabBar {...props} />}>
       <Tabs.Screen name="index" />
-      <Tabs.Screen name="exercises" />
-      <Tabs.Screen name="agenda" />
       <Tabs.Screen name="routines" />
-      <Tabs.Screen name="profile" />
-      {/* Hidden screens — not in bottom nav */}
-      <Tabs.Screen name="workout" options={{ href: null }} />
-      <Tabs.Screen name="workout-session" options={{ href: null }} />
-      <Tabs.Screen name="day-detail" options={{ href: null }} />
-      <Tabs.Screen name="routine-builder" options={{ href: null }} />
-      <Tabs.Screen name="import-routine" options={{ href: null }} />
+      <Tabs.Screen name="exercises" />
+      <Tabs.Screen name="settings" />
+
+      {/* Reachable from inside the tabs, never from the footer. */}
       <Tabs.Screen name="exercise/[id]" options={{ href: null }} />
-      <Tabs.Screen name="share/[id]" options={{ href: null }} />
+      <Tabs.Screen name="import" options={{ href: null }} />
+      <Tabs.Screen name="stopwatch" options={{ href: null }} />
       <Tabs.Screen name="timer" options={{ href: null }} />
       <Tabs.Screen name="timer-active" options={{ href: null }} />
       <Tabs.Screen name="tabata" options={{ href: null }} />

@@ -1,31 +1,18 @@
 /**
- * tabataStore — Persists TabataConfig between setup and active screens.
- * Separate from tabataThemeStore (which handles color themes).
+ * tabataStore — guarda la configuracion del tabata entre la pantalla de
+ * ajustes y la que corre.
+ *
+ * Solo elige y persiste. La forma de `TabataConfig` y sus valores por defecto
+ * viven en `lib/domain/types.ts`, porque los necesita la maquina de estados; se
+ * reexportan desde aqui para que ningun consumidor tenga que cambiar de sitio.
  */
 import { create } from 'zustand';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type TabataConfig = {
-  prepSeconds: number;
-  workSeconds: number;
-  restSeconds: number;
-  cooldownSeconds: number;
-  cycleRestSeconds: number;
-  rounds: number;
-  cycles: number;
-  soundEnabled: boolean;
-};
+import { DEFAULT_TABATA_CONFIG, type TabataConfig } from '@/lib/domain/types';
 
-export const DEFAULT_TABATA_CONFIG: TabataConfig = {
-  prepSeconds: 5,
-  workSeconds: 40,
-  restSeconds: 20,
-  cooldownSeconds: 30,
-  cycleRestSeconds: 15,
-  rounds: 3,
-  cycles: 5,
-  soundEnabled: true,
-};
+export { DEFAULT_TABATA_CONFIG };
+export type { TabataConfig };
 
 const TABATA_CONFIG_KEY = 'gymflow_tabata_config';
 
